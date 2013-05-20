@@ -1,0 +1,188 @@
+#!@python_exe@
+
+#     Copyright (C) 2010  Christopher Brumgard
+# 
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+# 
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+'''This script is used to register depots into LoDN'''
+
+
+__author__ = 'Chris Brumgard (sellers@cs.utk.edu)'
+
+
+import sys
+import socket
+import glob
+import configparser
+from optparse import OptionParser
+
+# Extends the PYTHONPATH
+sys.path.extend(['@prefix@/lib/']+glob.glob('@prefix@/lib/*.egg'))
+
+
+import pyMySQL
+from lodn.server import globals
+from lodn.server.db import managers
+from lodn.server.subsystems.fs.operations import registerDepot
+
+
+
+def loadSettings(configfile="@prefix@/etc/lodn.cfg"):
+
+    try:
+        # Creates a parser to read old file
+        parser = configparser.RawConfigParser()
+        
+        # Reads the file
+        parser.read(configfile)
+           
+        # Checks for mysql settings
+        if not parser.has_section('mysql'):
+            sys.exit('Error {file} does not have a mysql section'.format(
+                                                            file=configfile))
+                
+        # Builds a dictionary of the settings for mysql
+        mysqlArgs = dict(parser.items('mysql'))
+        
+        if 'account' in mysqlArgs:
+            mysqlArgs['username']  = mysqlArgs['account']
+            del mysqlArgs['account']
+            
+        if 'dbname' in mysqlArgs:
+            mysqlArgs['db_name']   = mysqlArgs['dbname']
+            del mysqlArgs['dbname']
+        
+    
+        # Create db manager for the process
+        manager = managers.ThreadConnectionManager(pyMySQL, **mysqlArgs)
+        globals.dbManager = manager
+        
+    
+    # Catches any error
+    except Exception as e:
+        sys.exit("Error reading config file {file}: ".format(
+                                                    file=configfile) + str(e))
+
+     
+def query_depot(host, port):
+        
+    try:
+        
+        # Creates a connection to the depot
+        s = socket.create_connection((host, port), 5)          
+        s.settimeout(5)
+        
+        # Sends the request for resources to the depot
+        s.send(("{version} {ibp_status} {ibp_st_res} {timeout} \n".format(
+                    version=1,ibp_status=4,ibp_st_res=3,timeout=30)).encode())
+                 
+        # Gets the response
+        response = s.recv(4096).decode()   
+                
+        s.close()
+        
+        # Checks that the response ends with a '\n'
+        if(response[-1] != '\n'):
+            return None
+        
+        # Splits the response into its fields
+        fields = response.split()
+        
+        # Checks the response for success
+        if len(fields) == 0 or fields[0] != "1":
+            return None
+    
+        # Returns the resources
+        return fields[1:]
+
+    except:
+        print('Error contacting depot {} on port {}'.format(host, port))
+        
+
+def parseCommandLine(args):
+    
+    '''parseCommandLine(args) -> options
+    
+    This method takes the given args and parses them accordingly.  It returns
+    a option object that holds the settings'''
+    
+    # Creates a option parser
+    parser = OptionParser(usage='usage: %prog')
+    
+    # Adds in the options
+    parser.add_option('-H', '--host', default=None, type="str",
+                      dest='host', help='hostname', metavar='HOSTNAME')
+    parser.add_option('-p', '--port', default=6714, type='int',
+                      dest='port', help='port', metavar='PORT')
+    parser.add_option('-d', '--duration', default=3600, type='int',
+                      dest='duration', help='duration', metavar='DURATION')
+    parser.add_option('-r', '--rid', default=None, type='str',
+                      dest='rid', help='rid0,rid1,...', metavar='RID')
+    parser.add_option('-s', '--site', default=None, type='str',
+                      dest='site', help='site', metavar='SITENAME')
+    parser.add_option('-t', '--timeout', default=60, type='int', 
+                      dest='timeout', help='timeout', metavar='TIMEOUT')
+    parser.add_option('-l', '--latlong', default=(0.0, 0.0), type='float',
+                      dest='latlong',  nargs=2,
+                      help='latitude and longitude in decimal degrees',
+                      metavar='LATITUDE LONGITUDE')
+    
+    # Parses the args
+    (options, args) = parser.parse_args(args=args)
+
+    # Checks the number of args
+    if len(args) > 1:
+        sys.exit('Usage error: invalid options supplied: ' + ' '.join(args))
+
+    # Checks the host
+    if options.host is None:
+        sys.exit('Usage error: must specify a host')
+    
+    # checks the site
+    if options.site is None:
+        sys.exit('Usage error: must specify a site')
+        
+    # Returns the options
+    return options
+
+
+
+if __name__ == '__main__':
+    
+    # Parse the command line args
+    options = parseCommandLine(sys.argv)
+    
+    # Query depot for rids
+    if options.rid is None:
+        rids = query_depot(options.host, options.port)
+    
+    # Split the rids up
+    else:
+        rids = options.rid.split(',')
+    
+    # No rids detected
+    if rids is None or len(rids) == 0:
+        sys.exit('No valid rids given')
+    
+    
+    # Loads the settings for mysql
+    loadSettings()
+    
+    # Registers the depot
+    try:
+        registerDepot(options.host, options.port, rids, options.site, 
+                      options.latlong)
+    except:
+        sys.exit('Error registering depot:', options.host, ':', options.port)
+    

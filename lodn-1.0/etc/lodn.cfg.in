@@ -1,0 +1,66 @@
+# -----------------------
+# LoDN configuration file
+# -----------------------
+
+
+
+#
+# L-Bone servers list
+# syntax: LBONE lb1.dom1.edu:port1 lb2.dom2.edu:port2 lb3.dom3.edu:port3
+#
+LBONE vertex.cs.utk.edu:6767
+
+#
+# Directory out of which CGI scripts are available
+# ex: /lodn/cgi-bin
+#
+CGIBIN_DIR @CGIBIN_DIR@ 
+
+#
+# Protocol and path to retrieve .jar files
+# 
+CODEBASE @LODN_URL@
+
+#
+# Directory which holds users' exNode files.
+#
+# Do NOT add a slash at the end of the directory path.
+#
+CONTENT_DIR @LODN_CONTENT_DIR@ 
+
+#
+# Directory which holds the LoRS tools
+#
+LORS_TOOLS_BIN @LORS_TOOLS_BIN@ 
+
+#
+# Directory which holds the LoDN etc  
+#
+LODN_ETC @LODN_ETC@
+
+
+#
+#LoDN PATH (absolute path leading and including lodn) 
+#
+LODN_PATH @LODN_PATH@
+###LoDN TRASH (To place the files after the user deletes them)
+#
+LODN_TRASH @LODN_TRASH@
+
+#
+# system host name
+# ex: promise.cs.utk.edu
+#HOST localhost 
+HOST @LODN_HOST@@LODN_DOMAIN@
+
+#
+# DOMAIN your.domain.name
+# ex: .cs.utk.edu
+#
+#DOMAIN localhost 
+DOMAIN @LODN_DOMAIN@ 
+
+#
+# Adminstrator's e-mail
+#
+ADMIN_EMAIL @ADMIN_EMAIL@ 

@@ -1,0 +1,368 @@
+@PERL@ -w
+use strict;
+use CGI qw(:standard);
+use Storable qw(store retrieve freeze thaw dclone);
+use Digest::MD5 qw(md5_hex);
+use constant LODN_CFG => @LODN_CFG@;
+my $LODN_ETC;
+# Name of the cookie
+#user and password can be either be taken from the cookie or can be taken in param(for future work)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $lodn_config;
+my $lodn_userinfo
+my $content_dir   = "/home/sellers";
+# Get the params;
+my $username = $Cuser || param('user');
+my $password = $Cpassword || param('pass');
+my $filename = param('filename');
+my $curr_path;
+my $warmer_file;
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+   while(<CONFIG>) {
+      s/\#.*//;
+      s/^\s+//;
+      s/\s+$//;
+      if(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+
+    }
+   close(CONFIG);
+ if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+$lodn_config   = LODN_CFG;
+$lodn_userinfo = "$LODN_ETC/userinfo";
+
+
+
+# Defines the routine for finding appropriate warmer for the exnode.
+sub find_warmer_file
+{	
+	# Builds the complete starting path for the warmer file for the exnode
+	$curr_path   = $content_dir . '/' . $filename;
+	$warmer_file;
+
+	# Removes any extra /.
+	$curr_path =~ s/\/+/\//g;
+
+	if(-f $curr_path)
+	{
+		$warmer_file = $curr_path . ".warmer";
+		
+		# Checks if the warmer file for the particular exists and if not then it
+		# resets the warmer file to being the warmer for the directory.
+		if ( !-f $warmer_file ) 
+		{
+			$warmer_file =~ s/\/[A-Za-z0-9_\-]*\.warmer$//;
+			$warmer_file =~ s/(\/[A-Za-z0-9_\-]*)$/${1}${1}\.warmer/;
+		}
+		
+	} elsif( -d $curr_path)
+	{
+		$warmer_file = $curr_path;
+		$curr_path =~ s/\/([A-Za-z0-9_\-]*)$/$1\/$1\.warmer/;
+		
+	} else
+	{
+		print "Path is not a valid path\n";
+	}
+	
+	# If there isn't a warmer for the file then it loops until a valid directory warmer
+	# file is found or the main content directory is reached.
+	while ( !( -f "$warmer_file" ) ) 
+	{
+		print "warmer is $warmer_file\n";
+
+		# Removes the current warmer from the path.
+		$warmer_file =~ s/\/[A-Za-z0-9_\-]*\/[A-Za-z0-9_\-]*\.warmer$//;
+
+		# Stops the search loop when it reaches the content directory.
+		if ( $warmer_file eq "${content_dir}" ) 
+		{
+
+			# Adds the next directory warmer to search for.
+			$warmer_file =~ s/(\/[A-Za-z0-9_\-]*)$/$1$1.warmer/;
+
+			last;
+		}
+
+		# Adds the next directory warmer to search for.
+		$warmer_file =~ s/(\/[A-Za-z0-9_\-]*)$/$1$1.warmer/;
+	}
+
+	# If no warmer is found then it just stops.
+	if ( !( -f $warmer_file ) ) 
+	{
+		$warmer_file = undef;
+		
+#		print "<html><head><title>Error!</title></head><body>\n";
+#		print "no valid warmer file detected</body>\n";
+#		exit;
+	}
+
+	# Returns the warmer file
+	return $warmer_file;
+}
+
+
+# Defines the list subroutine
+sub list_depots() 
+{
+	my $warmer_file = find_warmer_file();
+
+	print "Warmer is $warmer_file\n";
+
+	open( WARMER_FILE, "<$warmer_file" ) or die "Can't open warmer file\n";
+
+	while (<WARMER_FILE>) 
+	{
+		print;
+	}
+
+	close(WARMER_FILE);
+}
+
+# Defines the add depot subroutine
+sub add_depots()
+{
+	my $warmer_file = find_warmer_file();
+	my %sites;	
+	my %depots;
+	my $curr_site;
+	my $curr_depot;
+	
+	
+	if(defined($warmer_file))
+	{
+		# Opens the warmer file for this file. 
+		open( WARMER_FILE, "<$warmer_file" ) or die "Can't open warmer file\n";
+
+		# Reads in the depots for this file.
+		while (<WARMER_FILE>) 
+		{
+			# Trims the line of whitespaces and new lines.
+			chomp($_);	
+			s/^\s+(.*)\s$/$1/;
+			
+			# Skips blank lines
+			next if($_ eq "");
+		
+			# Gets the sitename;
+			if(m/^[A-Za-z0-9\.\-_]+:$/)
+			{
+				$_ =~ s/:$//g;
+				$curr_site = $_;
+			
+			# Gets the current depot name and port
+			}elsif(m/^[A-Za-z0-9\.\-_]+:\d+$/)
+			{
+				$curr_depot = $_;
+			
+				if(!defined($curr_site))
+				{
+					print "Error no site for depot\n";
+					exit;	
+				}
+			
+				$sites{$curr_site}{$curr_depot} = $curr_depot;
+			
+			# Gets the comment;
+			}elsif(m/^\#/)
+			{
+	
+			# Invalid line
+			}else
+			{
+				print "Error invalid line $_\n";
+				exit;	
+			}
+		}
+
+		# Closes the file handle
+		close(WARMER_FILE);
+	}
+	
+	foreach (keys(%sites))
+	{
+		print $_ . "\n";
+		foreach (keys %{$sites{$_}})
+		{
+			print $_ . "\n";
+		}	
+	}
+	
+	exit;
+	
+	for (1..10)
+	{
+		my $sitename  = param('site'.$_);
+		my $depotname = param('depotname'.$_);
+		my $depotport = param('depotport'.$_);
+		
+		if(!defined($sitename))
+		{		
+			if(defined($depotname) || defined($depotport))
+			{
+				print "Error sitename not given\n";
+				exit;
+				
+			}elsif(!defined($depotname) && !defined($depotport))
+			{
+				last;	
+			}
+		}
+		
+		if(!defined($depotname))
+		{
+			print "Error depotname not given\n";
+			exit;	
+		}
+		
+		if(!defined($depotport))
+		{
+			print "Error depotport not given\n";
+			exit;	
+		}
+	}
+}
+
+sub delete_depots()
+{
+	
+}
+
+
+
+# Prints the html header
+print header();
+
+
+# Checks that the username has been given
+if ( !defined($username) ) {
+	print "Username not specified\n";
+	exit(1);
+}
+
+# Checks that the password has been been given
+if ( !defined($password) ) {
+	print "Password not specified\n";
+	exit(1);
+}
+
+# Checks that the name of the file has been given
+if ( !defined($filename) ) {
+	print "filename not specified\n";
+	exit(1);
+}
+
+
+# Sanity Check
+print "Username = $username\n";
+print "Password = $password\n";
+print "Filename = $filename\n";
+
+if(-f $lodn_config)
+{
+	open(CONFIG_FILE, $lodn_config) or die "Error opening config file\n";
+
+	while(<CONFIG_FILE>)
+	{
+		s/\#.*//;
+		s/^\s+//;
+		s/\s+$//;
+
+		if(/^CONTENT_DIR\s+(\S*)/)
+		{
+			$content_dir = $1;
+		}
+	}
+
+	close(CONFIG_FILE);
+
+	if(!defined($content_dir))
+	{
+		print "<html><head></head><body>Error: LoDN config incomplete</body></html>\n";
+		exit;
+	}
+}else
+{
+	print "<html><head></head><body>Error: LoDN config file not found</body><html>\n";
+    exit;
+}
+
+
+if(-f $lodn_userinfo)
+{
+	my %user_hash = %{retrieve($lodn_userinfo)};
+
+	if(!defined($user_hash{$username}))
+	{
+		 print "<html><head><title>Error!</title></head><body>\n";
+    	 print "username invalid</body>\n";
+    	 exit;
+	}
+
+
+	if(($user_hash{$username}[3] ne $password) &&
+	   ($user_hash{$username}[3] ne md5_hex($password, $username)))
+	{
+		 print "<html><head><title>Error!</title></head><body>\n";
+    	 print "pasword invalid</body>\n";
+    	 exit;
+	}
+
+}else
+{
+	print "<html><head></head><body>Error: No LoDN user info file</body><html>\n";
+    exit;
+}
+
+my $actionNum=0;
+my $action;
+my %addDepots;
+my $depot;
+
+while( $action = param("action".$actionNum))
+{
+	if ( $action eq "list" ) 
+	{
+		print "list\n";
+		list_depots();
+		
+	}elsif ( $action eq "add" ) 
+	{
+		
+		if(!($depot = param("depot".$actionNum)))
+		{
+			print "No depot provided\n";	
+		}
+		
+		print "Adding $depot\n";
+		
+		#add_depots();
+
+	}elsif ( $action eq "delete" ) 
+	{
+	    print "delete";
+	}else 
+	{
+		print "<html><head><title>Error!</title></head><body>\n";
+		print "Invalid action</body>\n";
+		exit;
+	}
+	
+	$actionNum++;
+}
+

@@ -1,0 +1,111 @@
+@PERL@ -T
+use strict;
+use Digest::MD5 qw(md5_hex);
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw/:standard/; #(:standard *table vars canter img);
+use CGI::Cookie;
+use constant LODN_CFG => @LODN_CFG@;
+ my %mydata;
+ my $a;
+ my $usr = param("user");
+ my $u;
+ my $user;
+ my $password = param("password");
+ my $DOMAIN;
+ my $LODN_ETC;
+ my $givenpass=$password;
+ my $userinfo;
+ my $info;
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+   while(<CONFIG>) {
+      s/\#.*//;
+      s/^\s+//;
+      s/\s+$//;
+      if(/^DOMAIN\s+(\S*)/) {
+        $DOMAIN=$1;
+      }elsif(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+   }
+   close(CONFIG);
+   if(!(defined $DOMAIN)) {
+      #print header();
+      #print "<html><head></head><body>LoDN config incomplete</body></html>";
+      #exit;
+      $DOMAIN="";
+   }
+  if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+$userinfo="$LODN_ETC/userinfo";
+#open and load user database
+# my $info = retrieve ("$userinfo") or  die "can't retrieve that file";
+eval
+{
+  $info = retrieve ("$userinfo");
+};
+
+if($@)
+{
+     print header();
+     print "Error accessing user info database\n";
+     exit;
+}        
+
+# alter entered password to match altered password saved in database
+ $password =md5_hex($password,$usr);
+
+# load info into hash
+ %mydata = %{$info};
+
+#if the username is valid
+    if(defined $mydata{$usr}) {  
+	#if the username is enabled
+	if($mydata{$usr}[8] eq "no") {
+	    print header();
+	    print "<html><head><title>LoDN - Login Error</title>\n";
+	    print "</head><body>I'm sorry, but your account is currently\n";
+	    print "disabled.</body></html>\n";
+	    exit;
+	}
+        #if the password matches the one in the db
+        if ( $password eq $mydata{$usr}[3])
+         {
+ 
+         #change the database to show that user is logged in
+         $a = $usr;
+         $mydata{$usr}[6]="yes";
+         store (\%mydata, "$userinfo");
+         }
+    }
+
+#if everything from before worked out, set the cookie, and forward
+# the user to the opening page
+if (defined $a)
+{
+    $user = new CGI::Cookie( -NAME => "lodnuser",
+			     -VALUE => ["$usr","$givenpass"],
+			     -expires => "+4h",
+			     -domain => "$DOMAIN");
+    print "Set-Cookie: $user\n";
+    print redirect(-uri=>"lodn_browser.cgi?subdir=/$usr");
+}
+
+#otherwise tell the user that his username or password is invalid
+else
+{
+       print header();
+       print "<html><head><title>LoDN - Login Error</title></head><body>\n";
+       print "Either your username or password is wrong. Please go back and try again</body></html>";
+}

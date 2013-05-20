@@ -1,0 +1,331 @@
+@PERL@ -T
+use strict;
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:netscape :standard *table vars canter img);
+use Digest::MD5 qw(md5_hex);
+
+use constant LODN_CFG =>@LODN_CFG@;
+my $LODN_ETC;
+#user and password can be either be taken from the cookie or can be taken in param(from url)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+my $user;
+my $password;
+
+
+my %mydata;
+my $hashref;
+my $filewoext; # filename without extension (.xnd)
+my $admin="no";
+my $parent;
+my $dir;
+my @parts;
+my $serverscript;
+# Constants (as such)
+my $pub=0;
+my $CONTENT_DIR;
+my $file;
+my $pubfile;
+my $subdir;
+my $info;
+my (@dirs);
+my $dirname;
+
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $user=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $user=$Puser;
+   $password=$Ppassword;
+  }
+
+
+# CGI parameters
+$subdir=param('subdir');
+$subdir =~ s/\.\.\///g;
+$subdir =~ s/\.\.//g;
+if(!($subdir =~ /^\//)) { $subdir="\/".$subdir;}
+if(($subdir =~ /\/$/)) { chop($subdir);}
+
+if(!($subdir =~ /^\/$user$/) && !($subdir =~ /^\/$user\//)) {
+  print redirect(-uri=>"lodn_published.cgi?subdir=$subdir");
+  exit;
+}
+
+
+# LOAD CONFIG FILE AND READ VALUES
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+      while(<CONFIG>) {
+          s/\#.*//;
+          s/^\s+//;
+          s/\s+$//;
+          if(/^CONTENT_DIR\s+(\S*)/) {
+              $CONTENT_DIR=$1;
+          }elsif(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+
+       }
+       close(CONFIG);
+       if(!(defined $CONTENT_DIR)) {
+           print header();
+           print "<html><head></head><body>LoDN config incomplete</body></html>";
+           exit;
+       }
+      if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+}
+else {
+     print header();
+     print "<html><head></head><body>LoDN config file not found</body><html>";
+     exit;
+}
+
+
+$file = "$LODN_ETC/userinfo";
+$pubfile="$LODN_ETC/publishlist";
+
+#IF USER HAS A COOKIE
+if(defined $user) { 
+        eval
+        {
+          $info = retrieve ("$file");
+        };
+
+        if($@)
+        {
+             print header();
+             print "Error accessing user info database\n";
+             exit;
+        }
+
+        # alter entered password to match altered password saved in database
+         $password =md5_hex($password,$user);
+
+        # load info into hash
+         %mydata = %{$info};
+
+   if ($password eq $mydata{$user}[3])
+   {
+ 
+  #load the database into mydata
+  $hashref=retrieve($file);
+  %mydata=%{$hashref};
+  
+  #check to see if user is an admin 
+  if($mydata{$user}[7] eq "yes") {
+     $admin="yes";
+  }
+
+  #check to see if the user is logged on still (in the db)
+  if($mydata{$user}[6] eq "no") {
+     $user="guest";
+     $admin="no";
+  }
+ }
+} 
+else { 
+  $user="guest";
+  $admin="no";
+}
+
+# Generate directory and file lists
+$dirname="$CONTENT_DIR$subdir";
+opendir(DIR,$dirname) or die "can't open CONTENT_DIR/subdir \n";
+while(defined(my $file = readdir(DIR))){
+        chomp($file);
+        next if $file eq "." or $file eq ".." or $file eq "index.php";
+        if(-d "$CONTENT_DIR$subdir/$file") { push(@dirs,$file); }
+}
+close(DIR);
+#
+# Print directory listing
+#
+
+print header();
+
+print "<html><head><link rel=\"shortcut icon\" href=\"../images/favicon.ico\"></head>";
+
+#print "<body bgcolor=\"#D0DCE0\">";
+print "<body bgcolor=\"#A8A9AD\">";
+
+#if(defined($subdir) && ($subdir ne '')) {
+#        print "<b>Current Directory: </b><br>",
+#	     "<table align=\"left\" border=\"0\" cellspacing=\"0\" width=\"99%\">",
+#              "<tr><td><img src='../images/folder.gif' align=middle><tt>&nbsp;</tt>$subdir",
+#              "</td><td><tt>&nbsp</tt><a target=\"directory\" href=\"javascript:void(0)\" onClick='javascript:augment(\"$subdir/$dir\")'>",
+#              "<img src=\"../images/button_edit.png\" alt=\"augment\" border=\"0\"></a></td><td><tt>&nbsp;&nbsp;&nbsp;&nbsp;</tt></td></tr></table>",
+#              "<br><br>\n";
+#} else {
+#        print "<b>Current Directory: </b><br>/",
+#              "<br><br>\n";
+#}
+
+print "<br /><br /><b>Subdirectories:</b><br /><br />";
+
+
+print "<table align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"99%\">";
+
+if(defined($subdir) && ($subdir ne '') && ($subdir ne '/')) {
+  @parts=split(/\//,$subdir);
+  $parent=join('/',@parts[0 .. ($#parts-1)]);
+
+  if($parent ne '') {
+    print "<tr><td>",
+      "<a target=\"directory\" href='directory.cgi?subdir=$parent' ",
+      "onClick=\"top.listing.location='listing.cgi?subdir=$parent';",
+      "top.control.location='control.cgi?subdir=$parent';\">",	
+      "<img src='../images/upfolder.png' align=middle alt=\"up\" border=\"0\">",
+      "[..]</a></td></tr>";
+  } else {
+    print "<tr><td>",
+      "<a target=\"_top\" href='lodn_published.cgi?subdir=/'>",
+      "<img src='../images/upfolder.png' align=middle alt=\"up\" border=\"0\">",
+      "[..]</a></td></tr>";
+  }
+}
+
+
+#
+# Rename directory
+#
+
+print "<script language=\"JavaScript\" type=\"text/javascript\">\n",
+  "<!-- \n",
+  "function rename_directory (f) {",
+
+  "  var url=\"lodn_rename_directory.cgi?subdir=\"+f;",
+  "  var name=\"Rename Directory\";",
+  "  var features=\"width=400, height=200, locationbar=no,",
+  "  menubar=no, personalbar=no, scrollbars=yes, statusbar=no,",
+  "  toolbar=no\";",
+  "  window.open(url,name,features,null);",
+  "}\n",
+
+  "function augment(f) {",
+  "  var url=\"lodn_warmer_control.cgi?file=\"+f+\"&action=window\";",
+  "  var name=\"Warmer Control\";",
+  "  var features=\"width=400,height=200,locationbar=no,",
+  "  menubar=no,personalbar=no,scrollbars=yes,statusbar=no,",
+  "  toolbar=no\";",
+  "  window.open(url,name,features,null);",
+  "}\n";
+
+print "// --></script>\n";
+
+# "  top.directory.location='directory.cgi?subdir=$subdir';",
+
+#onClick="top.Frame2.location='URL2'";
+
+foreach $dir (sort @dirs) {
+  print "<tr><td>",
+    "<a target=\"directory\" href='directory.cgi?subdir=$subdir/$dir' ",
+    "onClick=\"top.listing.location='listing.cgi?subdir=$subdir/$dir';",
+    "top.control.location='control.cgi?subdir=$subdir/$dir';",
+    "\"><img src='../images/folder.gif' align=middle alt=\"rename\" border=\"0\">",
+    "$dir</a></td>\n",
+    "<td><a target=\"directory\" href=\"javascript:void(0)\" onClick='javascript:augment(\"$subdir/$dir\")'>",
+    "<img src=\"../images/button_edit.png\" alt=\"augment\" border=\"0\"></a>",
+    "<tt>&nbsp;</tt>",
+    "<a onClick=\"return delconf(\'folder\');\" href='lodn_delete.cgi?file=$subdir/$dir\&type=0'>",
+    "<img src=\"../images/button_drop.png\" alt=\"Del\" border=\"0\"></a>",
+    "<tt>&nbsp;</tt>",
+    "<a target=\"directory\" href=\"javascript:void(0)\" onClick='javascript:rename_directory(\"$subdir/$dir\")'>",
+    "<img src=\"../images/button_rename.png\" alt=\"Rename\" border=\"0\"></a>",
+    "</td></tr>\n";
+
+}
+print "</table>\n";
+
+print "<br><br><br><br><br><br><br><br><br>\n";
+
+
+#
+# Create directory
+#
+
+print "<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\n",
+
+  "function dir_validator(tf) {\n",
+
+  "  if(tf.filename.value ==\"\") {\n",
+  "    alert(\"You must enter a directory name.\");",
+  "    tf.filename.focus();\n return(false);\n",
+  "  }\n",
+
+  "  var OK=\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.\"\n",
+
+  "  var checkStr = tf.filename.value;\n",
+  "  var allValid = true;\n",
+  "  var i;\n",
+  "  var j;\n",
+  "  var ch;\n",
+
+  "for (i=0;  i < checkStr.length; i++) {\n",
+  "  ch = checkStr.charAt(i);\n",
+  "  for (j=0; j < OK.length; j++)\n",
+  "    if(ch == OK.charAt(j))\n",
+  "      break;\n",
+  "  if (j == OK.length) {\n",
+  "    allValid = false;\n",
+  "    break;\n",
+  "  }\n",
+  "}\n",
+
+  "if (!allValid)\n{",
+  "  alert(\"Please enter only letters, underscores, hyphens and numeric characters in the directory name.\");\n",
+  "  tf.filename.focus();\n",
+  "  return (false);\n",
+  "}\n",
+
+  "}",
+
+
+
+  "function delconf(f) {\n",
+
+  " var agree=confirm(\"Are you sure you wish to delete this \" + f);\n",
+  " if(agree) return true;\n",
+  " return false;\n",
+  "}\n";
+
+
+print "\n//--></script>\n";
+print "<p>&nbsp;</p>";
+print "<table><tr><td>";
+
+print "<table frame='box' rules='none' >",
+      "<tr><td>Create Directory</td></tr>",
+      "<tr><td><form onsubmit=\"return dir_validator(this)\" name=\"DirForm\" action='lodn_create.cgi'>",
+      "<input type='text'   name='filename' size='12' maxlength='50'>",
+      "<input type='hidden' name='subdir' value='$subdir'>",
+      "<input type='hidden' name='type'   value='0'>",
+      "<input type='submit' value='Create'></form></td></tr>",
+      "</table>\n";
+
+print "</td></tr>\n";
+
+# print "<tr><td align=\"center\"><font size=\"-2\">",
+#   "<a href='directory.cgi?subdir=$subdir'>(refresh directory list)</a>",
+#   "</font></td></tr></table>";
+
+
+print "<tr><td><font size=\"-1\">",
+  "<img src=\"../images/button_edit.png\">: Augment directory<br>",
+  "<img src=\"../images/button_drop.png\">: Delete directory<br>",
+  "<img src=\"../images/button_rename.png\">: Rename directory<br>",
+  "</font></td></tr>",
+  "</table>";
+
+print "</body></html>";

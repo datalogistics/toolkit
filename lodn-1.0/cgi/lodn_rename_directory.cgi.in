@@ -1,0 +1,275 @@
+@PERL@ -w
+use strict;
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:netscape :standard *table vars canter img);
+use File::Basename;
+use Digest::MD5 qw(md5_hex);
+use File::Copy;
+use File::Path;
+use constant LODN_CFG => @LODN_CFG@;
+ my $LODN_ETC;
+
+#try to retrieve the user cookie from the user
+#user and password can be either be taken from the cookie or can be taken in param(from url for future work)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+my $user;
+my $password;
+my %mydata;
+my $hashref;
+my $userfile ;
+my $pubfile ;
+my $LORS_TOOLS_BIN;
+my $CONTENT_DIR;
+my $info;
+# CGI parameters
+my $subdir;
+my $form;
+my $newname;
+my $path;
+my $dir;
+my $origdir;
+my %hash;  
+#read from config file
+
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $user=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $user=$Puser;
+   $password=$Ppassword;
+  }
+
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+   while(<CONFIG>) {
+      s/\#.*//;
+      s/^\s+//;
+      s/\s+$//;
+      if(/^CONTENT_DIR\s+(\S*)/) {
+        $CONTENT_DIR=$1;
+      }
+      if(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+
+    }
+   close(CONFIG);
+   if(!(defined $CONTENT_DIR)) {
+     print header();
+      print "<html><head></head><body>LoDN config incomplete</body></html>";
+      exit;
+   }
+ if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+$userfile = "$LODN_ETC/userinfo";
+$pubfile = "$LODN_ETC/publishlist";
+
+#if the user has a cookie
+if(defined $user) { 
+        eval
+        {
+          $info = retrieve ("$userfile");
+        };
+
+        if($@)
+        {
+             print header();
+             print "Error accessing user info database\n";
+             exit;
+        }
+
+        # alter entered password to match altered password saved in database
+         $password =md5_hex($password,$user);
+
+        # load info into hash
+         %mydata = %{$info};
+
+   if ($password eq $mydata{$user}[3])
+   {
+ 
+  #load the database into mydata
+  #$hashref=retrieve($userfile);
+  #%mydata=%{$hashref};
+
+  #check to see if the user is logged on still (in the db)
+  if($mydata{$user}[6] eq "no") {
+    #if not, redirect the user to the login page
+    #print redirect(-uri=>'../login.html');
+   print header();
+   print "<html><head><title>Oops!</title></head><body>\n";
+   print "User still no longer in the db.<br><hr>\n",
+     "<center><form onSubmit='javascript:window.close()'>",
+     "<input type='submit' value='OK'>",
+     "</form></center>",
+     "</body></html>";
+    exit(0);
+  }
+ }
+}
+else {
+  #print redirect(-uri=>'../autologout.html');
+   print header();
+   print "<html><head><title>Time expired!</title></head><body>\n";
+   print "Your time is expired. Please log in.<br><hr>\n",
+     "<center><form onSubmit='javascript:window.close()'>",
+     "<input type='submit' value='OK'>",
+     "</form></center>",
+     "</body></html>";
+  exit;
+}
+
+# put all code here to print out page or redirect user to good page
+
+
+
+# Constants (as such)
+
+# CGI parameters
+$subdir=param('subdir');
+$form=param('form');
+$newname=param('newname');
+
+
+print header,
+      start_html('LoDN - Rename Directory');
+
+unless($form) {
+  print "\n<form action='lodn_rename_directory.cgi'>",
+    "<input type='hidden' name='subdir' value='$subdir'>\n",
+    "<input type='hidden' name='form' value=1>\n",
+    "<table>",
+    "  <tr><td>New Name:</td><td><input type=text name='newname'></td></tr>",
+    "</table>\n",
+    "<input type='submit' value='Rename'>",
+    "<input type='button' value='Cancel' onClick=\"javascript:window.close()\">",
+    "</form>\n";
+
+  goto FALLOFF;
+}
+
+print "Renaming directory...";
+
+$path = dirname($CONTENT_DIR . $subdir);
+
+# print "\$path = $path <br>";
+# print "mv $CONTENT_DIR$subdir $path/$newname<br>";
+#####`mv $CONTENT_DIR$subdir $path/$newname`;
+if(Recur_mvdir("$CONTENT_DIR/$subdir", "$path/$newname"))
+   {
+     rmtree("$CONTENT_DIR/$subdir");
+   }
+
+print "$CONTENT_DIR/$subdir, $path/$newname \n";
+$dir = $path . "/" . $newname;
+# print "\$dir = $dir<br>";
+
+$dir =~ s/$CONTENT_DIR//;
+$origdir = $dir;
+#$dir =~ s/\//\\\//g; # replace / with \/ for sed
+#$subdir =~ s/\//\\\//g;
+
+ #print "sed: $subdir $dir<br>";
+
+##`cat $pubfile | sed -e 's/$subdir/$dir/' | sort > .tmp.rename`;
+##`cat .tmp.rename > $pubfile`;
+##`rm .tmp.rename`;
+open(PUBLIST,"$pubfile") or die "$pubfile file cannot be opened !!\n ";
+   while(my $singleline=<PUBLIST>)
+   {
+     $singleline=~s/$subdir/$dir/;
+     $hash{$singleline}=1;
+   }
+  close(PUBLIST);
+open(PUBWRITE,">$pubfile") or die "$pubfile file cannot be opened !!\n ";
+print PUBWRITE sort keys %hash;
+close(PUBWRITE);
+chmod(0640, ">$pubfile");
+
+print " done.<br>";
+
+print '<script language="JavaScript">',"\n",
+  '<!--',"\n",
+  'function refreshandclose() {',"\n",
+  '  window.opener.location.reload();',"\n",
+  '  window.close();',"\n",
+  '}',"\n",
+  ' //-->',"\n",
+  '</script>',"\n";
+
+
+
+print "\n",
+#     "<p>(Please refresh directory list)</p>",
+#     "<form onSubmit='javascript:window.close()'>",
+      "<form action='javascript:window.refreshandclose()'>",
+      "<input type='submit' value='Close'>",
+      "</form>";
+
+FALLOFF:
+print end_html();
+
+###Subroutines
+
+sub Recur_mvdir
+{
+my (@dirfile);
+my $subdir;
+my $source=shift(@_);
+my $destination=shift(@_);
+my $file;
+my $filename;
+if(! -d "$destination")
+ {
+  mkpath("$destination",0,0750) or die "can't mkdir $destination\n";
+ }
+else
+ {
+  print "AY:The $destination exists\n";
+ }
+
+opendir(DIR,$source) or die "can't open $source \n";
+ while(defined($file=readdir(DIR))){
+           chomp($file);
+           if($file eq "." or $file eq "..")
+                {
+                }
+           else
+                {
+                 $dirfile[scalar(@dirfile)]=$file;
+                }
+            }
+          foreach $filename (@dirfile)
+           {
+
+                        if(-f "$source/$filename")
+                        {
+                        copy("/$source/$filename" , "$destination") or die " can't copy /$source/$filename" , "$destination";
+                        }
+                        if(-d "$source/$filename") {
+                         Recur_mvdir("$source/$filename","$destination/$filename");
+
+                          }
+            }
+close(DIR);
+return 1;
+}
+

@@ -1,0 +1,287 @@
+README: IBP Code
+	This is the IBP 1.4.0.4 source distribution.
+	You can get this release from:
+	http://loci.cs.utk.edu/ibp
+
+Contents
+========
+
+	1. Introduction
+	2. Documentation
+	3. Compiling and installing an IBP server
+	4. How to start and monitor an IBP server
+	5. Using the IBP client library
+	6. Mailing list
+	7. Support
+	8. Thank you!
+
+
+1. Introduction
+===============
+The Internet Backplane Protocol (IBP) is middleware for managing and using 
+remote storage. It was invented to support Logistical Networking in large 
+scale, distributed systems and applications. We define logistical networking 
+as the global scheduling and optimization of data movement, storage and 
+computation based on a model that takes into account all the network's 
+underlying physical resources. This contrasts with more traditional 
+networking, which does not explicitly model storage or computation resources 
+in the network. 
+
+We call this approach "logistical" because of the analogy it bears with the 
+systems of warehouses, depots and distribution channels commonly used in the 
+logistics of military and industrial activity. IBP provides a mechanism for 
+using distributed storage for logistical purposes.
+
+It acquired its name because it was designed to enable applications to treat 
+the Internet as if it were a processor backplane. Whereas on a typical 
+backplane, the user has access to memory and peripherals and can direct 
+communication between them with DMA, IBP gives the user access to remote 
+storage and standard Internet resources (e.g. content servers implemented with
+standard sockets) and can direct communication between them with the IBP API.
+
+By providing a uniform, application-independent interface to storage in the 
+network, IBP makes it possible for applications of all kinds to use logistical
+networking to exploit data locality and more effectively manage buffer 
+resources. We believe it represents the kind of middleware needed to overcome 
+the current balkanization of state management capabilities on the Internet, 
+so that any application that needs to manage distributed state can benefit 
+from the kind of standardization, interoperability, and scalability that have 
+made the Internet into such a powerful communication tool. 
+
+
+
+2. Documentation
+================
+The documentation is avaliable at the IBP website. Please check it out at
+http://loci.cs.utk.edu/ibp/
+
+
+3. Source tree overview
+=======================
+src/ 		Source code 
+etc/		IBP server configure files
+doc/		Documents
+include/	Header files		
+
+
+4. Compiling and installing an IBP server
+=========================================
+  The IBP package should build on any moderate current Unix Like 
+  environment.  
+
+  The general procedure for compilation and installation follow these
+  three steps.
+
+        ./confiugre
+        make 
+        make install
+
+  Optionally you may specify an installation prefix using the 
+  --prefix=<dir> switch to 'configure', where "<dir>" is replaced   
+  with the full path to destination directory. The default value is:
+
+        /<IBP source package root>/local/
+
+   After configure completes successfully, run 'make' followed by 
+   'make install'.
+
+   After 'make install' completes successully, edit the file  
+        /<install-dir>/etc/ibp.cfg 
+   to set up appropriate value for all parameters used by ibp server.
+
+
+   This should be all ... your IBP server is ready!
+
+
+
+5. How to start and monitor an IBP server
+=========================================
+
+   The executable of IBP is /<install-dir>/bin/ibp_server_mt
+Before starting, we suggest to check out the options using the option "-help".
+
+IBP server - options:                                                        
+ -help                 : this screen                                           
+ -s  <stable storage>  : the amount of stable storage to allocate             
+ -v  <vol storage>     : the amount of volatile storage to allocate           
+ -ds <stable dir>      : the path of the stable storage directory             
+ -dv <vol dir>         : the path of the volatile storage directory           
+ -df <FIFO dir>        : the path of the FIFO/Circular Queue directory        
+ -l  <lifetime>        : the max duration                                    
+ -p  <port>            : the port to use                                     
+ -pw <password>        : the password (to modify the server data)
+ -cf <cfg path>        : the path to find the config file and store the log file
+ -c  <cfg name>        : the name of the config file (default ibp.cfg)
+ -hn <hostname>        : the host name on which the ibp server is running.
+ -tn <threads>         : number of the threads. Only valid for multi-thread server
+ -tl                   : enable per-thread logging.   
+ -rt <recovery time>   : the time for server grace recovery
+ -nr                   : skip the recover of the old capabilities
+
+If any of these parameters are not specified, the default values found in the 
+IBP configuration file (ibp.cfg) under /etc will be taken. In case there are 
+some option you'd like to keep in a sort of permanent way, the best thing to 
+do is to edit the file "ibp.cfg" and put them there. The options given on-line
+override the ibp.cfg options, and the ibp.cfg options override the standard 
+settings. For more informations about how to set the ibp.cfg informations, 
+refer to our on-line documentation about the server configuration 
+(http://loci.cs.utk.edu/ibp/documents/).
+
+So, now you're ready to start your IBP server with the parameters you like.
+
+If you want to test the server, the best way to do it is using the 
+"ibp-test" tool. Being a rather crude and small program, you need to 
+specify the hostname and the port while calling the program.
+
+To monitor the server, the tool ibp-slm (Simple Line Manager) comes with the 
+distribution. It can monitor any IBP server, and can modify its data (if the 
+right password is given).
+
+From version 1.4.0, IBP depot begins to support multiple storage
+resources. For current version, memory and disk storage are supported.
+For each resource, user need to define following entries:
+
+RESOURCEID:
+   Define the resource number  which is used to 
+   identify the source uniquely. Multiple RESOURCEID can be
+   defined in the configure file. The resource with  RESOURCESID 0 
+   in the config file is the default resource of the depot.
+RSTYPE:
+   Define the resource type. It's either "DISK" or "MEMORY"
+LOCATION:
+   Specify the storage directory. It's only applied to disk resource.
+HARDSIZE:
+   The amount of stable storage. The default unit of size is MByte,and
+   'b' or 'B' for bytes, 'm' or 'M' for Mbytes, 'g' or 'G' for GBytes.
+SOFTSIZE:
+   The size of total storage. The default unit of size is MBytes, and 
+  'b' or 'B' for bytes, 'm' or 'M' for Mbytes, 'g' or 'G' for GBytes.
+MINFREESIZE:
+   The minimal size of free storage. 
+MAXDURATION:
+   The maximum possible duration for a newly allocated storage. -1 for
+   no limit.
+RESOURCE_END
+   End of resource configuration.
+
+For each RESOURCEID, it must be followed by SOFTSIZE, HARDSIZE,
+MINFREESIZE, TYPE, LOCATION,MAXDURATION without other entries among 
+them and end with RESOURCE_END entry. The RESOURCESID must be an integer.
+
+
+
+Example:
+--------
+The following can be a typical ibp.cfg file
+
+RESOURCEID  0
+    RSTYPE        DISK
+    LOCATION      /tmp
+    SOFTSIZE      850m
+    HARDSIZE      120m
+    MINFREESIZE   5m
+    MAXDURATION   10
+RESOURCE_END
+NFUCFGFILE   /usr/local/ibp/etc/nfu.cfg
+HOSTNAME     ibp.cs.utk.edu
+THREADS      10                         
+
+(as you might notice, the size are in Mb unless otherwise specified)
+Now, let's start an IBP server changing some of the ibp.cfg parameters:
+
+> ~/IBP/bin/SunOS/ibp_server_mt -pw IloveIBP -p 6715 -cf /etc 
+cfg file: /etc/ibp.cfg            
+
+ parsing parameter                     ..................... Done
+ Reading configuration                 ..................... Done
+ Loading network function units        ..................... Done
+ Recovering the resource <0>           ..................... Done
+ Listening on 6719                     ..................... Done
+                
+ IBP server  1.4 0  is ready to accept requests now . 
+
+This is the starting screen of IBP (and the only one you will ever see, if 
+you're not in debugging mode ...)
+
+Now, to monitor your server:
+Now we will start ibp-slm, we'll put in our IBP server's name and port, and 
+then:
+first we will check the actual status, 
+and then we will modify bot the stable and volatile storage (to 20 Mb).
+
+> ~/IBP/bin/SunOS/ibp-slm      
+IBP - Simple Line Manager                  
+                                           
+IBP depot to connect to? toto              
+port (between 1023 and 65535)? 6715        
+Command? ?
+The only things the IBP-slm can do are:    
+        c       to select a status command 
+        s       to select an IBP depot     
+        e       to exit                    
+Command? c                                 
+Status operation? ?                                       
+The only operation supported are:                         
+        q       to query the status of an IBP depot       
+        m       to modify some parameters of an IBP depot 
+        c       to go back to the command menu            
+        e       to exit                                   
+Status operation? q                                       
+Depot:                  toto
+Port:                   6715                              
+Stable storage:         52428800                          
+Stable storage used:    0                                 
+Volatile storage:       104857600                          
+Volatile storage used:  0                                 
+Max Duration:           432000                        
+
+Command? c                         
+Status operation? m                
+Depot password? IloveIBP           
+New stable storage (in Mb)? 20     
+New volatile storage (in Mb)? 20   
+New max duration? -1               
+Depot:                  toto
+Port:                   6715       
+Stable storage:         20971520   
+Stable storage used:    0          
+Volatile storage:       20971520   
+Volatile storage used:  0          
+Max Duration:           -1         
+Command? e
+IBP - Simple Line Manager - exiting ...
+>
+
+5. Using IBP Client Library
+  To use ibp client library in your code, just #include "ibp.h" in the
+  source code and add -libp when link the library.
+
+  The ibp.h is in the /<install-dir>/include directory.
+  The ibp library is in the /<install-dir>/lib directory.
+
+6. Mailing list
+===============
+
+For the time being, just sent a message to ibp@cs.utk.edu
+
+
+
+7. Support
+==========
+
+Yes, we need it. ;-) 
+
+If you need any support, please send an e-mail to 
+
+ibp@cs.utk.edu 
+
+I will try to answer to your questions ASAP ... 
+
+
+
+8. Thank you
+============
+
+We'd like to express our thanks to the IBP community and all the users 
+for all the helpful suggestions and bug reports we have received.
+IBP has improved a lot and will continue to do so only with your help.

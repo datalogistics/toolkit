@@ -1,0 +1,7 @@
+#ifndef _IBP_VERSION_H
+#define _IBP_VERSION_H
+
+#define IBP_VER_MAJOR "@version_major@"
+#define IBP_VER_MINOR "@version_minor@"
+
+#endif

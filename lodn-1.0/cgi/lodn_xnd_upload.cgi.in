@@ -1,0 +1,254 @@
+@PERL@ -w
+use strict;
+use Digest::MD5 qw(md5_hex);
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:netscape :standard *table vars canter img);
+use File::Copy;
+use constant LODN_CFG =>@LODN_CFG@;
+my $LODN_ETC;
+my $hashref;
+my %mydata;
+my $long_file;
+my $pubfile;
+my $userfile;
+# Constants (as such)
+my $CONTENT_DIR;
+my $LORS_TOOLS_BIN;
+# CGI parameters
+my $user=param('user'); 
+my $pass=param('pass');
+my $filename=param('filename');
+my $subdir=param('dir');
+my $publish=param('publish');
+
+# AUGMENT PARAMETERS
+#
+my $copies = 2;
+my $type   = "-h";
+my $days   = "1d";
+my $location = "state= tn";
+#
+####################
+
+if (-f LODN_CFG) {
+  open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+  while(<CONFIG>) {
+    s/\#.*//;
+    s/^\s+//;
+    s/\s+$//;
+    if(/^CONTENT_DIR\s+(\S*)/) {
+      $CONTENT_DIR=$1;
+    }
+    if(/^LORS_TOOLS_BIN\s+(\S*)/) {
+      $LORS_TOOLS_BIN=$1;
+    }
+    if(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+ 
+  }
+  close(CONFIG);
+  if(!(defined $CONTENT_DIR) || !(defined $LORS_TOOLS_BIN)) {
+    print header();
+    print "<html><head></head><body>LoDN config incomplete</body></html>";
+    exit;
+  }
+
+  if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+$pubfile  = "$LODN_ETC/publishlist";
+$userfile = "$LODN_ETC/userinfo";
+
+sub update_status
+{
+  my $xndfile = shift;
+  my $new_status = shift;
+
+  open(TMP, ">/tmp/.update_status") || die "Can not open a temporary file";
+  open(XND, $xndfile) || die "Can not open $xndfile";
+  while(<XND>) {
+    if(/status/) {
+      my $t = $_;
+      my ($old_status) = />\s*(\w+)\s*</;
+      # Old status is $old_status
+      if($old_status eq $new_status) {
+	  # Nothing to do!
+	  #`rm /tmp/.update_status`;
+	  unlink("/tmp/.update_status");
+	  return;
+      }
+      $t =~ s/$old_status/$new_status/;
+      print TMP $t;
+    } else {
+      print TMP;
+    }
+  }
+  close(TMP);
+  close(XND);
+  move("/tmp/.update_status","$xndfile");
+  chmod(0640, $xndfile);
+  #`cat /tmp/.update_status >  $xndfile`;
+  #`rm /tmp/.update_status`;
+}
+
+
+
+
+if(!(defined $user) || !(defined $pass) || !(defined $filename) || !(defined $subdir)) {
+  print header();
+  print "<html><head><title>Error!</title></head><body>\n";
+  print "Not all required parameters were defined\n";
+  print "</body></html>";
+  exit;
+}
+
+if(defined $publish) 
+{
+	if($publish eq "yes" || $publish eq "1") 
+ 	{
+  		$publish=1;
+ 	} else 
+ 	{ 
+  		$publish=0;
+ 	}
+}else {
+	$publish=0;
+}
+ 
+  #load the database into mydata
+  $hashref=retrieve($userfile);
+  %mydata=%{$hashref};
+
+  #check to see if the user is logged on still (in the db)
+  unless(($mydata{$user}[3] eq $pass) || ($mydata{$user}[3] eq md5_hex($pass,$user))) 
+{ 
+    print header();
+    print "<html><head></head><body>\n";
+    print "Your password is not correct\n</body></html>";
+    exit;
+}
+
+
+
+unless(($subdir =~ /^\/$user\// || $subdir =~ /^\/$user$/)) {
+   print header();
+   print "<html><head><title>Error!</title></head><body>\n";
+   print "You do not have write permission for this directory\n";
+   exit;
+}
+
+unless((-e "$CONTENT_DIR/$subdir")) { 
+  print header();
+  print "<html><head><title>Error!</title></head><body>\n";
+  print "The subdir does not exist\n";
+  exit;
+}
+
+unless($filename=~/xnd$/) {
+  print header();
+  print "<html><head><title>Error!</title></head><body>\n";
+  print "The file you are attempting to upload is not an xnd\n";
+  exit;
+}
+
+# Upload file
+my $INFILE=upload('filename');
+# Isolate filename
+my $file=$filename;
+my @parts=split(/\//,$file);
+my $infile=$parts[$#parts];
+@parts=split(/\\/,$infile);
+$infile=$parts[$#parts];
+my $cmd;
+my $filenameSub  = 0;
+my $trueFilename = $infile;
+my @lines;
+my %hash;
+
+$trueFilename =~ s/.xnd$//;
+
+
+# Create file
+open(OUTFILE,">$CONTENT_DIR/$subdir/$infile");
+while(<$INFILE>) {
+  # Ensures that the filename is the same as the file
+  if(s/(^\s*<exnode:metadata.+name="filename".*>).*(<\/exnode:metadata>)/${1}${trueFilename}${2}/g)
+  {
+     $filenameSub++;
+
+     # If the end of the file has been reached and there is
+     # no filename given then it inserts one.
+  }elsif(m/<\/exnode>/ && $filenameSub == 0)
+  {
+     print OUTFILE "  <exnode:metadata name=\"filename\" type=\"string\">${trueFilename}</exnode:metadata>\n";
+  }
+					   
+  print OUTFILE $_;
+}
+
+close(OUTFILE);
+chmod(0640,"$CONTENT_DIR/$subdir/$infile");
+
+# augment immediately (see above for default value in use)
+$cmd = "$LORS_TOOLS_BIN/lors_augment ";
+$cmd .=	"$type -d $days -c $copies -l \"$location\" -t 18 "; # options
+$cmd .= "$CONTENT_DIR/$subdir/$infile -o $CONTENT_DIR/$subdir/$infile"; # do not use -f option
+#`$cmd`;
+
+update_status("$CONTENT_DIR/$subdir/$infile", "GOOD"); # I hope so!
+
+
+if($publish) 
+{
+	$long_file="/$subdir/$infile";
+	$long_file =~ s/\/+/\//g;
+  
+  	open(PUB, ">>$pubfile") || die("Cannot open pubfile");
+  	print PUB "$long_file\n";
+  	close PUB;
+  
+	# Sort the publish list
+	open(PUBLIST,"$pubfile") or die "$pubfile file cannot be opened !!\n ";
+	@lines=<PUBLIST>;
+	close(PUBLIST);
+	open(PUBWRITE,">.pub.temp") or die "$pubfile file cannot be opened !!\n ";
+	%hash = map{ $_ => 1} @lines;
+	@lines=sort keys(%hash);
+	print PUBWRITE @lines;
+	close(PUBWRITE);
+
+	# Move the publish file to the publish file
+  	move(".pub.temp", "$pubfile");  
+}
+
+print header();
+print "> $filename was successfully uploaded";
+
+if($publish) 
+{
+	print " and published";
+}
+
+print "\n";
+
+#Use WARMER
+if(fork() == 0)
+{
+   open(STDOUT, ">/dev/null");
+   open(STDERR, ">/dev/null");
+   exec "@LODN_TOOLS@/LoDNWarmerUpdater add \"$CONTENT_DIR/$subdir/$infile\"";
+}     
+
+

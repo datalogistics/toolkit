@@ -1,0 +1,317 @@
+@PERL@ -T
+use Digest::MD5 qw(md5_hex);
+use CGI qw/:standard/;
+use Storable qw(retrieve);
+use constant LODN_CFG =>@LODN_CFG@;
+my $LODN_ETC;
+my $dir=param("dir");
+my $userfile;
+#my $user=cookie("lodnuser");
+#user and password can be either be taken from the cookie or can be taken in param(from url for future work)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+my $user;
+my $password;
+my $hashref;
+my %mydata;
+my $pass;
+my $CODEBASE;
+my $LBONE;
+my $HOST;
+my $CGIBIN; # cgi-bin directory
+my $CONTENT_DIR;
+my $info;
+my $PORT=$ENV{"SERVER_PORT"};
+my $ENCRYPTION=(defined($ENV{"SSL_PROTOCOL"})) ? $ENV{"SSL_PROTOCOL"} : "clear" ;
+my $warmer_file;
+my %sites; 
+my $depotStr;
+my $depotsArgument = "";
+
+
+# Defines the routine for finding appropriate warmer for the exnode.
+sub find_warmer_file
+{	
+	# Builds the complete starting path for the warmer file for the exnode
+	my $warmer_file   = $CONTENT_DIR . '/' . $dir . "/.warmer";
+
+	# Removes any extra /.
+	$warmer_file =~ s/\/+/\//g;
+
+	# If there isn't a warmer for the file then it loops until a valid directory warmer
+	# file is found or the main content directory is reached.
+	while ( !( -f "$warmer_file" ) ) 
+	{
+
+		# Removes the current warmer from the path.
+		$warmer_file =~ s/\/[A-Za-z0-9_\-]*\/[A-Za-z0-9_\-]*\.warmer$//;
+
+
+		# Stops the search loop when it reaches the content directory.
+		if ( $warmer_file eq "${CONTENT_DIR}" ) 
+		{
+
+			# Adds the next directory warmer to search for.
+			$warmer_file =~ s/(\/[A-Za-z0-9_\-]*)$/$1\/.warmer/;
+
+			last;
+		}
+
+		# Adds the next directory warmer to search for.
+		$warmer_file =~ s/(\/[A-Za-z0-9_\-]*)$/\/.warmer/;
+	}
+
+	# If no warmer is found then it just stops.
+	if ( !( -f $warmer_file ) ) 
+	{
+		$warmer_file = undef;
+	}
+
+	# Returns the warmer file
+	return $warmer_file;
+}
+
+# Reads in the warmer and returns a hash of the sites that has a hash of the depots
+sub read_in_warmer()
+{
+        my $warmerfilenames = $_[0];
+        my %sites;
+	my $sitename;
+	my $depotname;
+
+	if(defined($warmerfilenames))
+	{
+		# Opens the warmer file for this file. 
+		open( WARMER_FILE, "<$warmerfilenames" ) or return %sites;
+
+		# Reads in the depots for this file.
+		while (<WARMER_FILE>) 
+		{
+			# Trims the line of whitespaces and new lines.
+			chomp($_);	
+			s/^\s+(.*)\s$/$1/;
+			
+			# Skips blank lines
+			next if($_ eq "");
+		
+			# Gets the sitename;
+			if(m/^\s*[A-Za-z0-9\.\-_:]+:\s*$/)
+			{
+				$_ =~ s/^\s*([A-Za-z0-9\.\-_:]+):\s*$/$1/g;
+				$sitename = $_;
+			
+			# Gets the current depot name and port
+			}elsif(m/^\s*[A-Za-z0-9\.\-_]+:\d+\s*$/)
+			{
+				$_ =~ s/^\s*([A-Za-z0-9\.\-_]+:\d+)\s*$/$1/g;
+				$depotname = $_;
+			
+				if(!defined($sitename))
+				{
+					print "Error no site for depot\n";
+					exit;	
+				}
+			
+				$sites{$sitename}{$depotname} = $depotname;
+			
+			# Gets the comment;
+			}elsif(m/^\s*\#/)
+			{
+	
+			# Invalid line
+			}else
+			{
+				print "Error invalid line $_\n";
+				exit;	
+			}
+		}
+
+		# Closes the file handle
+		close(WARMER_FILE);
+	}
+	
+	return %sites;
+}
+
+# Prints the depots to a string and returns the strings
+sub site2depotString()
+{
+    # Gets the parameter list
+    my $sites      = $_[0];
+
+    # Variables for holding the current site and depot values.
+    my $site;
+    my $depot;
+    my $str = "";
+    my $joinstr = "";
+
+    #Traverses over the sites in the hash and prints the sitename
+    for $site (keys(%{$sites}))
+    {
+        # Traverses the depots for the current site and prints the depots.
+        for $depot (keys(%{$sites->{$site}}))
+        {
+           $depot =~ s/:/\//g;
+           $str .= $joinstr.$depot;
+	   $joinstr = ":";
+        }
+    }
+
+
+    return $str;
+}
+
+
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $user=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $user=$Puser;
+   $password=$Ppassword;
+  }
+
+# LOAD CONFIG FILE AND READ VALUES
+if (-f LODN_CFG) {
+  open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+  while(<CONFIG>) {
+    s/\#.*//;
+    s/^\s+//;
+    s/\s+$//;
+    if(/^CODEBASE\s+(\S*)/) {
+      $CODEBASE=$1;
+    }
+    if(/^LBONE\s+(.*)$/) {
+      $LBONE=$1;
+    }
+    if(/^HOST\s+(\S*)/) {
+      $HOST=$1;
+    }
+    if(/^CGIBIN_DIR\s+(\S*)/) {
+      $CGIBIN=$1;
+    }
+    if(/^CONTENT_DIR\s+(\S*)/) {
+      $CONTENT_DIR=$1;
+    }
+   if(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+
+  }
+  close(CONFIG);
+  if(!(defined $CODEBASE) || !(defined $LBONE) || !(defined $HOST) || !(defined $CGIBIN)) {
+    print header();
+    print "<html><head></head><body>LoDN config incomplete</body></html>";
+    exit;
+  }
+  if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+ 
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+
+$userfile="$LODN_ETC/userinfo";
+
+#if the user has a cookie
+if(defined $user)
+{
+        eval
+        {
+          $info = retrieve ("$userfile");
+        };
+
+        if($@)
+        {
+             print header();
+             print "Error accessing user info database\n";
+             exit;
+        }
+
+        # alter entered password to match altered password saved in database
+         $password =md5_hex($password,$user);
+
+        # load info into hash
+         %mydata = %{$info};
+
+   if ($password eq $mydata{$user}[3])
+   {
+
+   #check to see if the user is logged on still (in the db)
+   unless($mydata{$user}[6] eq "yes") {
+    #if not, redirect the user to the login page
+    print redirect(-uri=>'../');
+    exit;
+    }
+    $pass=$mydata{$user}[3];
+    unless(defined $dir) {
+    $dir="\/$user";
+	}
+   }
+ }
+
+else{
+  print redirect(-uri=>'../autologout.html');
+  exit;
+}
+
+
+$warmer_file =  &find_warmer_file();
+%sites =  &read_in_warmer($warmer_file);
+$depotStr = &site2depotString(\%sites);
+
+
+if(defined($depotStr))
+{
+   $depotsArgument = "<argument>$depotStr</argument>";
+}
+
+
+print "Content-Type: application/x-java-jnlp-file\n";
+print "Content-Disposition: filename=LoDNPublisher.jnlp\n\n";
+print <<EOF
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<jnlp spec="1.0+" codebase="$CODEBASE">
+ <information>
+  <title>LoDN Publisher</title>
+  <vendor>LoCI</vendor>
+ </information>
+ <security>
+  <all-permissions/>
+ </security>
+ <resources>
+ <j2se initial-heap-size="-1" max-heap-size="-1" version="1.4+"/>
+  <jar href="LoDNPublisher.jar"/>
+  <jar href="LoDN.jar"/>
+  <jar href="Exnode.jar"/>
+  <jar href="IBP.jar"/>
+  <jar href="LBone.jar"/>
+  <jar href="forms-1.0.4.jar"/>
+  <jar href="jhall.jar"/>
+ </resources>
+ <application-desc main-class="edu.utk.cs.loci.lodnpublisher.LoDNPublisher">
+  <argument>$dir</argument>
+  <argument>$user</argument>
+  <argument>$pass</argument>
+  <argument>$LBONE</argument>
+  <argument>$HOST</argument>
+  <argument>$PORT</argument>
+  <argument>$ENCRYPTION</argument>
+  <argument>/lodn/cgi-bin</argument>
+  $depotsArgument
+  </application-desc>
+ </jnlp>
+EOF

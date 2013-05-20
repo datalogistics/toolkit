@@ -1,0 +1,70 @@
+#!@python_exe@
+
+#     Copyright (C) 2010  Christopher Brumgard
+# 
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+# 
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+'''This script is used to launch the LoDN server.'''
+
+
+__author__ = 'Christopher Brumgard (sellers@cs.utk.edu)'
+
+
+import glob
+import os
+import sys
+
+
+# Gets the current environ
+environ = os.environ.copy()
+
+# Find the nohup executable
+try:
+
+    nohup = [ nohup for nohup in 
+                [ os.path.join(path, 'nohup') for path in 
+                    ['/bin/', '/usr/bin'] + environ['PATH'].split(':')] 
+                        if glob.glob(nohup)][0]
+    
+except:
+    sys.exit('Couldn\'t find nohup executable')
+    
+ 
+# Finds the LoDN egg for execution
+try:
+    
+    lodnEggPath = glob.glob('@prefix@/lib/LoDN*.egg')[0]
+    
+except:
+    sys.exit('Couldn\'t find LoDN egg file for executable')
+ 
+
+
+# Updates the environ with the libs for LoDN
+environ['PYTHONPATH'] = ':'.join(['@prefix@/lib/'] + 
+                                 glob.glob('@prefix@/lib/*.zip') +
+                                 [environ.get('PYTHONPATH', '')])
+
+
+# Builds the arg list
+args = [ nohup, '@python_exe@', lodnEggPath ] + sys.argv[1:]
+
+
+# Launch LoDN
+os.execve(nohup, args, environ)
+
+# This should never be reached unless exec fails.
+print("Error LoDN did not launch.  Check the python executable at @python_exe@")
+sys.exit(-1)
+

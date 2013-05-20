@@ -1,0 +1,293 @@
+@PERL@ -w
+use strict;
+use Digest::MD5 qw(md5_hex);
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:standard *table vars canter img);
+use File::Path;
+use constant LODN_CFG => @LODN_CFG@;
+my $LODN_ETC;
+my $f_name = param("FName");
+my $l_name = param("LName");
+my $email = param("e-mail");
+my $usr = param("username");
+my $psw = param("password");
+my $rpsw = param("retype password");
+my $question = param("secret question");
+my $answer = param("secret answer");
+my $loggedon = "no";
+my $admin="no";
+my $authorized="no";
+my $hashref;
+my $key;
+my $a;
+my $CONTENT_DIR;
+my $ADMIN_EMAIL;
+my %data;
+my $usr2;
+my $accounts;
+my $file;
+
+
+# Function: useSendMailProgram
+# Description: This function uses the sendmail program to attempt to send
+#              an email.  It returns 0 on success and -1 on failure.
+# Input: subject - Holds the subject of the email.
+#        recipient - Holds the email address of the recipient.
+#        msg - Holds the message to send.
+#
+sub useSendMailProgram()
+{
+   # Gets the parmeters
+   my $subject   = shift;
+   my $recipient = shift;
+   my $msg       = shift;
+ 
+   # Checks the arguments
+   if(!defined($subject) || !defined($recipient) || !defined($msg))
+   {
+      print "Invalid arguments passed\n";
+      return -1;
+   }
+
+   #Opens a pipe to the sendmail program and starts execution.
+   if(!open(MAIL, "|/usr/sbin/sendmail -t") &&
+      !open(MAIL, "|sendmail -t")) 
+   {
+      return -1;
+   }
+ 
+   #Creates the email 
+   print MAIL "To: $recipient\n";
+   print MAIL "Subject: $subject\n\n";
+   print MAIL "$msg";
+   close(MAIL) or return -1;
+  
+   # return successfully
+   return 0;
+}
+
+# Function: sendEmail
+# Description: This function attempts to send email to the specified 
+#              recipient attempting to use in order: perl's sendmail module,
+#              mailx, mutt, and the sendmail program.
+#              It returns 0 on success and -1 on failure.
+# Input: subject - Holds the subject of the email.
+#        recipient - Holds the email address to send to.
+#        msg       - Holds the message to send. 
+sub sendEmail()
+{
+   # Gets the parmeters
+   my $subject   = shift;
+   my $recipient = shift;
+   my $msg       = shift;
+
+   # Local variables
+   my $useSendMail;
+   my $mail;
+
+   # Checks the arguments
+   if(!defined($subject) || !defined($recipient) || !defined($msg))
+   {
+      print "Invalid arguments passed\n";
+      return -1;
+   }
+
+   # Detects if the sendmail module is available for use 
+   eval "use SendMail"; $useSendMail = ($@) ? 0 : 1; 
+   
+   # Uses the sendmail module if its available
+   if($useSendMail)
+   {
+      eval "use SendMail; $mail = new SendMail(); $mail->Subject($subject); $mail->To($recipient); $mail->setMailBody($msg); $mail->sendMail()";
+   }
+
+   # Attempts to use mailx, mutt, or sendmail if the SendMail module fails
+   if(!$useSendMail || !$@)
+   {
+      system("echo $msg | mail -s \"$subject\" $recipient 2> /dev/null") == 0 or  
+      system("echo $msg | mutt -s \"$subject\" $recipient 2> /dev/null") == 0 or
+      &useSendMailProgram($subject, $recipient, $msg) == 0 or
+      return -1; # Failure to send email
+   }
+
+   # Return Successfully
+   return 0;
+}
+
+
+
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+   while(<CONFIG>) {
+      s/\#.*//;
+      s/^\s+//;
+      s/\s+$//;
+      if(/^CONTENT_DIR\s+(\S*)/) {
+        $CONTENT_DIR=$1;
+      }elsif(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+
+      if(/^ADMIN_EMAIL\s+(\S*)/) {
+        $ADMIN_EMAIL=$1;
+      }
+   }
+   close(CONFIG);
+   if(!(defined $CONTENT_DIR) || !(defined($ADMIN_EMAIL))) {
+      print header();
+      print "<html><head></head><body>LoDN config incomplete</body></html>";
+      exit;
+   }
+  if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+
+
+if($f_name eq "" ) {
+      print header();
+      print "<html><head><title>LoDN - Error</title></head><body>";
+      print "You must enter a first name\n";
+      print "</body></html>";
+      exit;
+}
+
+if($l_name eq "" ) {
+      print header();
+      print "<html><head><title>LoDN - Error</title></head><body>";
+      print "You must enter a last name\n";
+      print "</body></html>";
+      exit;
+}
+
+if($usr eq "") {
+	print header();
+	print "<html><head><title>LoDN - Error</title></head><body>";
+	print "You must enter a username\n";
+        print "</body></html>";
+	exit;
+}
+
+$usr2=$usr;
+$usr2 =~ s/\W//g;
+
+if($usr2 ne $usr) {
+
+	print header();
+	print "<html><head><title>LoDN - Error</title></head><body>";
+	print "Usernames may contain only underscores and alphanumeric characters\n";
+	print "</body></html>";
+	exit;
+}
+
+if($email eq "") {
+	print header();
+	print "<html><head><title>LoDN - Error</title></head><body>";
+	print "You must enter a valid e-mail address\n";
+	print "</body></html>";
+	exit;
+}
+
+unless($email =~ /\@/) {
+	print header();
+	print "<html><head><title>LoDN - Error</title></head><body>";
+	print "The e-mail address you entered is not valid.\n";
+	print "</body></html>";
+	exit;
+}
+
+if($psw eq "") {
+	print header();
+	print "<html><head><title>LoDN - Error</title></head><body>";
+	print "You must create a password\n";
+	print "</body></html>";
+	exit;
+}	
+
+$file = "$LODN_ETC/userinfo";
+$accounts = "$LODN_ETC/account_requests";
+if($psw eq $rpsw)
+{
+  $psw=md5_hex($psw,$usr);
+
+  if  ( -f $file ) #if the userfile exists
+  {
+    $hashref = retrieve ($file) || die "can't retrieve file.";
+
+    %data = %{$hashref};
+
+    foreach $key (keys %data)
+    {
+      if ($key eq $usr)
+       {
+        $a = $key;
+        last;
+       }
+       else 
+       {
+        next;
+       }
+    }
+
+     if (defined $a)  # If the username has been used
+     {
+      print header();
+      print "<html><head><title>LoDN - Error</title></head><body>";
+      print "Sorry.";
+      print "The username $usr has already been used. Please select another one. Click on the back arrow to go back to the form.";
+      print "</body></html>";
+      exit;
+     }
+     else { # If username is free
+         $data{$usr} = [$l_name, $f_name, $email, $psw, $question, $answer, $loggedon, $admin, $authorized];
+          store (\%data, $file);
+	  mkpath("$CONTENT_DIR/$usr",0,0750);
+          open(ACCOUNT,">>$accounts") or die "cannot open $accounts file";
+
+
+          print ACCOUNT "$f_name,$l_name,$email,$usr has created a disabled account \n";
+          close(ACCOUNT);
+          &sendEmail("Disabled LoDN Account Created", $ADMIN_EMAIL,"A disabled account has created awaiting activation");
+          &print_created;
+	  exit;
+     }
+   }
+   #if the userfile doesn't exist
+   else {
+     $data{$usr} = [$l_name, $f_name, $email, $psw, $question, $answer, $loggedon,$admin, $authorized];
+     store (\%data, $file);
+     mkpath("$CONTENT_DIR/$usr",0,0750);
+
+    
+      open(ACCOUNT,">>$accounts") or die "cannot open $accounts file";
+      print ACCOUNT "$f_name,$l_name,$email,$usr has requested a disabled account \n";
+      &sendEmail("Disabled LoDN Account Created", $ADMIN_EMAIL,"A disabled account has created awaiting activation");
+     &print_created;
+     exit;
+
+   }
+}     
+else {
+      print header();
+      print "<html><head><title>LoDN - Error</title></head><body>";
+      print "Please make sure you have entered the same password twice\n";
+      print "</body></html>";
+}
+
+
+sub print_created {
+print header();  
+print "<html><head><title>LoDN - Account Created</title></head>\n";
+print "<body>Your account has been successfully created and is awaiting authorization\n";
+"</body></html>\n";
+
+}

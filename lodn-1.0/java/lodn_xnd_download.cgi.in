@@ -1,0 +1,131 @@
+@PERL@ -w
+use strict;
+use Digest::MD5 qw(md5_hex);
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:netscape :standard *table vars canter img);
+use constant LODN_CFG =>@LODN_CFG@;
+my $LODN_ETC;
+my $hashref;
+my %mydata;
+my $CONTENT_DIR;
+my $user=param('user');
+my $pass=param('pass');
+my $filename=param('filename');
+my $subdir=param('dir');
+my $userfile;
+
+
+if(!defined($user) || !defined($pass) || !defined($filename) || 
+   !defined($subdir))
+{
+    print header();
+    print "<html><head><title>Error!</title></head><body>\n";
+    print "Not all required parameters were defined\n";
+    print "</body></html>";
+    exit;    
+}
+
+#Gets the content directory 
+if (-f LODN_CFG)
+{
+    open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+
+    while(<CONFIG>) 
+    {
+        s/\#.*//;
+        s/^\s+//;
+        s/\s+$//;
+        if(/^CONTENT_DIR\s+(\S*)/)
+        {
+            $CONTENT_DIR=$1;
+        }
+        if(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+
+    }
+
+    close(CONFIG);
+
+    if(!defined($CONTENT_DIR))
+    {
+       print header();
+       print "<html><head><title>Error!</title></head><body>LoDN config incomplete</body></html>";
+       exit;
+    }    
+  if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+     
+} else 
+{
+    print header();
+    print "<html><head><title>Error!</title></head><body>LoDN config file not found</body><html>";
+    exit;
+}  
+$userfile="$LODN_ETC/userinfo";
+#Gets the database info
+$hashref=retrieve($userfile);
+%mydata=%{$hashref};
+
+#Verfies the database entries
+unless(($mydata{$user}[3] eq $pass) || ($mydata{$user}[3] eq
+    md5_hex($pass,$user))) 
+{
+    print header();
+    print "<html><head><title>Error!</title></head><body>\n";
+    print "Your password is not correct\n</body></html>";
+    exit;
+}
+
+
+unless(($subdir =~ /^\/$user\// || $subdir =~ /^\/$user$/)) 
+{
+    print header();
+    print "<html><head><title>Error!</title></head><body>\n";
+    print "You do not have write permission for this directory\n";
+    exit;
+}   
+
+unless((-e "$CONTENT_DIR/$subdir")) 
+{
+    print header();
+    print "<html><head><title>Error!</title></head><body>\n";
+    print "The subdir does not exist\n";
+    exit;
+}
+
+unless($filename=~/xnd$/) 
+{
+    print header();
+    print "<html><head><title>Error!</title></head><body>\n";
+    print "The file you are attempting to download is not an xnd\n";
+    print "</body></html>\n";
+    exit;
+}    
+
+#Construct the full path to the file
+$filename = $CONTENT_DIR . $filename;
+
+#Prints the html header
+print header();
+
+#Attempts to open the file
+open(XNDFILE, "< $filename"); #or die "<html><head><title>Error!</title></head>\n" .
+#      "<body>The exnode file doesnot exist</body></html>\n";
+
+#Transfers the exnode file
+while(<XNDFILE>)
+{
+   print;
+}
+
+
+
+#Closes the handle
+close(XNDFILE);
+
+#Closes the script
+exit;

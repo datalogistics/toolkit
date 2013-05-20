@@ -1,0 +1,260 @@
+@PERL@ -w
+use Digest::MD5 qw(md5_hex);
+use File::Copy;
+use File::Path;
+use strict;
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:netscape :standard *table vars canter img);
+use File::Basename;
+use constant LODN_CFG => @LODN_CFG@;
+my $LODN_ETC;
+#try to retrieve the user cookie from the user
+#user and password can be either be taken from the cookie or can be taken in param(from url for future work)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+my $user;
+my $password;
+my %mydata;
+my $hashref;
+my $userfile;
+my $pubfile;
+my $LORS_TOOLS_BIN;
+my $CONTENT_DIR;
+my $info;
+# CGI parameters
+my $file;
+my $form;
+my $newname;
+my $oldname;
+my $path;
+my $newpathname;
+my $modified_npn;
+my %hash;
+#read from config file
+
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $user=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $user=$Puser;
+   $password=$Ppassword;
+  }
+
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+   while(<CONFIG>) {
+      s/\#.*//;
+      s/^\s+//;
+      s/\s+$//;
+      if(/^CONTENT_DIR\s+(\S*)/) {
+        $CONTENT_DIR=$1;
+      }
+      if(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+
+    }
+   close(CONFIG);
+   if(!(defined $CONTENT_DIR)) {
+     print header();
+      print "<html><head></head><body>LoDN config incomplete</body></html>";
+      exit;
+   }
+ if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+$userfile = "$LODN_ETC/userinfo";
+$pubfile = "$LODN_ETC/publishlist";
+
+#if the user has a cookie
+if(defined $user) {
+        eval
+        {
+          #load the database into mydata
+          $info = retrieve ("$userfile");
+        };
+
+        if($@)
+        {
+             print header();
+             print "Error accessing user info database\n";
+             exit;
+        }
+
+        # alter entered password to match altered password saved in database
+         $password =md5_hex($password,$user);
+
+        # load info into hash
+         %mydata = %{$info};
+
+   if ($password eq $mydata{$user}[3])
+   {
+   #check to see if the user is logged on still (in the db)
+   if($mydata{$user}[6] eq "no") {
+    print header();
+    print "<html><head><title>Oops!</title></head><body>\n";
+    print "User still no longer in the db.<br><hr>\n",
+     "<center><form onSubmit='javascript:window.close()'>",
+     "<input type='submit' value='OK'>",
+     "</form></center>",
+     "</body></html>";
+    exit(0);
+  }
+ }
+}
+else {
+   print header();
+   print "<html><head><title>Time expired!</title></head><body>\n";
+   print "Your time is expired. Please log in.<br><hr>\n",
+     "<center><form onSubmit='javascript:window.close()'>",
+     "<input type='submit' value='OK'>",
+     "</form></center>",
+     "</body></html>";
+  exit;
+}
+
+# put all code here to print out page or redirect user to good page
+
+
+
+# Constants (as such)
+
+# CGI parameters
+$file=param('file');
+$form=param('form');
+$newname=param('newname');
+
+$oldname = basename($file);
+$oldname =~ s/\.xnd$//;  # remove extension .xnd
+$path = dirname($CONTENT_DIR . $file);
+
+
+print header,
+      start_html('LoDN - Rename File');
+
+unless($form) {
+  print "\n<form action='lodn_rename_exnode.cgi'>",
+    "<input type='hidden' name='file' value='$file'>\n",
+    "<input type='hidden' name='form' value=1>\n",
+    "<table>",
+    "  <tr><td>New file name:</td><td><input type=text name='newname' value='$oldname'></td></tr>",
+    "</table>\n",
+    "<input type='submit' value='Rename'>",
+    "<input type='button' value='Cancel' onClick=\"javascript:window.close()\">",
+    "</form>\n";
+
+  goto FALLOFF;
+}
+
+
+
+$newpathname = $path . "/" . $newname . ".xnd";
+
+
+# IF NAME ALREADY USE IN THIS DIRECTORY
+
+if( -f "$newpathname" ) {
+	print "Sorry, a file called <i>$newname</i> is already<br>";
+	print "available in this directory. Please, choose another name.<br>";
+	goto FALLOFF2;
+}
+
+print "Renaming file...<br>";
+################`mv $CONTENT_DIR$file $newpathname`;
+rename "$CONTENT_DIR/$file" ,$newpathname;
+
+
+
+
+
+#print "\$newpathname: $newpathname<br>";
+$modified_npn = $newpathname;
+$modified_npn =~ s/$CONTENT_DIR//;
+#$modified_npn =~ s/\//\\\//g; # replace / with \/ for sed
+#$file =~ s/\//\\\//g;
+
+
+# UPDATE pulishlist FILE
+print "Updating publishlist (if required)...<br>";
+#print "sed: \$file = $file, \$modified_npn = $modified_npn<br>";
+###`cat $pubfile | sed -e 's/$file/$modified_npn/' | sort > .tmp1.rename`;
+###`cat .tmp1.rename > $pubfile`;
+###`rm .tmp1.rename`;
+open(PUBLIST,"$pubfile") or die "$pubfile file cannot be opened !!\n ";
+   while(my $singleline=<PUBLIST>)
+   {
+
+     $singleline=~s/$file/$modified_npn/;
+     $hash{$singleline}=1;
+   }
+  close(PUBLIST);
+open(PUBWRITE,">$pubfile") or die "$pubfile file cannot be opened !!\n ";
+print PUBWRITE sort keys %hash;
+close(PUBWRITE);
+chmod(0640, ">$pubfile");
+
+# UPDATE FILENAME METADATA IN EXNODE FILE
+
+# <exnode:metadata name="filename" type="string">02.jpg</exnode:metadata>
+print "Updating exNode file...<br>";
+#print "old = $oldname, new = $newname<br>";
+#print "\$newpathname = $newpathname<br>";
+
+##`cat $newpathname | sed -e 's/$oldname/$newname/' > .tmp2.rename`;
+
+open(TMP, ">.tmp2.rename") || die "Can not open a temporary file";
+open(XND, $newpathname) || die "Can not open $newpathname";
+while(<XND>) {
+  if(/filename/) {
+    my $t = $_;
+    $t =~ s/$oldname/$newname/;
+    print TMP $t;
+  } else {
+    print TMP;
+  }
+}
+
+###`cat .tmp2.rename >  $newpathname`;
+###`rm .tmp2.rename`;
+rename ".tmp2.rename", $newpathname;
+
+chmod(0640, $newpathname);
+
+print " done.<br>";
+
+FALLOFF2:
+
+print '<script language="JavaScript">',"\n",
+  '<!--',"\n",
+  'function refreshandclose() {',"\n",
+  '  window.opener.location.reload();',"\n",
+  '  window.close();',"\n",
+  '}',"\n",
+  ' //-->',"\n",
+  '</script>',"\n";
+
+
+
+print "\n",
+      "<form action='javascript:window.refreshandclose()'>",
+      "<input type='submit' value='Close'>",
+      "</form>";
+
+FALLOFF:
+print end_html();

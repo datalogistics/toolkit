@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<toc version="2.0">
+  <tocitem target="upload" text="LoDN Publisher Upload Client">
+  	<tocitem target="PublisherWindow"           text="Using the Publisher Window"/>
+  	<tocitem target="LocationandConnectionType" text="Location and Connection Type"/>
+  	<tocitem target="AdvancedParameters"        text="Advanced Parameters"/>
+  </tocitem>
+</toc>

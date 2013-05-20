@@ -1,0 +1,45 @@
+#ifndef PHOEBUS_H_
+#define PHOEBUS_H_
+
+#include <netinet/in.h>
+
+
+/***----Constants----***/
+#define MAX_PATH_ENTRIES        8
+#define ROUTEFILE               "@PHOEBUS_ROUTE_FILE@"
+
+typedef struct
+{
+    in_addr_t host;
+    in_port_t port;
+
+} phoebus_gateway_t;
+
+
+typedef struct
+{
+    in_addr_t src;
+    in_addr_t src_mask;
+    in_addr_t dst;
+    in_addr_t dst_mask;
+
+    phoebus_gateway_t gateway[MAX_PATH_ENTRIES];
+
+} phoebus_route_t;
+
+
+
+
+/***---Prototypes---***/
+phoebus_route_t *find_route(in_addr_t src, in_addr_t dst,
+                            phoebus_route_t *routes, int num_routes);
+int acquire_route_file_lock(int routetable_fd);
+int release_route_file_lock(int routetable_fd);
+off_t map_route_file(void **addr, int routetable_fd, off_t extend_length);
+void add_route(int fd, char *src_addr, char *src_mask, char *dst_addr,
+               char *dst_mask, char *gateways[MAX_PATH_ENTRIES]);
+void delete_route(int fd, int index);
+void show_routes(int fd);
+
+
+#endif /* PHOEBUS_H_ */

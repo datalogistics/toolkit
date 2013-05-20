@@ -1,0 +1,117 @@
+@PERL@ -w
+use Digest::MD5 qw(md5_hex);
+use strict;
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:standard *table vars canter img);
+use constant LODN_CFG =>@LODN_CFG@;
+ my $LODN_ETC;
+#user and password can be either be taken from the cookie or can be taken in param(from url for future work)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+my $user;
+my $password;
+my $u;
+my $key;
+my $strin;
+my %mydata;
+my $firfile;
+my $file;
+my $info;
+# LOAD CONFIG FILE AND READ VALUES
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+      while(<CONFIG>) {
+          s/\#.*//;
+          s/^\s+//;
+          s/\s+$//;
+          if(/^LODN_ETC\s+(\S*)/){
+          $LODN_ETC=$1;
+          }
+
+       }
+       close(CONFIG);
+      if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+
+}
+else {
+     print header();
+     print "<html><head></head><body>LoDN config file not found</body><html>";
+     exit;
+}
+
+
+$file = "$LODN_ETC/userinfo";
+if(defined($user))
+{
+        eval
+        {
+          $info = retrieve ("$file");
+        };
+
+        if($@)
+        {
+             print header();
+             print "Error accessing user info database\n";
+             exit;
+        }
+
+        # alter entered password to match altered password saved in database
+         $password =md5_hex($password,$user);
+
+        # load info into hash
+         %mydata = %{$info};
+
+   if ($password eq $mydata{$user}[3])
+   {
+    unless($mydata{$user}[6] eq "yes" && $mydata{$user}[7] eq "yes") {
+    print redirect(-uri=>'../');
+    exit;
+    }
+   }
+}
+else {
+  print redirect(-uri=>'../');
+  exit;
+}
+
+print header();  
+print "<html><head><title>LoDN - Admin - Accounts</title>";
+print "<script LANGUAGE=\"JavaScript\">\n";
+print "<!--\nfunction confirmDelete()\n{\n";
+print "var agree=confirm(\"Are you sure you wish to delete this user?\");";
+print "\nif(agree)\n return true ;\n";
+print "else\n return false ;\n";
+print "}\n// -->\n";
+print "</script>\n";
+print "User information for all users<br><br>";
+print "<center>";
+print "<table border=1>";
+print "<tr><td><b>Username</b></td><td><b>First Name</b></td>\n";
+print "<td><b>Last Name</b></td>\n";
+print "<td><b>E-mail</b></td>\n";
+print "<td><b>Admin</b></td>\n";
+print "<td><b>Enabled</b></td><td> </td><td> </td></tr>";
+
+ foreach $key (sort(keys(%mydata))) {
+    print "<tr><td>$key</td>";
+    print "<td>$mydata{$key}[1]</td>";
+    print "<td>$mydata{$key}[0]</td>";
+    print "<td>$mydata{$key}[2]</td>";
+    print "<td>$mydata{$key}[7]</td>";
+    print "<td>$mydata{$key}[8]</td>";
+   
+    print "<td><a href='admin_account.cgi?user=$key'>Edit</a></td>";
+    print "<td><a onClick=\"return confirmDelete()\" href=\"lodn_user_delete.cgi?tbd=$key\">Delete</a></td>";
+    print "</tr>";
+    
+ }
+
+print "</table></center><br>";

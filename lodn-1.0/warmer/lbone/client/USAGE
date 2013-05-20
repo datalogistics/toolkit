@@ -1,0 +1,208 @@
+LBONE API (draft)
+
+See http://www.cs.utk.edu/lbone/lbone_api.html for the latest details.
+
+* Structs
+
+  Use the IBP_depot struct (hostname and port)
+
+  #define Depot IBP_depot;
+
+
+
+  typedef struct {
+    int             numDepots;
+    unsigned long   stableSize;
+    unsigned long   volatileSize;
+    double          duration;
+    char           *location;
+  } LBONE_request;
+
+  The LBONE_request struct holds the info passed to the server outlining
+  the client's search criteria.
+
+    numDepots is the maximum number of depots to return.
+
+    stableSize and volatileSize indicate the minimum amount of each
+    needed to be included in the returned array. If both are non-zero
+    numbers, then the search is an AND. If either is a zero value, it
+    searches for the non-zero class of storage only.
+
+    duration is the minimum number of days that the user will need the
+    space. This must be >= zero. It is a double. For example, a value of
+    six hours would be duration = 0.25.
+
+    location allows the user to enter a keyword and value pair to determine
+    where they want storage and minimum environmental criteria. They may enter
+    NULL if location is irrelevant.
+
+    For US searches, the user can specify one or more of the following:
+
+      zip= 00000
+
+        The zip= keyword requires a valid 5-digit US zipcode only.
+
+      state= AA
+
+        The state= keyword requires a valid 2-letter state code (postal code)
+
+      city=  AAAAA [AAAA ....]        (requires state= )
+
+        The city= keyword accepts space delimited words.
+
+      country= US
+
+        The country= US location is very vague and gives poor results.
+
+      airport= AAA
+
+        The airport= keyword requires a 3-letter airport (IATA) code 
+    
+
+    For international searches, the user can specify one or more of the following:
+
+      city=  AAAAA [AAAA ....]        (requires country= )
+
+        The city= keyword accepts space delimited words.
+
+      country= AA
+
+        The country= keyword requires a valid 2-letter iso country code.
+
+      airport= AAA
+
+        The airport= keyword requires a 3-letter airport (IATA) code 
+    
+
+    The server has access to a database of 30,000 US zipcode/city/state entries, 
+    2,000 US airports and 6,000 international airports. Currently, international
+    city and country lookups are done with the airport list. All entries specify
+    lat/lon coordinates.
+
+    If multiple keyword/value pairs are given, the server uses the following
+    algorithm to try to determine the best location:
+
+    For US searches:
+
+      1. Search for zipcode - it is the most accurate
+         Is it a valid number? Must be between 01001 and 99999.
+         If not found, decrement by 1. Repeat until found.
+         When found, get lat/lon.
+         No other searches are performed.
+
+      2. Search for airport - not as accurate as city, but more reliable results
+         Is it 3 characters?
+         If found, get lat/lon.
+         If not found, go to city/state search.
+
+      3. Search for city and state
+         Is the state 2 letters?
+         If found, get lat/lon.
+         If not found, go to state search.
+
+      4. Search for state only
+         Is the state 2 letters?
+         If found, get lat/lon.
+         If not found, return depots in random order.
+
+
+    For non-US searches:
+
+      1. Search for airport - not as accurate as city, but more reliable results
+         Is it 3 characters?
+         If found, get lat/lon.
+         If not found, go to city/country search.
+
+      2. Search for city and country
+         Is the country 2 letters?
+         If found, get lat/lon.
+         If not found, go to country search.
+
+      3. Search for country only
+         Is the country 2 letters?
+         If found, get lat/lon.
+         If not found, return depots in random order.
+
+
+    Once the location is determined, the server then caluclates the distance
+    based on the Haversine Formula.
+
+      dlon = lon2 - lon1 
+      dlat = lat2 - lat1 
+      a = (sin(dlat/2))^2 + cos(lat1) * cos(lat2) * (sin(dlon/2))^2 
+      c = 2 * arcsin(min(1,sqrt(a))) 
+      d = R * c  where R is 3956 miles, and lat and lon are first converted from
+                 decimal values to radians.
+
+      To convert decimal degrees to radians, multiply the number of degrees by
+      pi/180 = 0.017453293 radians/degree.
+
+
+    The environmental keywords allow you specify the minimum class of service
+    for the depots that you want to use.
+
+    The keywords are:
+
+      connection=   What type of connection to the Internet?
+
+      monitoring=   When is someone available to monitor this machine?
+
+      power=        How long can this machine run if the primary power fails?
+
+      backup=       What is the backup policy for depot data stored on this machine?
+
+      firewall=     Does it have one?
+
+    The environmental keyword options are:
+
+      connection= [ ISDN/56K | Cable/DSL | T1 | T3 ]
+      monitoring= [ Occasional | 9-5 | 24-7 ]
+      power= [ Minutes | Hours | Generator ]
+      backup=  [ Occasional | Daily-Single Copy | Daily-Multiple Copies ]
+      firewall= [ no | yes ]
+
+    The options increase in "value" from left to right. The options match their own
+    value and all values to their right. For example, if you specify "power= Minutes"
+    then all depots with power equal to Minutes, Hours and Generator will be returned.
+    If you specify "power= Hours", then only depots with a power option of Hours or
+    Generator will be returned.
+
+    The default values return all depots (each option assumes the lowest value).
+
+    Please note that all searches are currently case sensitive. 
+
+
+
+* Functions
+
+  Depot *lbone_getDepots(Depot lboneServer, LBONE_request req, int timeout);
+
+    This is the primary function. It passes the lbone server info and the search
+    criteria. It returns null on failure or an array of IBP_depots on success.
+    It accepts a timeout value of seconds to wait before returning NULL.
+
+    The server checks the request against cached data about the IBP depots. The
+    depot array returned by this call meets the request according to the cached
+    data. These depots, however, may not be currently active or their capacities
+    may have dropped since the last update.
+
+  Depot *lbone_chackDepots(Depot *depots, LBONE_request, int timeout);
+
+    This function accepts the list returned by the lbone_getDepots() call. It then
+    spawns a thread for each depot in the array and makes an IBP_status() call.
+    It determines which depots are currently reachable and which ones still meet
+    the request criteria.
+
+  Depot *lbone_sortByBandwidth(Depot *depots, int timeout);
+
+    This function accepts the list returned by the lbone_checkDepots() call. It
+    then spawns a thread for each depot in the array and makes a nws_ping() call. 
+    It measures the bandwidth to each depot and sorts them from highest to lowest. 
+    If the depot's nws sensor is not available or no measurment is taken, it is 
+    assigned a bandwidth of zero and put at the end of the list.
+
+ 
+
+If you have any questions, please send email to lbone@cs.utk.edu.
+
+

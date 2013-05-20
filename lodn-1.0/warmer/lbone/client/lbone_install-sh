@@ -1,0 +1,35 @@
+#!/bin/sh
+
+## This script makes the IBP library, the nws library, and then builds
+## the LBONE client library and some tools to show usage of the calls.
+#
+
+cd nws
+rm -f Include/config.h config.cache config.status ;
+make distclean
+./configure ;
+make lib ;
+mkdir Library ; cd Library ;
+mkdir `uname` ; cd .. ;
+cp libnws.a Library/`uname` ;
+cd ..
+
+cd ibp
+cd src/
+rm -f config.status config.cache
+make clean
+autoheader
+touch *.c
+aclocal
+autoconf
+./configure
+make client
+cd ..
+cd ..
+
+mkdir -p bin/`uname`
+mkdir -p obj/`uname`
+cd src
+make clean
+make
+cd ..

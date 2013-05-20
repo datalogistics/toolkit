@@ -1,0 +1,36 @@
+@PERL@ -w
+use strict;
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:netscape :standard *table vars canter img);
+my $logfile = "/tmp/warmer-jp.log";
+
+print header();
+print "<html><head><title>Warmer Informations</title></head><body>\n";
+
+
+
+print "<h1>Warmer Informations</h1>\n";
+
+print "This page contains informations about the last warming session.<br>\n";
+print "Data available in " . $logfile . " (promise.cs.utk.edu)<br>\n";
+print "<hr>\n";
+
+print "<font size=-2>\n";
+
+if( -f $logfile) {
+  open(LOG, $logfile) or die "Can not open $logfile";
+  while(<LOG>) {
+    print $_ . "<br>";
+  }
+} else {
+
+  print "Log file of the Warmer unavailable today.<br>\n";
+
+}
+
+print "</font>\n";
+
+print "<hr>\n";
+print "</body></html>\n";
+
+exit;

@@ -1,0 +1,7 @@
+# Sample depotfile
+
+# Depot specification with all resource ids that can be discovered
+#hostname:port:*    sitename    latitude    longitude
+
+# Depot specification with the resource ids to use specified.
+#hostname:port:0,1,2... sitename    latitude    longitude

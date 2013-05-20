@@ -1,0 +1,373 @@
+lodn_exportExnode.o lodn_exportExnode.o: lodn_exportExnode.c \
+  /usr/include/stdlib.h /usr/include/Availability.h \
+  /usr/include/AvailabilityInternal.h /usr/include/_types.h \
+  /usr/include/sys/_types.h /usr/include/sys/cdefs.h \
+  /usr/include/sys/_symbol_aliasing.h \
+  /usr/include/sys/_posix_availability.h /usr/include/machine/_types.h \
+  /usr/include/i386/_types.h /usr/include/sys/wait.h \
+  /usr/include/sys/signal.h /usr/include/sys/appleapiopts.h \
+  /usr/include/machine/signal.h /usr/include/i386/signal.h \
+  /usr/include/i386/_structs.h /usr/include/sys/_structs.h \
+  /usr/include/machine/_structs.h /usr/include/mach/i386/_structs.h \
+  /usr/include/sys/resource.h /usr/include/machine/endian.h \
+  /usr/include/i386/endian.h /usr/include/sys/_endian.h \
+  /usr/include/libkern/_OSByteOrder.h \
+  /usr/include/libkern/i386/_OSByteOrder.h /usr/include/alloca.h \
+  /usr/include/machine/types.h /usr/include/i386/types.h \
+  /usr/include/i386/_types.h /usr/include/unistd.h \
+  /usr/include/sys/unistd.h /usr/include/sys/select.h \
+  /usr/include/sys/_select.h /usr/include/stdio.h ../include/lodn.h \
+  ../include/lodn_client/lodn_errno.h \
+  ../include/lodn_client/lodn_options.h ../include/lodn_client/lodn_api.h \
+  /usr/include/sys/stat.h /usr/include/pthread.h \
+  /usr/include/pthread_impl.h /usr/include/sched.h /usr/include/time.h \
+  /usr/include/_structs.h /sw/lors/include/lors/lors_api.h \
+  ../include/config.h /usr/include/assert.h /usr/include/semaphore.h \
+  /usr/include/sys/types.h /usr/include/sys/fcntl.h \
+  /usr/include/sys/semaphore.h ../include/jval.h ../include/jrb.h \
+  ../include/jval.h /sw/lors/include/dllist.h /sw/lors/include/jval.h \
+  /sw/lors/include/ibp.h /sw/lors/include/ibp/ibp_os.h \
+  /sw/lors/include/ibp/ibp_protocol.h \
+  /sw/lors/include/ibp/ibp_ClientLib.h /sw/lors/include/ibp/ibp_os.h \
+  /sw/lors/include/ibp/ibp_protocol.h /sw/lors/include/ibp/ibp_errno.h \
+  /sw/lors/include/ibp/ibp_errno.h /sw/lors/include/ibp/ibp_nfu.h \
+  /sw/lors/include/ibp/ibp_ClientLib.h /sw/lors/include/lors/lors_error.h \
+  /sw/lors/include/lors/lors_opts.h /sw/lors/include/libexnode/exnode.h \
+  /usr/include/string.h /usr/include/strings.h \
+  /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlexports.h \
+  /usr/include/libxml2/libxml/xmlstring.h \
+  /usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/stdarg.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/dict.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/hash.h \
+  /usr/include/libxml2/libxml/valid.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h /usr/include/stdint.h \
+  /usr/include/libxml2/libxml/xmlIO.h /usr/include/libxml2/libxml/SAX.h \
+  /usr/include/libxml2/libxml/xlink.h /usr/include/libxml2/libxml/SAX2.h \
+  /sw/lors/include/lbone_base.h /sw/lors/include/fields.h \
+  /usr/include/ctype.h /usr/include/runetype.h /sw/lors/include/ibp.h \
+  /usr/include/signal.h /usr/include/errno.h /usr/include/sys/errno.h \
+  /usr/include/netdb.h /usr/include/netinet/in.h \
+  /usr/include/sys/socket.h /usr/include/machine/_param.h \
+  /usr/include/i386/_param.h /usr/include/netinet6/in6.h \
+  /usr/include/fcntl.h \
+  /usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/limits.h \
+  /usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/syslimits.h \
+  /Developer/usr/llvm-gcc-4.2/lib/gcc/i686-apple-darwin11/4.2.1/include/limits.h \
+  /Developer/usr/llvm-gcc-4.2/lib/gcc/i686-apple-darwin11/4.2.1/include/syslimits.h \
+  /usr/include/limits.h /usr/include/machine/limits.h \
+  /usr/include/i386/limits.h /usr/include/i386/_limits.h \
+  /usr/include/sys/syslimits.h /usr/include/dirent.h \
+  /usr/include/sys/dirent.h /usr/include/arpa/inet.h \
+  /usr/include/sys/utsname.h /usr/include/sys/file.h \
+  /usr/include/sys/queue.h /usr/include/sys/time.h /usr/include/sys/un.h \
+  /sw/lors/include/lors/lors_util.h \
+  /sw/lors/include/lors/lors_resolution.h \
+  /sw/lors/include/lors/lors_api.h /sw/lors/include/fields.h \
+  /sw/lors/include/lors/lors_job.h /sw/lors/include/lors/lors_api.h \
+  /sw/protobuf-c/include/google/protobuf-c/protobuf-c.h \
+  /usr/include/inttypes.h \
+  /usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/stddef.h \
+  /sw/protobuf-c/include/google/protobuf-c/protobuf-c-private.h \
+  ../include/lodn_client/lodn_types.h /sw/lors/include/lors.h \
+  /sw/lors/include/lors/lors_api.h /sw/lors/include/lors/lors_opts.h \
+  /sw/lors/include/lors/lors_file_opts.h \
+  /sw/lors/include/lors/lors_error.h /sw/lors/include/lors/xndrc.h \
+  /sw/lors/include/lors/lors_util.h
+
+/usr/include/stdlib.h:
+
+/usr/include/Availability.h:
+
+/usr/include/AvailabilityInternal.h:
+
+/usr/include/_types.h:
+
+/usr/include/sys/_types.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/sys/_symbol_aliasing.h:
+
+/usr/include/sys/_posix_availability.h:
+
+/usr/include/machine/_types.h:
+
+/usr/include/i386/_types.h:
+
+/usr/include/sys/wait.h:
+
+/usr/include/sys/signal.h:
+
+/usr/include/sys/appleapiopts.h:
+
+/usr/include/machine/signal.h:
+
+/usr/include/i386/signal.h:
+
+/usr/include/i386/_structs.h:
+
+/usr/include/sys/_structs.h:
+
+/usr/include/machine/_structs.h:
+
+/usr/include/mach/i386/_structs.h:
+
+/usr/include/sys/resource.h:
+
+/usr/include/machine/endian.h:
+
+/usr/include/i386/endian.h:
+
+/usr/include/sys/_endian.h:
+
+/usr/include/libkern/_OSByteOrder.h:
+
+/usr/include/libkern/i386/_OSByteOrder.h:
+
+/usr/include/alloca.h:
+
+/usr/include/machine/types.h:
+
+/usr/include/i386/types.h:
+
+/usr/include/i386/_types.h:
+
+/usr/include/unistd.h:
+
+/usr/include/sys/unistd.h:
+
+/usr/include/sys/select.h:
+
+/usr/include/sys/_select.h:
+
+/usr/include/stdio.h:
+
+../include/lodn.h:
+
+../include/lodn_client/lodn_errno.h:
+
+../include/lodn_client/lodn_options.h:
+
+../include/lodn_client/lodn_api.h:
+
+/usr/include/sys/stat.h:
+
+/usr/include/pthread.h:
+
+/usr/include/pthread_impl.h:
+
+/usr/include/sched.h:
+
+/usr/include/time.h:
+
+/usr/include/_structs.h:
+
+/sw/lors/include/lors/lors_api.h:
+
+../include/config.h:
+
+/usr/include/assert.h:
+
+/usr/include/semaphore.h:
+
+/usr/include/sys/types.h:
+
+/usr/include/sys/fcntl.h:
+
+/usr/include/sys/semaphore.h:
+
+../include/jval.h:
+
+../include/jrb.h:
+
+../include/jval.h:
+
+/sw/lors/include/dllist.h:
+
+/sw/lors/include/jval.h:
+
+/sw/lors/include/ibp.h:
+
+/sw/lors/include/ibp/ibp_os.h:
+
+/sw/lors/include/ibp/ibp_protocol.h:
+
+/sw/lors/include/ibp/ibp_ClientLib.h:
+
+/sw/lors/include/ibp/ibp_os.h:
+
+/sw/lors/include/ibp/ibp_protocol.h:
+
+/sw/lors/include/ibp/ibp_errno.h:
+
+/sw/lors/include/ibp/ibp_errno.h:
+
+/sw/lors/include/ibp/ibp_nfu.h:
+
+/sw/lors/include/ibp/ibp_ClientLib.h:
+
+/sw/lors/include/lors/lors_error.h:
+
+/sw/lors/include/lors/lors_opts.h:
+
+/sw/lors/include/libexnode/exnode.h:
+
+/usr/include/string.h:
+
+/usr/include/strings.h:
+
+/usr/include/libxml2/libxml/tree.h:
+
+/usr/include/libxml2/libxml/xmlversion.h:
+
+/usr/include/libxml2/libxml/xmlexports.h:
+
+/usr/include/libxml2/libxml/xmlstring.h:
+
+/usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/stdarg.h:
+
+/usr/include/libxml2/libxml/xmlregexp.h:
+
+/usr/include/libxml2/libxml/dict.h:
+
+/usr/include/libxml2/libxml/xmlmemory.h:
+
+/usr/include/libxml2/libxml/threads.h:
+
+/usr/include/libxml2/libxml/globals.h:
+
+/usr/include/libxml2/libxml/parser.h:
+
+/usr/include/libxml2/libxml/hash.h:
+
+/usr/include/libxml2/libxml/valid.h:
+
+/usr/include/libxml2/libxml/xmlerror.h:
+
+/usr/include/libxml2/libxml/list.h:
+
+/usr/include/libxml2/libxml/xmlautomata.h:
+
+/usr/include/libxml2/libxml/entities.h:
+
+/usr/include/libxml2/libxml/encoding.h:
+
+/usr/include/stdint.h:
+
+/usr/include/libxml2/libxml/xmlIO.h:
+
+/usr/include/libxml2/libxml/SAX.h:
+
+/usr/include/libxml2/libxml/xlink.h:
+
+/usr/include/libxml2/libxml/SAX2.h:
+
+/sw/lors/include/lbone_base.h:
+
+/sw/lors/include/fields.h:
+
+/usr/include/ctype.h:
+
+/usr/include/runetype.h:
+
+/sw/lors/include/ibp.h:
+
+/usr/include/signal.h:
+
+/usr/include/errno.h:
+
+/usr/include/sys/errno.h:
+
+/usr/include/netdb.h:
+
+/usr/include/netinet/in.h:
+
+/usr/include/sys/socket.h:
+
+/usr/include/machine/_param.h:
+
+/usr/include/i386/_param.h:
+
+/usr/include/netinet6/in6.h:
+
+/usr/include/fcntl.h:
+
+/usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/limits.h:
+
+/usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/syslimits.h:
+
+/Developer/usr/llvm-gcc-4.2/lib/gcc/i686-apple-darwin11/4.2.1/include/limits.h:
+
+/Developer/usr/llvm-gcc-4.2/lib/gcc/i686-apple-darwin11/4.2.1/include/syslimits.h:
+
+/usr/include/limits.h:
+
+/usr/include/machine/limits.h:
+
+/usr/include/i386/limits.h:
+
+/usr/include/i386/_limits.h:
+
+/usr/include/sys/syslimits.h:
+
+/usr/include/dirent.h:
+
+/usr/include/sys/dirent.h:
+
+/usr/include/arpa/inet.h:
+
+/usr/include/sys/utsname.h:
+
+/usr/include/sys/file.h:
+
+/usr/include/sys/queue.h:
+
+/usr/include/sys/time.h:
+
+/usr/include/sys/un.h:
+
+/sw/lors/include/lors/lors_util.h:
+
+/sw/lors/include/lors/lors_resolution.h:
+
+/sw/lors/include/lors/lors_api.h:
+
+/sw/lors/include/fields.h:
+
+/sw/lors/include/lors/lors_job.h:
+
+/sw/lors/include/lors/lors_api.h:
+
+/sw/protobuf-c/include/google/protobuf-c/protobuf-c.h:
+
+/usr/include/inttypes.h:
+
+/usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/stddef.h:
+
+/sw/protobuf-c/include/google/protobuf-c/protobuf-c-private.h:
+
+../include/lodn_client/lodn_types.h:
+
+/sw/lors/include/lors.h:
+
+/sw/lors/include/lors/lors_api.h:
+
+/sw/lors/include/lors/lors_opts.h:
+
+/sw/lors/include/lors/lors_file_opts.h:
+
+/sw/lors/include/lors/lors_error.h:
+
+/sw/lors/include/lors/xndrc.h:
+
+/sw/lors/include/lors/lors_util.h:

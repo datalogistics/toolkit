@@ -1,0 +1,5 @@
+To install, use:
+
+  sh ./lbone_install-sh
+
+See the USAGE document or http://loci.cs.utk.edy/lbone/client_api.html for details on usage.

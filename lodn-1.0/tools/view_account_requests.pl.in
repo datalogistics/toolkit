@@ -1,0 +1,43 @@
+@PERL@ -w
+
+use strict;
+
+my $file = "@LODN_ETC@/account_requests";
+my @entries;
+my $lnum = -1;
+my $fname;
+my $lname;
+my $email;
+my $username;
+my $stuff;
+
+# Opens the account file for reading
+open(ACCOUNTS, "<$file") or die "Can't open $file";
+
+# Traverses the entries in the account file.
+for(<ACCOUNTS>)
+{
+    chomp();
+
+    $lnum++;
+
+    # Gets the name, email and username for the current entry
+    ($fname, $lname, $email, $username, $stuff) = split(/,/);
+
+    # Checks the validity of the entry
+    die "Entry $lnum is invalid" unless defined($fname) and defined($lname) and defined($email) and defined($username) and !defined($stuff);
+
+    # Gets the username
+    $username =~ s/^(\S+)\s+.*/$1/;
+
+    # Prints the data for each entry
+    print "Account Name: $username\n";
+    print "  First name: $fname\n";
+    print "  Last name:  $lname\n";
+    print "  Email:      $email\n";
+    print "  Username:   $username\n";
+    print "\n";
+}
+
+# Closes the account file handle
+close(ACCOUNTS);

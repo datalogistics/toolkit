@@ -1,0 +1,58 @@
+#!/bin/sh
+
+# build and install ibp package
+BUILD_IBP=@LORS_BUILD_IBP@
+if test "${BUILD_IBP}" = yes; then
+    echo "Building ibp package..."
+    cd @LORS_IBP_SRC_DIR@
+    ./configure --prefix=@prefix@ --enable-clientonly=yes
+    make install
+    if test $? -ne 0; then
+        echo "****** Error in building ibp package"
+        cd @PREFIX@
+        /bin/rm Makefile
+        exit 1
+    fi
+    cd @PREFIX@
+fi
+
+BUILD_ECGI=@LORS_BUILD_ECGI@
+if test "${BUILD_ECGI}" = yes; then
+    echo "Building ecgi package..."
+    cd @LORS_ECGI_SRC_DIR@
+    make
+    ranlib libecgi.a
+    if test $? -ne 0; then
+        echo "****** Error in building ecgi package"
+        cd @PREFIX@
+        /bin/rm Makefile
+        exit 1
+    fi
+    cd @PREFIX@
+fi
+
+BUILD_NWS=@LORS_BUILD_NWS@
+if test "${BUILD_NWS}" = yes; then
+    echo "Building nws package..."
+    cd @LORS_NWS_SRC_DIR@
+    make clean
+    rm -f config.status config.cache
+    ./configure && make lib
+    cd Sensor/ExpMemory
+    make memory.o
+    ar -q ../../libnws.a memory.o
+    cd ../../ 
+    ranlib ./libnws.a
+    mkdir -p Library/$UNAME/
+    cp libnws.a Library/$UNAME/
+    if test $? -ne 0; then
+        echo "****** Error in building nws package"
+        cd @PREFIX@
+        /bin/rm Makefile
+        exit 1
+    fi
+    cd @PREFIX@
+fi
+
+exit 0
+

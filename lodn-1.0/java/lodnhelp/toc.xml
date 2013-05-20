@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<toc version="2.0">
+	<tocitem target="intro" text="Introduction">
+		<tocitem target="lodn" text="LoDN"/>
+		<tocitem target="ln" text="Logistical Networking"/>
+	</tocitem>
+	<tocitem target="client" text="LoDN Client">
+		<tocitem target="clientwin" text="Client Window"/>
+		<tocitem target="clientparam" text="Download Parameters">
+			<tocitem target="clientconn" text="Connections"/>
+			<tocitem target="clientblock" text="Block Size"/>
+			<tocitem target="clientsuggested" text="Suggested Values"/>
+		</tocitem>
+		<tocitem target="downvexec" text="Download vs. Execute"/>
+		<tocitem target="clientprogress" text="Transfer Progress Window"/>
+		<tocitem target="clientmenu" text="Menu Bar Commands"/>
+	</tocitem>
+</toc>

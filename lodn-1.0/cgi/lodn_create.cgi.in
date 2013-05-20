@@ -1,0 +1,287 @@
+@PERL@ -w
+use strict;
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:netscape :standard *table vars canter img);
+use Digest::MD5 qw(md5_hex);
+use File::Path;
+use Carp;
+
+use constant LODN_CFG =>@LODN_CFG@;
+my $LODN_ETC;
+#user and password can be either be taken from the cookie or can be taken in param(from url for future work)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+my $user;
+my $password;
+my %mydata;
+my $hashref;
+
+# Constants (as such)
+my $CONTENT_DIR;
+my $info;
+my $userfile;
+# CGI parameters
+my $filename;
+my $subdir;
+my $type; # 0 for directory, 1 for file, 2 for recursive directory
+my $INFILE;
+
+
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $user=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $user=$Puser;
+   $password=$Ppassword;
+  }
+
+
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+   while(<CONFIG>) {
+      s/\#.*//;
+      s/^\s+//;
+      s/\s+$//;
+      if(/^CONTENT_DIR\s+(\S*)/) {
+        $CONTENT_DIR=$1;
+      }elsif(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+
+   }
+   close(CONFIG);
+
+   if(!(defined $CONTENT_DIR)) {
+      print header();
+      print "<html><head></head><body>LoDN config incomplete</body></html>";
+      exit;
+   }
+  if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+
+$userfile = "$LODN_ETC/userinfo";
+
+
+#if the user has a cookie
+if(defined $user) {
+        eval
+        {
+          $info = retrieve ("$userfile");
+        };
+
+        if($@)
+        {
+             print header();
+             print "Error accessing user info database\n";
+             exit;
+        }
+
+        # alter entered password to match altered password saved in database
+         $password =md5_hex($password,$user);
+
+        # load info into hash
+         %mydata = %{$info};
+
+   if ($password eq $mydata{$user}[3])
+   {
+  #check to see if the user is logged on still (in the db)
+  if($mydata{$user}[6] eq "no") {
+
+    #if not, redirect the user to the login page
+     print redirect(-uri=>'../index.html');
+     exit(0);
+  }
+ }
+}
+else {
+  print redirect(-uri=>'../autologout.html');
+  exit;
+}
+
+
+# CGI parameters
+$filename=param('filename');
+$subdir=param('subdir');
+$type=param('type'); # 0 for directory, 1 for file
+
+
+# $filename may not be specified and if so then the last directory of the 
+# $subdir is assumed to be the filename.
+if(not defined($filename))
+{
+	if(not $subdir =~ m/^([\w\d_\/]+?)\/([\w\d_]+)(\/)?$/g)
+	{
+		print header();
+   		print "<html><head><title>Error!</title></head>\n";
+   		print "<body>Error parsing the creation request</body>\n";
+   		exit;
+	}
+	
+	$subdir   = $1;
+	$filename = $2;
+}
+
+
+if(!($subdir =~ /^\/$user\// || $subdir =~ /^\/$user$/)) {
+   print header();
+   print "<html><head><title>Error!</title></head><body>\n";
+   print "<body>You do not have write permission for this directory</body>\n";
+   exit;
+}
+
+# Checks that the .. isn't specified in the URL
+if(($subdir =~ m/\.\./) or ($filename =~ m/\.\./))
+{
+	print header();
+	print "<html><head><title>Error!</title></head>\n";
+    print "<body>Illegal directory or file specified</body>\n";
+    exit;
+}
+
+
+
+#
+# _DIRECTORY_
+#
+if($type==0) 
+{
+	if(-e "$CONTENT_DIR/$subdir/$filename" or 
+	   ("$CONTENT_DIR/$subdir/$filename" != "$CONTENT_DIR/$subdir" and 
+	     not -e "$CONTENT_DIR/$subdir")) 
+	{ 
+		goto FALLOFF; 
+	}
+	
+	# Makes the directory
+	eval { mkpath("$CONTENT_DIR/$subdir/$filename", 0, 0750) };
+	
+	# Catches the error from mkpath if their is one
+  	if ($@) 
+  	{
+  		print header();
+		print "<html><head><title>Error!</title></head>\n";
+    	print "<body>Couldn't create the CONTENT_DIR/$subdir/$filename directory</body>\n";
+    	exit;
+  	}  
+	
+	#mkdir("$CONTENT_DIR/$subdir/$filename");
+	#chmod(0750,"$CONTENT_DIR/$subdir/$filename");
+	#`cp $CONTENT_DIR/../index.php $CONTENT_DIR/$subdir/$filename`;
+}
+
+#
+# _FILE_
+#
+if($type==1) {
+
+#  if(-e "$CONTENT_DIR/$subdir/$filename") { goto FALLOFF; }
+
+  unless($filename=~/xnd$/) { goto FALLOFF; }
+
+
+  # Upload file
+  $INFILE=upload('filename');
+
+  # Isolate filename
+  my $file=$filename;
+  my @parts=split(/\//,$file);
+  my $infile=$parts[$#parts];
+  @parts=split(/\\/,$infile);
+  $infile=$parts[$#parts];
+
+  my $filenameSub = 0;
+  my $trueFilename = $infile;
+
+  $trueFilename =~ s/.xnd$//;
+  
+  # Create file
+  if(!open(OUTFILE,">$CONTENT_DIR/$subdir/$infile"))
+  {
+  	 print header();
+     print "<html><head><title>Error!</title></head><body>\n";
+     print "<body>Couldn't create the CONTENT_DIR/$subdir/$filename file</body>\n";
+     exit;
+  } 	
+    	
+  while(<$INFILE>) 
+  {
+    # Ensures that the filename is the same as the file
+    if(s/(^\s*<exnode:metadata.+name="filename".*>).*(<\/exnode:metadata>)/${1}${trueFilename}${2}/g)
+    {
+       $filenameSub++;
+
+    # If the end of the file has been reached and there is
+    # no filename given then it inserts one.
+    }elsif(m/<\/exnode>/ && $filenameSub == 0)
+    {
+       print OUTFILE "  <exnode:metadata name=\"filename\" type=\"string\">${trueFilename}</exnode:metadata>\n";
+    }
+
+    # Copies the line into the output exnode file
+    print OUTFILE $_;
+    
+  }
+  chmod(0640,"$CONTENT_DIR/$subdir/$infile");
+  close(OUTFILE);
+
+  #Use WARMER
+  if(fork() == 0)
+  {
+     open(STDOUT, ">/dev/null");
+     open(STDERR, ">/dev/null");
+     exec "@LODN_TOOLS@/LoDNWarmerUpdater add \"$CONTENT_DIR/$subdir/$infile\"";
+  }
+
+}
+
+#
+# Recursive make dir
+#
+if($type==2) 
+{
+	if(-e "$CONTENT_DIR/$subdir/") 
+	{ 
+		goto FALLOFF; 
+	}
+	
+	# Makes the directory
+	eval { mkpath("$CONTENT_DIR/$subdir/$filename", 0, 0750) };
+	
+	# Catches the error from mkpath if their is one
+  	if ($@) 
+  	{
+  		print header();
+		print "<html><head><title>Error!</title></head>\n";
+    	print "<body>Couldn't create the CONTENT_DIR/$subdir/$filename directory</body>\n";
+    	exit;
+  	}  
+}
+
+
+
+FALLOFF:
+
+if($type==0 or $type==2) {
+  print redirect("directory.cgi?subdir=$subdir");
+}
+
+if($type==1) {
+  print redirect("listing.cgi?subdir=$subdir");
+}

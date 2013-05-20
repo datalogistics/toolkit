@@ -1,0 +1,75 @@
+
+CONTENTS
+========
+
+AUTHOR
+ABOUT
+CONTENTS
+REQUIREMENTS
+HOW TO INSTALL
+RUN
+
+
+AUTHOR
+======
+
+Christopher Brumgard
+
+
+ABOUT
+=====
+This is the LoDN (Logistical Distribution Network) package for the server. 
+This package allows for the LoDN server to be installed.  
+
+
+CONTENTS
+========
+
+COPYING         GPL License file
+
+ChangeLog       File that lists the changes from version to version
+
+INSTALL         File that shows how to install the LoDN package
+
+README          This file
+
+lib/
+
+    LoDN-1.5.0.Winnipeg.0-py3.1.egg     Egg file that contains LoDN
+    pkg_resources.py                    Distribute module
+    pyMySQL.zip                         Zip file that has the pyMySQL source 
+                                        code for building the pyMySQL module
+    python3.0-protobuf-2.0.3.zip        Zip file that has Google's protocol
+                                        buffer implementation in Python.
+               
+lodn.cfg        Sample lodn config file.
+
+scripts/
+
+    install_policy.py.in        Base script for installing a policy file.
+    lodnd.py.in                 Base script for running LoDN.
+    
+setup.py        The install script
+
+
+
+REQUIREMENTS
+============
+
+Linux or Mac OS X
+gcc
+Python >= 3.1   
+MYSQL server and client libraries >= 5.1
+
+
+HOW TO INSTALL
+==============
+
+See the INSTALL file
+
+
+RUN
+===
+
+To run the LoDN server, execute the lodnd.py script in the bin subdirectory 
+of the lodn base directory.

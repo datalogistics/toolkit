@@ -1,0 +1,114 @@
+@PERL@ -T
+use strict;
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:standard *table vars canter img);
+use Digest::MD5 qw(md5_hex);
+use File::Copy;
+use File::Path;
+use constant LODN_CFG => @LODN_CFG@;
+my $LODN_ETC;
+#user and password can be either be taken from the cookie or can be taken in param(from url for future work)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+my $user;
+my $password;
+my $u;
+my $cook;
+my $strin;
+my %mydata;
+my $DOMAIN;
+my $file;
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $user=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $user=$Puser;
+   $password=$Ppassword;
+  }
+
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+   while(<CONFIG>) {
+      s/\#.*//;
+      s/^\s+//;
+      s/\s+$//;
+      if(/^DOMAIN\s+(\S*)/) {
+        $DOMAIN=$1;
+      }elsif(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+
+   }
+   close(CONFIG);
+   if(!(defined $DOMAIN)) {
+      #print header();
+      #print "<html><head></head><body>LoDN config incomplete</body></html>";
+      #exit;
+      $DOMAIN="";
+   }
+  if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+$file = "$LODN_ETC/userinfo";
+#retrieve the database and load it into mydata
+$u = retrieve ($file);
+%mydata = %{$u};
+
+#change the logged in value for the user to no and store the database
+$mydata{$user}[6]="no";
+store (\%mydata, $file);
+$u=$user;
+$cook = new CGI::Cookie( -NAME => "lodnuser",
+                         -VALUE => $u,
+                         -expires => "now",
+                         -domain => "$DOMAIN");
+print "Set-Cookie: $cook\n";
+
+
+
+# print out page telling user it all went well
+
+print header();
+
+
+
+print "<html>",
+  "  <head>\n",
+  "    <title>LoDN - Logout</title>\n",
+  "    <link type=\"text/css\" rel=\"stylesheet\" href=\"../lodn.css\">\n",
+  "    <link rel=\"shortcut icon\" href=\"../images/favicon.ico\">\n",
+  "  </head>\n",
+  "\n",
+  "  <body>\n",
+  "    <br>\n",
+  "    <div class=\"fondencouleur\">\n",
+  "\n",
+  "    <p>You have successfully logged out.</p>\n",
+  "\n",
+  "    <p><a href='../index.html'>Click here</a> to return to the login page or ",
+  "       <a href='lodn_published.cgi'>here</a> to browse as guest.<br>\n",
+  "    </p>\n",
+  "\n",
+  "    <hr>\n",
+  "	\n",
+  "\n",
+  "    </div>\n",
+  "  </body>\n",
+  "</html>\n";
+

@@ -1,0 +1,145 @@
+@PERL@ -T
+use strict;
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:standard *table vars canter img);
+use File::Path;
+use File::Copy;
+use Digest::MD5 qw(md5_hex);
+use constant LODN_CFG =>@LODN_CFG@;
+my $LODN_ETC;
+my $filestr = param("file");
+my @files;
+my $xndext;
+#user and password can be either be taken from the cookie or can be taken in param(from url for future work)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+my $user;
+my $password;
+my $hashref;
+my %mydata;
+my $file;
+my $pubfile;
+my $info;
+my $match;
+my @lines;
+my $xnd;
+my $line;
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $user=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $user=$Puser;
+   $password=$Ppassword;
+  }
+
+if (-f LODN_CFG) {
+  open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+  while(<CONFIG>) {
+    s/\#.*//;
+    s/^\s+//;
+    s/\s+$//;
+    if(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+
+  }
+  close(CONFIG);
+  if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+}
+
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+$file="$LODN_ETC/userinfo";
+$pubfile="$LODN_ETC/publishlist";
+
+if(defined $user) {
+        eval
+        {
+          $info = retrieve ("$file");
+        };
+
+        if($@)
+        {
+             print header();
+             print "Error accessing user info database\n";
+             exit;
+        }
+
+        # alter entered password to match altered password saved in database
+         $password =md5_hex($password,$user);
+
+        # load info into hash
+         %mydata = %{$info};
+
+   if ($password eq $mydata{$user}[3])
+   {
+
+    if($mydata{$user}[6] eq "no") {
+    print redirect(-uri=>'../index.html');
+    exit(0);
+  }
+ }
+}
+else {
+  print redirect(-uri=>'../autologout.html');
+}
+
+#@files = split ':', $filestr;
+
+# Splits target into its individual files
+while($filestr =~ m/\<file\>(.*?)\<\/file\>|(^.+$)/g)
+{
+    push(@files, (defined($1)) ? $1 : $2);
+}
+
+while($xnd = shift @files) {
+
+  @lines = undef;
+ 
+  $xnd =~ s/\/+/\//g;
+  if(($xnd =~ /\.xnd$/) || ($xnd =~ /\/$/)){ 
+    ##########`grep -v "^$xnd" $pubfile > .unpub.temp`;
+    $match="$xnd";
+  } else {
+    #########`grep -v "^$xnd/" $pubfile > .unpub.temp`;
+    $match="$xnd/";
+  }
+  ##`cat .unpub.temp > $pubfile`;
+  ##`rm .unpub.temp`;
+open(PUBLIST,"$pubfile") or die "$pubfile file cannot be opened !!\n ";
+while(defined($line=<PUBLIST>))
+   {
+      if($line=~ /^$match/)
+          {
+          }
+      else
+          {
+              $lines[scalar(@lines)]=$line;
+          }
+
+   }
+close(PUBLIST);
+open(PUBWRITE,">$pubfile") or die "$pubfile file cannot be opened !!\n ";
+print PUBWRITE @lines;
+close(PUBWRITE);
+chmod(0640, $pubfile);
+
+  $xndext = $xnd;
+}
+
+$xndext =~ s/\/[a-zA-Z0-9\-_\.]*$//;
+print redirect(-uri=>"listing.cgi?subdir=$xndext");

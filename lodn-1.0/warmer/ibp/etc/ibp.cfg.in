@@ -1,0 +1,111 @@
+###########################################################
+#
+# This is sample of ibp server configuration file. The ibp 
+# server configuration file provides defaults for users and 
+# the values can be change 
+#
+###########################################################
+# From version 1.4.0, IBP depot begins to support multiple storage
+# resources. Currently, memory and disk storage are supported.
+# For each resource, user need to define following entries:
+#
+# RESOURCEID:
+#    Define the resource number  which is used to 
+#    identify the source uniquely. Multiple RESOURCEID can be
+#    defined in the configure file. The resource with  RESOURCESID 0 
+#    in the config file is the default resource of the depot.
+# RSTYPE:
+#    Define the resource type. It's either "DISK" or "MEMORY"
+# LOCATION:
+#    Specify the storage directory. It's only applied to disk resource.
+# HARDSIZE:
+#    The amount of stable storage. The default unit of size is MByte,and
+#    'b' or 'B' for bytes, 'm' or 'M' for Mbytes, 'g' or 'G' for GBytes.
+# SOFTSIZE:
+#    The size of total storage. The default unit of size is MBytes, and 
+#    'b' or 'B' for bytes, 'm' or 'M' for Mbytes, 'g' or 'G' for GBytes.
+# MINFREESIZE:
+#    The minimal size of free storage. 
+# MAXDURATION:
+#    The maximum possible duration for a newly allocated storage. -1 for
+#    no limit.
+# ZEROCONF:
+#    1 to enable zeroconf to broadcast the resource on local network. 0 to disable.
+#    Default value is 1.
+# DATADIRS
+#    Number of data folders to hold IBP allocations. ( maximum 512). Default is 16
+# RESOURCE_END
+#    End of resource configuration.
+# For each RESOURCEID, it must be followed by SOFTSIZE, HARDSIZE,
+# MINFREESIZE, TYPE, LOCATION,MAXDURATION without other entries among 
+# them and end with RESOURCE_END entry. 
+# The RESOURCESID must be an integer.
+ 
+
+ RESOURCEID 0 
+    RSTYPE        DISK 
+    SOFTSIZE      800m
+    HARDSIZE      500m
+    MINFREESIZE   20m
+    LOCATION      /tmp
+    MAXDURATION   10
+    ZEROCONF      1     
+    DATADIRS      16
+ RESOURCE_END 
+ 
+# RESOURCEID  1 
+#    RSTYPE        MEMORY 
+#    LOCATION      /tmp
+#    SOFTSIZE      850m   
+#    HARDSIZE      120m   
+#    MINFREESIZE   5m
+#    MAXDURATION   10
+# RESOURCE_END
+
+# CFGPORT define the port number of the server. The default value is 
+# 6714.
+ CFGPORT      6714
+
+# PASSWD define the server passwd ( NULL is defualt)
+ PASSWD      ibp
+
+# HOSTNAME define the hostname on which the ibp server is runging
+# !! Attention: You must use FQDN(Fully Qualified Domain Name).
+# HOSTNAME rod.cs.utk.edu
+
+# NFUCFGFILE define the NFU configuration file name.
+ NFUCFGFILE  @prefix@/etc/nfu.cfg
+
+# THREADS define the number of the statically allocated threads in 
+# mutli-thread ibp server
+ THREADS   4 
+
+# MAXTHREADS define the max number of the  threads in 
+# mutli-thread ibp server
+ MAXTHREADS   64 
+
+# ENABLEAUTHEN  != 0  to enable client authentication 
+ENABLEAUTHEN 0
+
+# CAFILE  CA Certificate file name
+# CAFILE /etc/cafile  
+
+# DEPOTCERTFILE depot's certificate file
+# DEPOTCERTFILE  /etc/cert.pem
+
+# DEPOTPRIVATEKEYFILE depot's certificate  private key file 
+# DEPOTPRIVATEKEYFILE  /etc/private.pem
+
+#QUEUELEN The max length of requests waitting queue. 
+#QUEUELEN  56
+
+#MAXIDLETIME The maximum idle time of the persistent connection
+#MAXIDLETIME 15 
+
+# CL_IPv4 and CL_IPv6 define the client ip address which can allocate space on 
+# ibp server.
+# It's important to notice that if any CL_IPv4 or CL_IPv6 client are specified, 
+# they are the only clients allowed to allocate space on ibp server; If no 
+# client is specified, then all clients have allocate permission.
+# CL_IPv4  160.36.57.212 255.255.255.255
+# CL_IPv4  0.0.0.0

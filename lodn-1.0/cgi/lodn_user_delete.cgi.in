@@ -1,0 +1,132 @@
+@PERL@ -w
+use strict;
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:standard *table vars canter img);
+use File::Copy;
+use File::Path;
+use constant LODN_CFG => @LODN_CFG@;
+my $LODN_ETC;
+my $tbd = param("tbd");
+my $hashref;
+my $key;
+my $a;
+my @pub;
+my $CONTENT_DIR;
+my $ADMIN_EMAIL;
+my $userfile;
+my $pubfile;
+my %mydata;
+#my $user = cookie("lodnuser");
+#user and password can be either be taken from the cookie or can be taken in param(from url)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+my $user;
+my $password;
+####Checking of username and password(Cookie)############
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $user=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $user=$Puser;
+   $password=$Ppassword;
+  }
+
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+   while(<CONFIG>) {
+      s/\#.*//;
+      s/^\s+//;
+      s/\s+$//;
+      if(/^CONTENT_DIR\s+(\S*)/) {
+        $CONTENT_DIR=$1;
+      }
+      if(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+
+   }
+   close(CONFIG);
+   unless(defined $CONTENT_DIR) {
+      print header();
+      print "<html><head></head><body>LoDN config incomplete</body></html>";
+      exit;
+   }
+ if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+$userfile = "$LODN_ETC/userinfo";
+$pubfile = "$LODN_ETC/publishlist";
+#if the user has a cookie
+unless(defined $user) {
+  print redirect(-uri=>'../');
+  exit;
+}
+
+#load the database into mydata
+$hashref=retrieve($userfile);
+%mydata=%{$hashref};
+
+#check to see if the user is logged on still (in the db) and an admin
+unless(($mydata{$user}[6] eq "yes") && ($mydata{$user}[7] eq "yes")) {
+
+  print redirect(-uri=>'../');
+  exit;
+}
+
+unless(defined $tbd) {
+  print header();
+  print "<html><head></head><body>You must specify a user to delete.</body></html>\n";
+  exit;
+}
+
+unless(defined $mydata{$tbd}[6]) {
+  print header();
+  print "<html><head></head><body>The user you are trying to delete does not exist</body></html>\n";
+  exit;
+}
+
+
+#load the database again in case anything has changed
+$hashref = retrieve ($userfile) || die "can't retrieve file.";
+%mydata = %{$hashref};
+delete($mydata{$tbd});
+store (\%mydata, $userfile);
+$tbd =~ s/ //g;
+if($tbd =~ /\w/ && !($tbd=~/\W/)) {
+if( -e "$CONTENT_DIR/$tbd") { 
+        ####`rm -rf $CONTENT_DIR/$tbd`; 
+        rmtree("$CONTENT_DIR/$tbd");
+         }
+if( -f "$pubfile") {
+  open(PUB, "$pubfile") || die "can't open pubfile";
+  @pub=<PUB>;
+  close(PUB);
+  open(PUB, ">$pubfile") || die "can't open pubfile";
+  foreach (@pub) {
+    unless(/^$tbd\//) {
+      print PUB;
+    }
+  }
+  close(PUB);
+  chmod(0640, $pubfile);
+}
+}
+print redirect(-uri=>'lodn_accounts.cgi');
+
+

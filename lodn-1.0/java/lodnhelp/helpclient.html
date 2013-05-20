@@ -1,0 +1,103 @@
+<html>
+<head>
+<title>LoDN Help - Download Client </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<h1><font face="Times New Roman">LoDN Download Client</font></h1>
+<h2><font face="Times New Roman"><a name="ClientWindow"></a>Client Window</font></h2>
+<p><font face="Times New Roman"><b><a name="Figure1"></a>Figure 1:</b> The LoDN 
+  Download Client interface.<br>
+  <img src="fig1.jpg" width="370" height="279"><br>
+  <font size="-1">Please note: Figures 1 and 3 depict the LoDN Download Client 
+  interface for Windows. However, the download client interface for Mac or Unix 
+  operating systems are substantially identical to the version pictured.</font></font></p>
+<p><font face="Times New Roman">The box labeled &quot;Input File&quot; will already 
+  be filled in with the content key for the file to be downloaded. </font></p>
+<p><font face="Times New Roman">Enter a file path in the box labeled &quot;Output 
+  File,&quot; or click <i>Browse</i> to choose a location and file name for the 
+  downloaded content.</font></p>
+<p><font face="Times New Roman">After selecting desired values for the download 
+  parameters, click either the <i>Download</i> or <i>Execute</i> button to begin 
+  downloading. <i>Download</i> simply retrieves the file, while <i>Execute</i> 
+  retrieves the file and then automatically opens the downloaded file. Use the 
+  <i>Execute</i> button only when you trust the file content, as <i>Execute</i> 
+  does not differentiate between legitimate file content and harmful content such 
+  as a virus. </font></p>
+<p><font face="Times New Roman">When the download begins, the &quot;Transfer Progress&quot; 
+  window (<a href="#Figure1">Fig. 3</a>) will appear and display the status of 
+  the download. When the download is complete, click <i>OK</i> to close the Transfer 
+  Progress window. To exit LoDN, close the download client window. <br>
+  </font></p>
+<p></p>
+<h2><font face="Times New Roman"><a name="DownloadParameters"></a>Download Parameters</font></h2>
+<h3><font face="Times New Roman"><a name="Connections"></a>Number of Connections</font></h3>
+<p><font face="Times New Roman">&quot;Number of connections&quot; refers to the 
+  maximum number of data transfer operations to be performed concurrently during 
+  download. Each connection, or &quot;thread,&quot; is an individual transfer 
+  stream, retrieving a separate block of data. Maximizing download performance 
+  is a matter of balancing the number of connection threads with available bandwidth. 
+  Using more connection threads usually means faster performance, provided that 
+  sufficient bandwidth is available. For transfers within a local area network, 
+  four to six threads are recommended. For transfers over public wide area networks, 
+  use one to two threads for TCP friendliness. For transfers over dedicated high-speed 
+  links, as between research facilities, try using ten or more threads for maximum 
+  performance. See <a href="#Figure2">Figure 2</a> for further suggestions. You 
+  may choose a number from the drop down menu, or overwrite the menu box with 
+  a positive integer. </font></p>
+<h3><font face="Times New Roman"><a name="BlockSize"></a>Transfer Block Size</font></h3>
+<p><font face="Times New Roman">During download, each connection thread retrieves 
+  one incremental block of data at a time; the &quot;transfer block size&quot; 
+  indicates a preferred size for this download increment. Choose a small block 
+  size for retrieving small files or downloading over a slower connection, and 
+  a large block size for larger files or faster connections. See <a href="#Figure2">Figure 
+  2</a> for suggested settings. When downloading small files (a few hundred KB 
+  or less) over a slow connection you may have best results choosing a block size 
+  on the order of the filesize. If you are unsure of the file size or your connection 
+  speed, try a transfer block size of 512 KB. Choose a transfer block size by 
+  entering a positive integer in the box provided and using the radio buttons 
+  to select units of kilobytes (KB) or megabytes (MB). </font></p>
+<h3><font face="Times New Roman"><a name="SuggestedValues"></a>Suggested Values</font></h3>
+<p><font face="Times New Roman"><b><a name="Figure2"></a>Figure 2: </b>Suggested 
+  values for download parameters.<br>
+  <img src="fig2.gif" width="418" height="95"><br>
+  <font size="-1">Note: Mbps is megabits per second. To convert to MBps (megabytes 
+  per second), divide Mbps by 8.</font></font></p>
+<h2><font face="Times New Roman"><a name="DownloadvsExecute"></a>Download versus 
+  Execute</font></h2>
+<p><font face="Times New Roman">After selecting desired values for the download 
+  parameters, click either the <i>Download</i> or <i>Execute</i> button to begin 
+  downloading. <i>Download</i> simply retrieves the file, while <i>Execute</i> 
+  retrieves the file and then automatically opens the downloaded file or runs 
+  the downloaded application. Use the <i>Execute</i> button only when you trust 
+  the file content, as <i>Execute</i> does not differentiate between legitimate 
+  file content and harmful content such as a virus. </font></p>
+<h2><font face="Times New Roman"><a name="TransferProgressWindow"></a>Transfer 
+  Progress Window</font></h2>
+<p><font face="Times New Roman">When the download begins, the &quot;Transfer Progress&quot; 
+  window (Fig. 3) will appear and display the status of the download. When the 
+  download is complete, click <i>OK</i> to close the Transfer Progress window. 
+  To exit LoDN, close the download client window. <br>
+  </font></p>
+<p><font face="Times New Roman"><b><a name="Figure3"></a>Figure 3: </b>The Transfer 
+  Progress window.<br>
+  <img src="fig3.jpg" width="218" height="210"></font></p>
+<h2><font face="Times New Roman"><a name="MenuBarCommands"></a>Menu Bar Commands</font></h2>
+<p><font face="Times New Roman">From the menu bar at the top left of the download 
+  client window (<a href="#Figure1">Fig. 1</a>) you may access the &quot;File&quot; 
+  and &quot;Help&quot; menus. Options for these menus are listed below:</font></p>
+<p>The &quot;File-&gt;Open&quot; command allows you to browse for an input file. 
+  This option is only available when using the download client in stand-alone 
+  mode.</p>
+<p>The &quot;File-&gt;Download&quot; command is equivalent to clicking the <i>Download</i> 
+  button, located at the bottom of the client window. The <i>Download</i> command 
+  starts the file transfer. </p>
+<p><font face="Times New Roman">&quot;File-&gt;Exit&quot; closes the Download 
+  Client window.</font></p>
+<p><font face="Times New Roman">&quot;Help-&gt;Contents&quot; opens the browsable 
+  LoDN help files. </font></p>
+<p><font face="Times New Roman">&quot;Help-&gt;About&quot; displays information 
+  about the LoDN Download Client application.</font></p>
+</body>
+</html>

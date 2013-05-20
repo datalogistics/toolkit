@@ -1,0 +1,191 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use Storable qw(store retrieve);
+use Digest::MD5 qw(md5_hex);
+use File::Path;
+
+use constant LODN_CFG  => @LODN_CFG@;
+
+# Variables
+my $firstName = "";
+my $lastName  = "";
+my $username  = "";
+my $email     = "";
+my $question  = "";
+my $answer    = "";
+my $password  = "";
+my $admin     = "no";
+my $lodn_etc_dir;
+my $lodn_content_dir;
+my %userinfo;
+
+# Checks that a username and/or options where given.
+if(scalar(@ARGV) < 1)
+{
+    print STDERR "Usage: $0 [options] username\n\n";
+    print STDERR "Options:\n";
+    print STDERR "  -f, --firstname\t\tFirst name of the user\n";
+    print STDERR "  -l, --lastname\t\tLast name of the user\n";
+    print STDERR "  -e, --email\t\t\tEmail address of the user\n";
+    print STDERR "  -q, --question\t\tSecurity question for the user\n";
+    print STDERR "  -r, --response\t\tAnswer to the security question of the user\n";
+    print STDERR "  -p, --password\t\tPassword for the user\n";
+    print STDERR "  -a, --admin=[yes|no]\t\tGrant administrative privileges to user\n";
+    exit 1;
+}
+
+# Traverses the command line args parsing the options
+for (my $i=0; $i<scalar(@ARGV)-1; $i++) 
+{
+    my $key;
+    my $value;
+
+    if($ARGV[$i] =~ m/^-/)
+    {
+        if($ARGV[$i] =~ m/^--/)
+        {
+            if($ARGV[$i] =~ m/(.*)=(.*)$/)
+            {
+                $key   = $1;
+                $value = $2;
+            }else
+            {
+               $key   = $ARGV[$i];
+               $value = $ARGV[++$i];
+            }
+        }else
+        {
+            if(length($ARGV[$i]) > 2)
+            {
+               $ARGV[$i] =~ m/(..)(.+)/;
+               $key   = $1;
+               $value = $2;
+
+            }else
+            {
+               $key   = $ARGV[$i];
+               $value = $ARGV[++$i];
+            }
+        }
+
+    }else
+    {
+        die "$ARGV[$i] is an invalid option.";
+    }
+    
+    # First name
+    if($key eq "-f" or $key eq "--firstname")
+    {
+        $firstName = $value;
+    }elsif($key eq "-l" or $key eq "--lastname")
+    {
+        $lastName = $value;
+    }elsif($key eq "-e" or $key eq "--email")
+    {
+        $email = $value;
+    }elsif($key eq "-q" or $key eq "--question")
+    {
+        $question = $value;
+    }elsif($key eq "-r" or $key eq "--response")
+    {
+        $answer = $value;
+    }elsif($key eq "-p" or $key eq "--password")
+    {
+        $password = $value;
+    }elsif($key eq "-a" or $key eq "--admin")
+    {
+        if(!($value =~ m/^(no)|(yes)$/))
+        {
+           die "Value for -a|--admin must be yes or no.";
+        }  
+
+        $admin = $value;
+
+    }else
+    {
+        print STDERR "$key is an invalid option\n";
+        exit 1;
+    }
+}
+
+# Gets the username
+$username = $ARGV[$#ARGV];
+
+# Checks fi the lodn configuration file exists.
+if( -f  LODN_CFG)
+{
+    # Opens the lodn cfg file for reading.
+    open(CFG, LODN_CFG) or die "Can't open ".LODN_CFG."\n";
+
+    # Reads in line by line
+    while(<CFG>)
+    {
+        chomp();
+
+        # Removes starting whitespace and comments
+        s/^\s+//g;
+        s/#.*//g;
+
+        # Splits the line into its parts
+        my @fields = split(/\s+/);
+
+        # Skips blank lines and dies on lines that don't have 0 or 2 fields.
+        next if(scalar(@fields) == 0);
+        die "Error on line $. of ".LODN_CFG if(scalar(@fields) != 2);
+
+        # Gets the content directory, trash directory and etc directory for lodn.
+        if($fields[0] =~ m/^CONTENT_DIR$/)
+        {
+            $lodn_content_dir = $fields[1] . "/";
+        }elsif($fields[0] =~ m/^LODN_ETC$/)
+        {
+            $lodn_etc_dir = $fields[1] . "/";
+        }
+    }
+
+    # Closes the file stream.
+    close(CFG);
+
+    # Checks that all of the values are defined in the file.
+    if(!defined($lodn_content_dir) or !defined($lodn_etc_dir))
+    {
+        die "Invalid configuration specifed in ".LODN_CFG;
+    }
+
+}else
+{
+    die LODN_CFG . " does not exist\n";
+}
+
+# Checks that the userinfo file exists
+if(! -f  $lodn_etc_dir."userinfo")
+{
+    print STDERR "LoDN Userinfo file does not exist\n";
+    exit 1;
+}
+
+# Calculates the md5 hash of the password
+$password = md5_hex($password, $username);
+
+# Gets the userinfo file as a hash.
+%userinfo = %{retrieve($lodn_etc_dir."userinfo")};
+
+# Checks if the username exists
+if(exists $userinfo{$username})
+{
+    print STDERR "User $username already exists.\n";
+    exit 1;
+}
+
+# Creates the entry for the user
+ $userinfo{$username} = [$lastName, $firstName, $email, $password, $question, $answer, "no", $admin, "yes"];
+
+# Stores the updated user data with the new password
+store(\%userinfo, $lodn_etc_dir."userinfo");
+
+# Makes the content path for the user.
+mkpath("${lodn_content_dir}/${username}",0,0750);
+
+print "User $username successfully added.\n";

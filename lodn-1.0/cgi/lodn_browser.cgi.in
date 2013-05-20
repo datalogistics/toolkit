@@ -1,0 +1,171 @@
+@PERL@ -T
+use strict;
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:netscape :standard *table vars canter img);
+use Digest::MD5 qw(md5_hex);
+use constant LODN_CFG => @LODN_CFG@;
+my $LODN_ETC;
+my $LODN_PATH;
+#user and password can be either be taken from the cookie or can be taken in param(from url)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+my $user;
+my $password;
+
+my %mydata;
+my $hashref;
+my $filewoext; # filename without extension (.xnd)
+my $admin="no";
+my $parent;
+my $dir;
+my @parts;
+my $serverscript;
+# Constants (as such)
+my $pub=0;
+my $CONTENT_DIR;
+my $file;
+my $pubfile;
+   my $info;
+# CGI parameters
+my $subdir=param('subdir');
+
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $user=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $user=$Puser;
+   $password=$Ppassword;
+  }
+
+#print header();
+#print "Cookie username: $user\n"; exit 1;
+
+if(!($subdir=~/^\/$user$/) && !($subdir=~/^\/$user\//)) {
+  print redirect("lodn_published.cgi?subdir=$subdir");
+  exit;
+}
+$subdir =~ s/\.\.\///g;
+$subdir =~ s/\.\.//g;
+if(!($subdir =~ /^\//)) { $subdir="\/".$subdir;}
+if(($subdir =~ /\/$/)) { chop($subdir);}
+ 
+  $serverscript=$ENV{SERVER_NAME};
+  $serverscript.=$ENV{SCRIPT_NAME};
+  $serverscript =~ s/\/lodn_browser.cgi.*$//;
+
+#print header();
+#print "SERVER NAME = $ENV{SERVER_NAME} SCRIPTNAME = $ENV{SCRIPT_NAME} \n script = $serverscript \n "; exit 1;
+
+
+# LOAD CONFIG FILE AND READ VALUES
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+      while(<CONFIG>) {
+          s/\#.*//;
+          s/^\s+//;
+          s/\s+$//;
+          if(/^CONTENT_DIR\s+(\S*)/) {
+              $CONTENT_DIR=$1;
+          }elsif(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }elsif(/^LODN_PATH\s+(\S*)/){
+        $LODN_PATH=$1;
+        }
+
+
+       }
+       close(CONFIG);
+       if(!(defined $CONTENT_DIR)) {
+           print header();
+           print "<html><head></head><body>LoDN config incomplete</body></html>";
+           exit;
+       }
+      if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+       }
+     if(!(defined $LODN_PATH)) {
+      print header();
+      print "<html><head></head><body>LoDN_PATH was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+ 
+}
+else {
+     print header();
+     print "<html><head></head><body>LoDN config file not found</body><html>";
+     exit;
+}
+
+
+$file = "$LODN_ETC/userinfo";
+$pubfile="$LODN_ETC/publishlist";
+
+
+#IF USER HAS A COOKIE
+if(defined $user) {
+        eval
+        {
+          $info = retrieve ("$file");
+        };
+
+        if($@)
+        {
+             print header();
+             print "Error accessing user info database\n";
+             exit;
+        }
+
+        # alter entered password to match altered password saved in database
+         $password =md5_hex($password,$user);
+
+        # load info into hash
+         %mydata = %{$info};
+
+   if ($password eq $mydata{$user}[3])
+   {
+    #check to see if user is an admin 
+    if($mydata{$user}[7] eq "yes") {
+     $admin="yes";
+    }
+
+    #check to see if the user is logged on still (in the db)
+    if($mydata{$user}[6] eq "no") {
+     $user="guest";
+     $admin="no";
+    }
+   }
+} 
+else {
+  $user="guest";
+  $admin="no";
+}
+
+print header();
+
+print "<html><head>",
+  "<title>LoDN browser</title>",
+  "<link rel=\"shortcut icon\" href=\"../images/favicon.ico\">",
+  "</head>\n",
+  "<frameset frameborder=\"0\" framespacing=\"0\" border=\"0\" cols=\"*\" rows=\"120, *, 30\">",
+  "  <frameset frameborder=\"0\" framespacing=\"0\" border=\"0\" rows=\"*\" cols=\"144, *\">",
+  "    <frame name=\"logo\" marginwidth=\"0\" marginheight=\"0\" src=\"../LoCI_logo.html\" noresize scrolling=\"no\"></frame>",
+  "    <frame name=\"control\" marginwidth=\"0\" marginheight=\"0\" src=\"control.cgi?subdir=$subdir\" noresize scrolling=\"no\"></frame>",
+  "  </frameset>",
+  "  <frameset frameborder=\"0\" framespacing=\"0\" border=\"0\" rows=\"*\" cols=\"240,*\">",
+  "    <frame name=\"directory\" marginwidth=\"5\" marginheight=\"5\" src=\"directory.cgi?subdir=$subdir\" noresize scrolling=\"auto\" frameborder=\"0\" ></frame>",
+  "    <frame name=\"listing\" marginwidth=\"5\" marginheight=\"5\" src=\"listing.cgi?subdir=$subdir\" noresize></frame>",
+  "</frameset>",
+  "<frame name=\"footer\" marginwidth=\"5\" marginheight=\"5\" src=\"../footer.html\" scrolling=\"no\" noresize></frame>",
+  "<noframes>   <p>Frames are not supported.</p>    </noframes>",
+  "</frameset>",
+
+  "</html>\n";

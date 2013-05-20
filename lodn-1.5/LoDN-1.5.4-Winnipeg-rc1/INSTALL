@@ -1,0 +1,43 @@
+
+Starting MySQL
+--------------
+sudo mysqld_safe
+
+
+Setting up MySQL for LoDN
+-------------------------
+
+<username>  = LoDN MySQL username 
+<password>  = LoDN MySQL password
+
+Creating users
+--------------
+mysql --user=root mysql
+CREATE USER '<username>'@'localhost' IDENTIFIED BY '<password>';
+GRANT ALL PRIVILEGES ON *.* TO '<username>'@'localhost' WITH GRANT OPTION;
+
+Create the database
+--------------------
+create database lodn;
+GRANT ALL ON lodn.* TO '<username>'@localhost IDENTIFIED BY '<password>';
+
+
+
+Installing LoDN
+---------------
+
+To install LoDN use the setup.py script.  Please see the README file for a list
+of requirements.  Use the python you want to run LoDN with as the one used for
+the install.
+
+python3.1 setup.py install [options]
+
+options:
+    --prefix=path                   Base directory for installation
+    --depotfile=file                Depot description file
+    --with-mysql=path-to-mysql      Path to the mysql installation
+    --use-previous-settings         Uses the current settings instead of 
+                                    asking for settings
+                                    
+The setup.py script will ask questions about the LoDN setup and then install 
+LoDN to the specified location.

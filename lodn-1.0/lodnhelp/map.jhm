@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<map version="2.0">
+	<mapID target="intro" url="helpintro.html"/>
+	<mapID target="lodn" url="helpintro.html#LoDN"/>
+	<mapID target="ln" url="helpintro.html#LN"/>
+	<mapID target="client" url="helpclient.html"/>
+	<mapID target="clientwin" url="helpclient.html#ClientWindow"/>
+	<mapID target="clientparam" url="helpclient.html#DownloadParameters"/>
+	<mapID target="clientconn" url="helpclient.html#Connections"/>
+	<mapID target="clientblock" url="helpclient.html#BlockSize"/>
+	<mapID target="clientsuggested" url="helpclient.html#SuggestedValues"/>
+	<mapID target="downvexec" url="helpclient.html#DownloadvsExecute"/>
+	<mapID target="clientprogress" url="helpclient.html#TransferProgressWindow"/>
+	<mapID target="clientmenu" url="helpclient.html#MenuBarCommands"/>
+</map>

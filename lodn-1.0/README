@@ -1,0 +1,293 @@
+Contents
+========
+
+        1. Introduction
+        2. Compiling and installing a LoDN server
+        3. Basics for managing a LoDN server
+        4. LoDN warmer
+        5. Support
+        6. Thank you!
+
+
+1. Introduction
+===============
+The Logistical Distribution Network (LoDN) is an experimental content distribution tool. 
+LoDN allows users to store content on the Logistical Network, and manage or retrieve that 
+stored content without installing anything or learning to use any complicated software. 
+LoDN is comprised of three elements: Upload and Download clients (powered by Java Web Start) 
+for storing and retrieving data, and a web interface for managing stored data and browsing 
+public content. LoDN uses the Logistical Networking infrastructure provided by the Internet 
+Backplane Protocol (IBP) and the Logistical Backbone (L-Bone) to store file content on IBP 
+storage "depots" registered with the L-Bone directory. Content publishers can use LoDN's web 
+interface to manage stored data in an environment similar to a familiar IMAP email interface. 
+Content distributors can make LoDN data files available by including an active LoDN link on 
+a webpage, in an email, or through the LoDN content directory. Users access a file by clicking 
+a LoDN link, thereby starting the LoDN Download Client, and then using the download client to 
+retrieve the file content directly from IBP storage.
+
+Further information about IBP and the L-Bone can be found at http://loci.cs.utk.edu/ibp/ and 
+http://loci.cs.utk.edu/lbone/ . 
+
+2. Compiling and installing a LoDN server
+=========================================
+All you need is a GNU/Linux box allowed to run a web server (e.g Apache) and a Perl interpreter. 
+A Java Runtime Environment is required on the server side only if you wish to modify and recompile 
+the Java sources of the LoDN project.
+
+2.1 Web Server Set Up
+When setting up the web sever, have the web server serve all content under <prefix>/lodn/lodn 
+(Note: The final lodn is a soft link to the web directory and an alias could be used instead 
+in apache) with the base url of http[s]://FQHN[:port]/lod where FQHN is the fully qualified host 
+name of the web server.    The web server also needs to be enabled to run cgi scripts located 
+under the <prefix>/lodn/lodn/cgi-bin directory with the url http[s]://FQHN[:port]/lodn/cgi-bin. 
+The following is an example when configuring the Apache server using httpd.conf:
+
+ScriptAlias /lodn/cgi-bin/ <prefix>/lodn/cgi-bin/
+
+<Directory "lodn/">
+    AllowOverride FileInfo AuthConfig Limit
+    Options MultiViews Indexes SymLinksIfOwnerMatch +ExecCGI
+    <Limit GET POST OPTIONS PROPFIND>
+        Order allow,deny
+        Allow from all
+        #AllowOverride Options FileInfo
+    </Limit>
+</Directory>
+
+
+If you want to enable your web server supporting https protocol, you also need to configure your 
+web server using appropriate certificates.
+
+Please see http://httpd.apache.org for more details.
+
+2.2 LoRS tools installation
+You must install the LoRS tools before installing LoDN. They are not included in the LoDN archive, 
+but you can download our latest lors software at http://loci.cs.utk.edu/lors/distributions/lors-0.82.1.tar.gz.
+Please follow the README in lors software package for further instructions on installation. 
+
+2.3 Jar signing certificate generation
+Since LoDN uses Java Web Start technology for LoDN upload/download clients, and these applications will access 
+the user's local file system, the jar files should be signed with certificate provided by a Certificate Authority(CA). 
+For test purposes, you could generate a self-signed certificate using keytool. The following is an example which
+includes 3 steps:
+ keytool -genkey -keyalg rsa -keystore lodn.keystore -alias lodn_jar(generate lodn_jar keystore)
+ keytool -selfcert -keystore lodn.keystore -alias lodn_jar(generate a self-signed certificate named lodn_jar.cer)
+ keytool -export -alias lodn_jar -keystore lodn.keystore -file lodn_jar.cer(export the certificate into keystore)
+
+ and then import the certificate into the web browser's certificate list used for testing.
+
+Please follow the instructions at http://www.verisign.com/ on how to get a trial Verisign certificate or buy a 
+formal Verisign certificate to sign the jar files. 
+
+2.4 LoDN software installation
+The general procedure for compilation and installation follow these three steps. 
+        ./confiugre
+        make
+        make install
+We'll describe required and optional configure options further in the following:
+./configure
+  --prefix                Directory to install the web, cgi scripts, etc and tools...
+                             (Default: /usr/local/lodn)
+  --with-perl             Specify the path to the perl interpreter (Optional, will autodetect)
+  --with-java             Specify the path to the java tools(jar, jarsigner, keytool). (Optional, will autodetect)
+  --with-content-dir      Specify the repository for the exnodes. (Required)
+  --with-lors             Specify the LoRS installation directory. (Required)
+  --with-libxml2          Specify the libxml2 installation directory (Optional, will autodetect)
+  --with-trash            Specify the directory where deleted exnode go (Optional, will put trash under content 
+                          directory if not specified otherwise)
+  --with-url              Specify the complete URL path for lodn. (Required, This is how it figures out the 
+                          protocol (http or https), hostname and domain for the urls, webstart applications 
+                          and signing certificates)
+  --with-email            Specify the email address of the admin for lodn. (Required)
+  --with-keystore         Specify the full path to the java keystore that holds the certificate. (Required.  
+                          Necessary for signing the jars and for the TLS/SSL iteractions).
+  --with-keystore-passwd  Specify the keystore password.  (Required).
+  --with-keystore-alias   Specify the alias for the keystore entry to sign the jars with.  (Required).
+  --with-iconv            Specify the iconv library installation directory. (Optional, only neccessary if 
+                          iconv can't found or it can't be found by the loader at runtime)
+  --with-warmer-threads   Specify the number of warmer threads to use.  (Optional, number of threads to use
+                          for the warmer, default:32)
+  --with-warmer-period    Specify how often the warmer runs  (Optional, how often the warmer runs #h#m#s default: 6h)
+  --with-warmer-logfile   Specify where the warmer's logfile is (Optional).  By default there will be a 
+                          log file under <prefix>/lodn/logs.
+  --with-warmer-verbose   Specify the level of the warmer's verbosity (Optional,Default 0)
+
+Here is an example of running the configure script:
+ ./configure --with-lors=/home/testuser/lors-0.82.1/local --with-content-dir=/home/testuser/lodn_content 
+--with-url=https://loci.cs.utk.edu/lodn --with-email=testuser@cs.utk.edu 
+--with-keystore=/home/testuser/lodn/certFolder/lodn.keystore --with-keystore-passwd=abcde 
+--with-keystore-alias=lodn_jar --prefix=/home/testuser/lodn-1.0b
+
+When you do configure, make and make install, be sure to be the same user and group as the one you specified
+in the apache configuration file to run lodn as. If you do this then all of the files and directories will 
+be given the correct set of secure permissions.
+
+After configure completes successfully, run 'make' followed by 'make install'.  The make install stage may 
+take some time as it is querying the LBone for set of default depots for the warmer to use.
+
+After 'make install' completes successully, your LoDN server is ready to run!
+       
+3. Basics for managing a LoDN server
+=========================================
+
+The following management tools are available for managing lodn under the tools directory:
+  view_account_requests.pl
+  auth.pl
+  lodn_useradd.pl
+  lodn_userdel.pl
+  lodn_usermod.pl
+  lodn_passwd.pl
+
+3.1 Add or ban a user
+When a new user applies through the create account web page, you should receive an e-mail titled "Disabled
+LoDN Account Created". For better user protection, the body of the e-mail will not disclose any user information.
+You need to go to tools directory under your LoDN installation directory to run view_account_requests.pl to see
+who is applying for an account, e.g.:
+shell% ./view_account_requests.pl 
+  Account Name: test
+  First name: test_firstname
+  Last name:  test_lastname
+  Email:      user@utexas.edu
+  Username:   test
+
+If you want to approve the user, run auth.pl which is also under tools directory like the following:
+./auth.pl UserName yes
+If you want to ban the user, run:
+./auth.pl Username no
+
+
+3.2 Adding a user account
+In addition to the web interface, lodn_useradd.pl can used to add new users via the command line.
+
+Usage: lodn_useradd.pl [options] username.  
+
+Options:
+  -f, --firstname               First name of the user
+  -l, --lastname                Last name of the user
+  -e, --email                   Email address of the user
+  -q, --question                Security question for the user
+  -r, --response                Answer to the security question of the user
+  -p, --password                Password for the user
+  -a, --admin=[yes|no]          Grant administrative privileges to user
+
+3.3 Deleting a user account
+A user can be deleted from the system using lodn_userdel.pl.  By default the home area and content for the user 
+remains unchanged.  Specifying the -r options will also cause user's home area to be removed from the system.
+
+Usage: ./lodn_userdel.pl [options] username
+
+Options:
+  -r, --remove          Remove the users home area and files
+
+
+3.4 Modifying a user account
+A user's account can be modified with lodn_usermod.pl.  It allows all of the user's values to be changed.
+
+Usage: ./lodn_usermod.pl [options] username
+
+Options:
+  -f, --firstname               First name of the user
+  -l, --lastname                Last name of the user
+  -e, --email                   Email address of the user
+  -q, --question                Security question for the user
+  -r, --response                Answer to the security question of the user
+  -a, --admin=[yes|no]          Grant administrative privileges to user
+
+3.5 Changing a user account password
+A user's password can be changed with lodn_passwd.pl. 
+
+Usage: ./lodn_passwd.pl username
+
+
+4. LoDN Warmer
+=================
+4.1 LoDN Warmer Introduction
+The storage service provided by Logistical Networking's underlying infrastructure, called IBP, is known as a "best efort" 
+storage service. This means that IBP does not provide guarantees of sustained data accessibility. Stored data may become
+temporarily or permanently unavailable due to machine or network outages, or the space used for "soft" storage allocations 
+may be reclaimed by the local system. IBP's primitiveness is by design and allows it to scale globally. Strong properties 
+like reliable data accessibility and extended storage duration are achieved by aggregating individual IBP allocations into 
+a distributed "network file." 
+Data is stored on IBP depots in allocations for a fixed period of time according to a dynamically-negotiated storage "lease". 
+The existing IBP interface allows a client or an application to renew this lease with the IBP_manage operation. The IBP_copy 
+operation allows data to be copied from one depot to another. This operation allows the user to store replicas of file content 
+at multiple locations. 
+When a file is uploaded into the Logistical Network, it is divided into blocks of data. These blocks are spread and stored 
+over one or more IBP depots. The exNode file is an XML description of this partitioning and geographical distribution of file 
+content. The exNode allows us to associate the many individual IBP allocations holding blocks of file content into one "network 
+file". In order to assure data integrity and availability, the LoDN server must run a process known as the Warmer over all the 
+exNode files for which it is in charge. In general, the Warmer must:
+* walk through the exNode file directories of each user 
+² process the status of each block in each exNode,
+² make some decisions (refresh, trim or augment data) according to local policy (max number of copies, percentage of hard and 
+soft storage, supplemental lease time).
+
+4.2 The usage of .warmer file
+In the current LoDN implementation, after "make install", a default .warmer file will be generated by querying the L-Bone server 
+under the directory where you set up to store all of the users' exnode files. The .warmer file gives a default depot list so 
+that LoDN warmer could pick depots from the file while making choice where to copy data to. The .warmer file looks like the below: 
+Site1:
+     depot:port
+     depot:port
+
+Site2:
+     depot:port
+     depot:port
+
+A site is just a collection of depots with each mapping of an exnode being put on one of the depots of that site.
+The following is a sample .warmer file generated automatically after running "make install":
+
+#Generated Sites from /export2/lodn/tools/warmer_generator.
+
+internet2.edu:
+        vrvs-ag.internet2.edu:6714
+memphis.edu:
+        peach.fedex.memphis.edu:6714
+        peach.fedex.memphis.edu:6715
+utk.edu:
+        pound.cs.utk.edu:6714
+        alces.tiem.utk.edu:6714
+        acre.cs.utk.edu:6714
+        ounce.cs.utk.edu:6714
+utmck.edu:
+        dt2.ipl.utmck.edu:6714
+        dt1.ipl.utmck.edu:6714
+vanderbilt.edu:
+        ibp.accre.vanderbilt.edu:6714
+
+As a LoDN server administrator, you could edit your own .warmer file based on the choice of your perfered depots. Not only could you edit the .warmer file under the directory where all of users' exnodes are stored, but also you could refine the .warmer file for each user directory. LoDN Warmer process will warm the exnode files based on the closest .warmer file it could find. For example, to warm an exnode, the warmer will first look for user-defined warmer file for that specified exnode, if not succeed, it will look for the .warmer file under the current directory, if not succeed, it will then look for the .warmer file in upper level directory until it reaches the default .warmer file for all of the exnodes the LoDN Server is in charge of, which is under the top directory where all users' directory reside.
+
+4.3 How to run LoDN Warmer
+The two warmer programs are LoDNWarmer and LoDNWarmerUpdater. LoDNWarmer is the main program and manages the warming and augmenting.  LoDNWarmerUpdater updates the queue of LoDNWarmer by either removing or adding an exnode.
+4.3.1 LoDNWarmer
+After running "make install", a cron job like the following will be added to your crontab:
+0-59/5 * * * * /export2/ying/curlodn/lodn/tools/checkWarmer.sh
+The cron job will run every five minutes to check if a LoDN warmer process is running, if not, a LoDN warmer will be started automatically. 
+Here is how the default warmer is started in checkWarmer.sh:
+LoDNWarmer -t 40 --path <your_lodn_content_directory> -b 6h -o $logfile -V 0 >/dev/null 2>&1 &
+So if want to run a default LoDN warmer, you don't have to do anything, a default warmer will be started automatically with the help of the cronjob.
+
+If you want to manually run the warmer by yourself instead of using the default warmer, the following is an introduction of warmer option:
+Usage: LoDNWarmer options
+ -b,--background <time> Run warmer continously in the background every time period where time is #d#h#m#s(days, hours, minutes, seconds).
+ -c,--copies <number>   Augments each mapping that number of times, only useful in conjunction with using the lbone.
+ -d,--depot-list <file> Use the depots in this file to augment the exnodes with if there is no .warmer files for the exnodes.
+ -h,--help              Print this help message
+ -l,--lbone-server <hostname:port> Use the lbone server at this hostname and port to get depots to use for augmentation.
+ -o,--log-file <file>   Write all log data to this file (default is stdout).
+ -p,--path <dir1[:dir2:dir3...]> Warm the exnodes that lie recursively under these directories.
+ -r,--refresh-only|     Do not augment the mappings only refresh the mappings that are already present.
+ -t,--threads <number>  Use this many worker threads. The number of threads specified is also the maximum number of concurrent connections IBP connection allowed for the warmer.
+
+4.3.2 LoDNWarmerUpdater
+Generally, you don't have to use LoDNWarmerUpdater at all. However, if you want to add or remove an exnode from the queue of LoDNWarmer, you could do the following:
+Usage: LoDNWarmerUpdater add|remove exnode-file
+
+
+5. Support
+============
+If you need any support, please send an e-mail to: loci-interested@cs.utk.edu, we'll reply to you as early as we can.
+
+6. Thank You
+=============
+We'd like to express our thanks to all the LoDN users for all the helpful suggestions and bug reports we have received.

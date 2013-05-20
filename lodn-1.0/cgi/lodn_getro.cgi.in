@@ -1,0 +1,188 @@
+@PERL@ -w
+use CGI qw(:netscape :standard *table vars canter img);
+use Digest::MD5 qw(md5_hex);
+use Storable qw(retrieve);
+use constant LODN_CFG =>@LODN_CFG@;
+my $LODN_ETC;
+my $file;
+my $shortfile;
+my $dir;
+my $cmd;
+my $hashref;
+my %mydata;
+my $user=param("user");
+my $hash=param("hash");
+#user and password can be either be taken from the cookie or can be taken in param(from url for future work)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+#my $user;
+my $password;
+my $userfile;
+my $pub=0;
+my $line;
+my $size;
+my $CONTENT_DIR;
+my $LORS_TOOLS_BIN;
+my $pubfile;
+my $info;
+$file=param("file");
+$shortfile=$file;
+$shortfile =~ s/.*\/([a-zA-Z0-9_\-\.]*.xnd)/$1/;
+
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $user=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $user=$Puser;
+   $password=$Ppassword;
+  }
+
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+   while(<CONFIG>) {
+      s/\#.*//;
+      s/^\s+//;
+      s/\s+$//;
+      if(/^CONTENT_DIR\s+(\S*)/) {
+        $CONTENT_DIR=$1;
+      }
+      if(/^LORS_TOOLS_BIN\s+(\S*)/) {
+        $LORS_TOOLS_BIN=$1;
+      }
+
+      if(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+   }
+   close(CONFIG);
+  if(!(defined $CONTENT_DIR) || !(defined $LORS_TOOLS_BIN)) {
+      print header();
+      print "<html><head></head><body>LoDN config incomplete</body></html>";
+      exit;
+   }
+
+  if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+$userfile="$LODN_ETC/userinfo";
+$pubfile="$LODN_ETC/publishlist";
+
+if(!(defined $file) || !(defined $shortfile) || !($file =~ /xnd/) ) {
+
+      print redirect(-uri=>'lodn_browser.cgi');
+      exit;
+}
+
+if($file=~ /^\/$user\//) 
+{
+  $pub=1;
+}
+
+if($pub==0)
+{
+  open(PUB, $pubfile) || die "Can't access publishlist";
+  while(<PUB>) 
+  {
+    if(/^$file$/) 
+    {
+      $pub=1;
+      last;
+    }
+  }
+  close(PUB);
+}
+
+if($pub == 0 && !defined($user))
+{
+  print header();
+  print "<html><head></head><body>Username not given</body><html>";
+  exit;
+}
+
+# alter entered password to match altered password saved in database
+if(defined($password))
+{
+    $hash =md5_hex($password,$user);
+}
+
+if((defined $user) && (defined $hash)) 
+{
+    eval
+    {
+       $info = retrieve ("$userfile");
+    };
+
+    if($@)
+    {
+        print header();
+        print "Error accessing user info database\n";
+        exit;
+    }
+
+    # load info into hash
+    %mydata = %{$info};
+
+    if ($hash eq $mydata{$user}[3])
+    { 
+        $hashref=md5_hex($mydata{$user}[3], $file);
+        if($hash eq $hashref) 
+	{
+           $pub=1;
+	}
+    }
+}
+
+if($pub == 0) 
+{
+    print header();
+    print "<html><head><title>Error</title></head><body>";
+    print "\nYou are not authorized to access this exNode</body></html>";
+    exit;
+}
+
+if( !( -f "$CONTENT_DIR/$file" )) 
+{
+    print header();
+    print "Error accessing file $file\n";
+    exit;
+}
+
+$cmd = "$LORS_TOOLS_BIN/lors_modify -m -w $CONTENT_DIR/$file";
+open(RO, "$cmd |") || die "Content-Type: text/txt\n Error\n";
+
+$line = join '', <RO>;
+$line =~ s/\s*<exnode:metadata name="(warmer|status|broken_since|number_of_copies|original_filesize).*?<\/exnode:metadata>//msg;
+
+$size = length $line;
+
+if(($line =~ /Error/ || $line =~ /ERROR/) && $size<50) 
+{
+  print header();
+  print "Error accessing file $file\n";
+  exit;
+}
+
+
+
+$file =~ s/.*\/([a-zA-Z0-9_\-\.]\.xnd)/$1/;
+print "Content-Type: application/download\n";
+print "Content-Length: $size\n";
+print "Content-Disposition: attachment; filename=$shortfile\n\n";
+print $line;
+

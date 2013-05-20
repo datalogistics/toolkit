@@ -1,0 +1,74 @@
+@PERL@ -w
+use strict;
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:netscape :standard *table vars canter img);
+use constant LODN_CFG => @LODN_CFG@;
+my $CONTENT_DIR;
+my $LORS_TOOLS_BIN;
+my $LS_MAPPINGS = "@LODN_TOOLS@/ls_mappings";
+my $file;
+my $listing;
+my @parts;
+my $part;
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+   while(<CONFIG>) {
+      s/\#.*//;
+      s/^\s+//;
+      s/\s+$//;
+      if(/^CONTENT_DIR\s+(\S*)/) {
+        $CONTENT_DIR=$1;
+      }
+      if(/^LORS_TOOLS_BIN\s+(\S*)/) {
+        $LORS_TOOLS_BIN=$1;
+      }
+   }
+   close(CONFIG);
+   if(!(defined $CONTENT_DIR) || !(defined $LORS_TOOLS_BIN)) {
+      print header();
+      print "<html><head></head><body>LoDN config incomplete</body></html>";
+      exit;
+   }
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+# CGI parameters
+$file=param('file');
+
+print header;
+print "<head><title>LoDN View</title></head>";
+print "<body>";
+print "<h3>$file</h3>";
+
+$file =~ s/ /\\ /g;
+
+#$listing=`$LORS_TOOLS_BIN\/lors_ls -h $CONTENT_DIR/$file 2>&1`;
+$listing=`$LS_MAPPINGS $CONTENT_DIR/$file 2>&1`;
+@parts=split(/\n/,$listing);
+#shift(@parts);
+#shift(@parts);
+#shift(@parts);
+#shift(@parts);
+
+print "<pre>";
+foreach $part (@parts) {
+ unless(($part =~ /TOOL/) || ($part =~ /EXNODEFILE/) || ($part =~ /MAXLENGTH/) ) {
+   $part =~ s/SIZE(.*)/<b>Size:$1<\/b>/;
+   $part =~ s/Filename(.*)/<b>Filename:$1<\/b><hr>/;
+   $part =~ s/TITLE //;
+   print "$part<br>";
+ }
+}
+print "</pre>";
+
+print "<p><hr>",
+      "<center>",
+      "<form onSubmit='javascript:window.close()'>",
+      "<input type='submit' value='OK'>",
+      "</form>",
+      "</center>";
+print "</body></html>";

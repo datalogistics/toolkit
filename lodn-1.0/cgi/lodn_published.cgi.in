@@ -1,0 +1,164 @@
+@PERL@ -T
+use strict;
+use Digest::MD5 qw(md5_hex);
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:netscape :standard *table vars canter img);
+use CGI::Cookie;
+use constant LODN_CFG => @LODN_CFG@;
+my $LODN_ETC;
+my $LODN_PATH;
+#try to retrieve the user cookie from the user
+my $u;
+my %mydata;
+my $hashref;
+#user and password can be either be taken from the cookie or can be taken in param(from url)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+my $user;
+my $password;
+# Constants (as such)
+my $CONTENT_DIR;
+my $admin="no";
+# CGI parameters
+my $dir=param('subdir');
+my $downdir;
+my @dirs;
+my $files;
+my $prev="";
+my $file;
+my $pubfile;
+my $info;
+
+
+
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+   while(<CONFIG>) {
+      s/\#.*//;
+      s/^\s+//;
+      s/\s+$//;
+      if(/^CONTENT_DIR\s+(\S*)/) {
+        $CONTENT_DIR=$1;
+      }elsif(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }elsif(/^LODN_PATH\s+(\S*)/){
+        $LODN_PATH=$1;
+        }
+
+
+
+   }
+   close(CONFIG);
+   if(!(defined $CONTENT_DIR)) {
+      print header();
+      print "<html><head></head><body>LoDN config incomplete</body></html>";
+      exit;
+   }
+if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+if(!(defined $LODN_PATH)) {
+      print header();
+      print "<html><head></head><body>LoDN_PATH was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+
+$file = "$LODN_ETC/userinfo";
+$pubfile= "$LODN_ETC/publishlist";
+
+#if(!(defined $user)) {$user="guest";}
+####Checking of username and password(Cookie)############
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $user=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $user=$Puser;
+   $password=$Ppassword;
+  }
+#IF USER HAS A COOKIE and his password is correct
+  if(defined $user) {
+	eval
+	{
+	  $info = retrieve ("$file");
+	};
+
+	if($@)
+	{
+	     print header();
+	     print "Error accessing user info database\n";
+	     exit;
+	}
+
+	# alter entered password to match altered password saved in database
+	 $password =md5_hex($password,$user);
+
+	# load info into hash
+	 %mydata = %{$info};
+
+   if ($password eq $mydata{$user}[3])
+   {
+
+   }
+  else
+  {
+  $user="guest";
+  }
+}
+else {
+  $user="guest";
+}
+
+if(!(defined $dir)) {$dir="";}
+
+if($dir=~/^\/$user\// || $dir =~ /^\/$user$/) {
+  print redirect("-uri =>../autologout.html");
+  exit;
+}
+
+
+$dir =~ s/\.\.\///g;
+$dir =~ s/\.\.//g;
+$downdir=$dir;
+$downdir =~ s/[a-zA-Z0-9_\-\.]*\/?$//;
+if(!(defined $dir)) {
+  $dir="/";
+}
+
+print header();
+
+print "<html><head>",
+  "<title>LoDN browser</title>",
+  "<link rel=\"shortcut icon\" href=\"../images/favicon.ico\">",
+  "</head>\n",
+  "<frameset frameborder=\"0\" framespacing=\"0\" border=\"0\" cols=\"*\" rows=\"120, *, 30\">",
+  "  <frameset frameborder=\"0\" framespacing=\"0\" border=\"0\" rows=\"*\" cols=\"144, *\">",
+  "    <frame name=\"logo\" marginwidth=\"0\" marginheight=\"0\" src=\"../LoCI_logo.html\" noresize scrolling=\"no\"></frame>",
+  "    <frame name=\"gcontrol\" marginwidth=\"0\" marginheight=\"0\" src=\"gcontrol.cgi?subdir=$dir\" noresize scrolling=\"no\"></frame>",
+  "  </frameset>",
+  "  <frameset frameborder=\"0\" framespacing=\"0\" border=\"0\" rows=\"*\" cols=\"240,*\">",
+  "    <frame name=\"gdirectory\" marginwidth=\"5\" marginheight=\"5\" src=\"gdirectory.cgi?subdir=$dir\" noresize scrolling=\"auto\" frameborder=\"0\" ></frame>",
+  "    <frame name=\"glisting\" marginwidth=\"5\" marginheight=\"5\" src=\"glisting.cgi?subdir=$dir\" noresize></frame>",
+  "</frameset>",
+  "<frame name=\"footer\" marginwidth=\"5\" marginheight=\"5\" src=\"../footer.html\" scrolling=\"no\" noresize></frame>",
+  "<noframes>   <p>Frames are not supported.</p>    </noframes>",
+  "</frameset>",
+
+  "</html>\n";
+

@@ -1,0 +1,177 @@
+@PERL@ -T
+use strict;
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:netscape :standard *table vars canter img);
+use Digest::MD5 qw(md5_hex);
+use constant LODN_CFG => @LODN_CFG@;
+my $LODN_ETC;
+
+#try to retrieve the user cookie from the user
+#user and password can be either be taken from the cookie or can be taken in param(from url)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+my $user;
+my $password;
+my %mydata;
+my $hashref;
+my $filewoext; # filename without extension (.xnd)
+my $admin="no";
+my $parent;
+my $dir;
+my @parts;
+my $serverscript;
+# Constants (as such)
+my $pub=0;
+my $file;
+my $pubfile;
+my $info;
+my $CONTENT_DIR;
+# CGI parameters
+my $subdir=param('subdir');
+$subdir =~ s/\.\.\///g;
+$subdir =~ s/\.\.//g;
+if(!($subdir =~ /^\//)) { $subdir="\/".$subdir;}
+if(($subdir =~ /\/$/)) { chop($subdir);}
+
+####Checking of username and password(Cookie)############
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $user=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $user=$Puser;
+   $password=$Ppassword;
+  }
+
+
+if(!($subdir =~ /^\/$user$/) && !($subdir =~ /^\/$user\//)) {
+  print redirect(-uri=>"../autologout.html");
+  exit;
+}
+
+# LOAD CONFIG FILE AND READ VALUES
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+      while(<CONFIG>) {
+          s/\#.*//;
+          s/^\s+//;
+          s/\s+$//;
+          if(/^CONTENT_DIR\s+(\S*)/) {
+              $CONTENT_DIR=$1;
+          }elsif(/^LODN_ETC\s+(\S*)/){
+          $LODN_ETC=$1;
+          }
+
+       }
+       close(CONFIG);
+       if(!(defined $CONTENT_DIR)) {
+           print header();
+           print "<html><head></head><body>LoDN config incomplete</body></html>";
+           exit;
+       }
+      if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+
+}
+else {
+     print header();
+     print "<html><head></head><body>LoDN config file not found</body><html>";
+     exit;
+}
+
+$file = "$LODN_ETC/userinfo";
+$pubfile="$LODN_ETC/publishlist";
+
+#IF USER HAS A COOKIE
+if(defined $user) { 
+        eval
+        {
+          $info = retrieve ("$file");
+        };
+
+        if($@)
+        {
+             print header();
+             print "Error accessing user info database\n";
+             exit;
+        }
+
+        # alter entered password to match altered password saved in database
+         $password =md5_hex($password,$user);
+
+        # load info into hash
+         %mydata = %{$info};
+
+   if ($password eq $mydata{$user}[3])
+   {
+ 
+  #load the database into mydata
+  $hashref=retrieve($file);
+  %mydata=%{$hashref};
+  
+  #check to see if user is an admin 
+  if($mydata{$user}[7] eq "yes") {
+     $admin="yes";
+  }
+
+  #check to see if the user is logged on still (in the db)
+  if($mydata{$user}[6] eq "no") {
+     $user="guest";
+     $admin="no";
+  }
+ }
+}
+else {
+  $user="guest";
+  $admin="no";
+}
+
+
+print header();
+print "<html><head><link rel=\"shortcut icon\" href=\"../images/favicon.ico\"></head>";
+print "<body bgcolor=\"#A8A9AD\">";
+
+print "\n",
+"<table width=\"100%\" border=0 cellspacing=\"3\">",
+"   <tr height=\"25\" bgcolor=\"000000\">",
+"      <td align=\"left\" ><font color=\"#FFFFFF\">Logged in as: &nbsp",
+"<a target=\"directory\" href='directory.cgi?subdir=/$user' ",
+"onClick=\"top.listing.location='listing.cgi?subdir=/$user';",
+"top.control.location='control.cgi?subdir=/$user';\">",
+"<i>$user</i></a></td></font>",
+"    <td align=\"center\"><font color=\"#FFFFFF\"><i>v1.0beta</i></td></font>",
+"       <td align=\"right\">",
+" <a href=\"logout.cgi\" target=\"_top\"  style=\"color:#FFFFFF;\">Logout",
+"   <img src=\"../images/logout.gif\" border=\"no\" align=middle></a>",
+" <a href=\"../doc/Publish.htm\" target=\"_top\" style=\"color:#FFFFFF;\">LoDN Help</a></td>",
+"   </tr>",
+"      <tr>",
+"    <td style=\"font-size:30px;\">&nbsp;<i>..::<a href=\"@LODN_URL@\" target=\"_top\"  link=\"#000000\" vlink=\"#000000\" alink=\"#000000\"><b>LoDN</b></a>::..</i></td>",
+"        <td></td>",
+"     <td align=\"center\">",
+"            <form action='lodn_upjnlp.cgi' onSubmit=\"return javaconfirm()\">",
+"            <input type='hidden' name='dir' value='$subdir'>",
+"            <input type='submit' value='Launch Java Upload Client'>",
+"            </form>",
+# "            <form action='lodn_upjnlp_osx.cgi' onSubmit=\"return javaconfirm()\">",
+# "            <input type='hidden' name='dir' value='$subdir'>",
+#"            <input type='submit' value='OS X'><font size=\"-2\">(click OS X if you use Mac)</font>",
+#"",
+#"</form>",
+"          ",
+"          </td>",
+"   </tr>",
+  "</table>";
+
+print "</body></html>";
+
+

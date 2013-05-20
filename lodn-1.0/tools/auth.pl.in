@@ -1,0 +1,101 @@
+@PERL@ -w
+
+use strict;
+use Digest::MD5 qw(md5_hex);
+use Storable qw(store retrieve freeze thaw dclone);
+
+my $file="@LODN_ETC@/userinfo";
+my $accountfile = "@LODN_ETC@/account_requests";
+
+#"/usr/local/www/html/lodn/cgi-bin/userinfo";
+my $user= shift;
+my $setting= shift;
+my $third = shift;
+my $key;
+my $hashref;
+my %data;
+my @accountEntries;
+my $fname;
+my $lname;
+my $email;
+my $username;
+my $stuff;
+my $lnum = -1;
+
+
+unless(defined $user) {
+    print "User  -  Authorized status\n";
+    print "----------------------------\n";
+    $hashref = retrieve ($file) || die "can't retrieve file.";
+    %data = %{$hashref};
+
+    foreach $key (sort (keys %data)) {
+     if($key ne "") {
+      print "$key - $data{$key}[8]\n";
+     }
+    }
+    exit;
+}    
+
+if( !(defined $setting) || defined $third) {
+
+print "usage:  auth.pl\n";
+print "        auth.pl user auth-status\n";
+exit;
+}
+
+if($setting ne "no" && $setting ne "yes") {
+print "invalid auth-status: $setting\n";
+print "auth-status must be either \"yes\" or \"no\"\n";
+exit;
+}
+
+#IF WE'VE MADE IT HERE, THEN INPUT LOOKS OK
+    $hashref = retrieve ($file) || die "can't retrieve file.";
+    %data = %{$hashref};
+
+#CHECK FOR BAD USER
+unless(defined $data{$user}) {
+ print "I'm sorry, but the username you provided doesn't exist\n";
+ exit;
+}
+
+#OK, GO AHEAD AND CHANGE AUTH STATUS
+$data{$user}[8] = $setting;
+store (\%data, $file);
+
+
+
+# Opens the account file for reading
+open(ACCOUNTS, "<$accountfile") or die "Can't open $accountfile";
+
+# Traverses the entries in the account file.
+foreach (<ACCOUNTS>)
+{
+    chomp();
+
+    # Gets the name, email and username for the current entry
+    ($fname, $lname, $email, $username, $stuff) = split(/,/);
+
+    # Checks the validity of the entry
+    die "Entry $lnum is invalid" unless defined($fname) and defined($lname) and defined($email) and defined($username) and !defined($stuff);
+
+    # Gets the username
+    $username =~ s/^(\S+)\s+.*/$1/;
+
+    if($username ne $user)
+    {
+        push(@accountEntries, $_);
+    }
+}
+
+# Closes the account file handle
+close(ACCOUNTS);
+
+# Updates the entries in the account file
+open(ACCOUNTS, ">$accountfile") or die "Can't open $accountfile";
+foreach (@accountEntries) { print ACCOUNTS "$_\n"; }
+close(ACCOUNTS);
+
+# Prints Done.
+print "Update complete\n";

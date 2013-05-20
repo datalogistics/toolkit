@@ -1,0 +1,79 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(README)
+AM_INIT_AUTOMAKE(libexnode,0.6.5)
+
+dnl Default install directory
+AC_PREFIX_DEFAULT(`pwd`/local)
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_RANLIB
+AC_PROG_MAKE_SET
+
+dnl Checks for libraries.
+dnl AC_CHECK_LIB(xml2,xmlNewDocNode,,AC_MSG_ERROR(Can't find libxml2))
+AC_CHECK_LIB(xml2,xmlNewDocNode,,AC_MSG_WARN(Can't find libxml2))
+
+dnl Checks for header files.
+AC_HEADER_STDC
+
+AC_ARG_WITH(libxml2,
+            [  --with-libxml2=DIR      Specify the libxml2 installation directory],
+	    [XMLDIR=${withval}])
+
+
+# Checks the libxml2 and attempts to get the include and lib directories for libxml2
+if test "x${XMLDIR}" !=  "x"; then
+
+   comma=`echo ${XMLDIR} | cut -d ',' -f 1-`;
+
+   # If a comma is present then treat the first portion as the include directory and
+   # the second portion as the lib directory otherwise just append the include and lib directory
+   if test "x${comma}" != "x"; then
+       XMLINC=`echo ${XMLDIR} | cut -d ',' -f1`;
+       XMLLIB=`echo ${XMLDIR} | cut -d ',' -f2`;
+   else
+       XMLINC="${XMLDIR}/include";
+       XMLLIB="${XMLDIR}/lib";
+   fi
+
+   if test ! -d "${XMLLIB}" -o ! -d "${XMLINC}"; then
+      echo "libxml2 is not a valid path libxml2"; exit;
+   fi
+
+else
+
+   # Attempt to find the the xml-config program to get the the libxml2 configuration data
+   AC_PATH_PROG(XML_CONFIG, xml2-config, no)
+
+   # If the xml-config program exists then use it to get the include and lib directory for libxml2
+   if test "$XML_CONFIG" != "no"; then
+      XMLINC=`$XML_CONFIG --cflags`;
+      XMLLIB=`$XML_CONFIG --libs`;
+   fi
+fi
+
+
+
+AC_SUBST(XMLDIR)
+AC_SUBST(XMLINC)
+AC_SUBST(XMLLIB)
+
+AC_ARG_WITH(libfdr,[  --with-libfdr=DIR       path to libfdr [DIR/include]],
+            [FDRDIR="$with_libfdr";
+             FDRINC="-I\$(FDRDIR)/include";
+             FDRLIB="-L\$(FDRDIR)/lib"],
+            [FDRDIR="/usr/local";
+             FDRINC="-I\$(FDRDIR)/include";
+             FDRLIB="-L\$(FDRDIR)/lib"])
+
+AC_SUBST(FDRDIR)
+AC_SUBST(FDRINC)
+AC_SUBST(FDRLIB)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+
+dnl Checks for library functions.
+AC_CHECK_FUNCS(strdup strtod strtoul)
+
+AC_OUTPUT(Makefile src/Makefile include/Makefile)

@@ -1,0 +1,125 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use Digest::MD5 qw(md5_hex);
+use Storable qw(store retrieve);
+use File::Copy;
+
+
+use constant LODN_CFG  => @LODN_CFG@;
+
+# Variables
+my $username;
+my $remove = 0;
+my %userinfo;
+my $lodn_content_dir;
+my $lodn_trash_dir;
+my $lodn_etc_dir;
+
+# Checks that a username and/or options where given.
+if(scalar(@ARGV) < 1)
+{
+    print STDERR "Usage: $0 [options] username\n\n";
+    print STDERR "Options:\n";
+    print STDERR "  -r, --remove\t\tRemove the users home area and files\n";
+    exit 1;
+}
+
+# Traverses the command line args parsing the options
+for (my $i=0; $i<scalar(@ARGV)-1; $i++) 
+{
+    # Remove user directory
+    if($ARGV[$i] eq "-r" or $ARGV[$i] eq "--remove")
+    {
+        $remove++;
+    }else
+    {
+        print STDERR "$ARGV[$i] is an invalid option\n";
+        exit 1;
+    }
+}
+
+# Gets the username
+$username = $ARGV[$#ARGV];
+
+# Checks fi the lodn configuration file exists.
+if( -f  LODN_CFG)
+{
+    # Opens the lodn cfg file for reading.
+    open(CFG, LODN_CFG) or die "Can't open ".LODN_CFG."\n";
+
+    # Reads in line by line
+    while(<CFG>)
+    {
+        chomp();
+
+        # Removes starting whitespace and comments
+        s/^\s+//g;
+        s/#.*//g;
+
+        # Splits the line into its parts
+        my @fields = split(/\s+/);
+
+        # Skips blank lines and dies on lines that don't have 0 or 2 fields.
+        next if(scalar(@fields) == 0);
+        die "Error on line $. of ".LODN_CFG if(scalar(@fields) != 2);
+
+        # Gets the content directory, trash directory and etc directory for lodn.
+        if($fields[0] =~ m/^CONTENT_DIR$/)
+        {
+            $lodn_content_dir = $fields[1] . "/";
+        }elsif($fields[0] =~ m/^LODN_TRASH$/)
+        {
+            $lodn_trash_dir = $fields[1] . "/";
+        }elsif($fields[0] =~ m/^LODN_ETC$/)
+        {
+            $lodn_etc_dir = $fields[1] . "/";
+        }
+    }
+
+    # Closes the file stream.
+    close(CFG);
+
+    # Checks that all of the values are defined in the file.
+    if(!defined($lodn_content_dir) or !defined($lodn_trash_dir) or !defined($lodn_etc_dir))
+    {
+        die "Invalid configuration specifed in ".LODN_CFG;
+    }
+
+}else
+{
+    die LODN_CFG . " does not exist\n";
+}
+
+# Checks that the userinfo file exists
+if(! -f  $lodn_etc_dir."userinfo")
+{
+    print STDERR "LoDN Userinfo file does not exist\n";
+    exit 1;
+}
+
+# Gets the userinfo file as a hash.
+%userinfo = %{retrieve($lodn_etc_dir."userinfo")};
+
+# Checks that username exists
+if(!exists $userinfo{$username})
+{
+    print STDERR "No such user $username\n";
+    exit 1;
+}
+
+# Deletes the user entry from the hash.
+delete $userinfo{$username};
+
+# Stores the updated user data with the new password
+store(\%userinfo, $lodn_etc_dir."userinfo");
+
+# Moves the user's directory and file to the trash directory
+if($remove)
+{
+    move($lodn_content_dir."$username", $lodn_trash_dir."$username");
+}
+
+print "User $username successfully removed.\n";
+

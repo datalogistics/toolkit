@@ -1,0 +1,179 @@
+#!@python_exe@
+
+#     Copyright (C) 2010  Christopher Brumgard
+# 
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+# 
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+'''This script is used to install policy descriptions to LoDN'''
+
+
+__author__ = 'Chris Brumgard (sellers@cs.utk.edu)'
+
+
+import sys
+import glob
+import configparser
+from optparse import OptionParser
+
+# Extends the PYTHONPATH
+sys.path.extend(['@prefix@/lib/']+glob.glob('@prefix@/lib/*.egg'))
+
+
+import pyMySQL
+from lodn.server import globals
+from lodn.server.subsystems.data_dispatcher import policy
+from lodn.server.db import managers, decorators
+ 
+ 
+def loadSettings(configfile="@prefix@/etc/lodn.cfg"):
+
+    try:
+        # Creates a parser to read old file
+        parser = configparser.RawConfigParser()
+        
+        # Reads the file
+        parser.read(configfile)
+           
+        # Checks for mysql settings
+        if not parser.has_section('mysql'):
+            sys.exit('Error {file} does not have a mysql section'.format(
+                                                            file=configfile))
+                
+        # Builds a dictionary of the settings for mysql
+        mysqlArgs = dict(parser.items('mysql'))
+        
+        if 'account' in mysqlArgs:
+            mysqlArgs['username']  = mysqlArgs['account']
+            del mysqlArgs['account']
+            
+        if 'dbname' in mysqlArgs:
+            mysqlArgs['db_name']   = mysqlArgs['dbname']
+            del mysqlArgs['dbname']
+        
+    
+        # Create db manager for the process
+        manager = managers.ThreadConnectionManager(pyMySQL, **mysqlArgs)
+        globals.dbManager = manager
+        
+    
+    # Catches any error
+    except Exception as e:
+        sys.exit("Error reading config file {file}: ".format(
+                                                    file=configfile) + str(e))
+
+
+ 
+def parseCommandline(args):
+    
+    parser = OptionParser(usage='usage: %prog -i|--inode=inode -p|--policy=file')
+    
+    parser.add_option('-i', '--inode', default=None, type="int",
+                      dest='inode', help='inode number', metavar='INODE')
+    parser.add_option('-p', '--policy', default=None,
+                      dest='policyFile', help='policy file', metavar='FILE')
+    
+    
+    (options, args) = parser.parse_args(args=args)
+
+    if len(args) > 1:
+        parser.error('{} are unrecognized options'.format(' '.join(args[1:])))
+        
+    elif options.inode is None:
+        parser.error('Must specify an inode')
+        
+    elif options.policyFile is None:
+        parser.error('Must specify a policy file')
+
+    return options
+
+@decorators.MySQLWrapper
+def find_depot_id(cursor, host, port):
+    
+    cursor.execute('START TRANSACTION')
+    
+    cursor.execute('''SELECT depot_id 
+                      FROM depots 
+                      WHERE host = ? AND port = ?
+                      LIMIT 1''',
+                   (host, port))
+    
+    return cursor.fetchone()
+
+def readPolicyFile(filename):
+    
+    p = policy.Policy()
+    currSite = None
+    
+    try:
+        with open(filename, 'r') as f:
+            for lineno, line in enumerate(f.readlines()):
+                
+                fields = line.split()
+    
+                # Blank line or comment
+                if len(fields) == 0 or fields[0][0] == '#':
+                    continue
+                
+                # Invalid line
+                elif len(fields) > 1:
+                    sys.exit('Invalid site or depot declaration on line {}'.format(lineno))
+                    
+                # Site
+                elif fields[0][-1] == ':':
+                    
+                    # Add the pervious site to the policy
+                    if currSite is not None:
+                        p.addSite(currSite)
+                    
+                    # Create a new site
+                    currSite = policy.Site(fields[0][:-1])
+                
+                # Depot
+                else:
+                    
+                    if currSite is None:
+                        sys.exit('Depots defined before site given')
+                    
+                    try:
+                        host, port = fields[0].split(':')
+                        port = int(port)
+                    
+                        depot_id = int(find_depot_id(host, port)[0])
+                    
+                        currSite.addDepot(depot_id)
+                    except Exception as e:
+                        sys.exit("Depot at {} {} is not registered".format(
+                                                                    host, port))
+                       
+    
+    except Exception as e:
+        sys.exit(e)
+        
+    if currSite is not None:
+        p.addSite(currSite)
+        
+    return p
+
+
+if __name__ == '__main__':
+    
+    loadSettings()
+
+    options = parseCommandline(sys.argv)
+    
+    p = readPolicyFile(options.policyFile)
+    
+    policy.set_policy(options.inode, p)
+    
+    

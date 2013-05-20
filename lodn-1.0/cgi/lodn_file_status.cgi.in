@@ -1,0 +1,123 @@
+@PERL@ -T
+use strict;
+use Digest::MD5 qw(md5_hex);
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI  qw(:netscape :standard *table vars canter img);
+use File::stat;
+use constant LODN_CFG => @LODN_CFG@;
+my $LODN_ETC;
+#CONSTANTS
+my $CONTENT_DIR;
+my $USER_FILE ;
+my $LODN_CONFIG;
+#Parameters
+my $user=param('user');
+my $pass=param('pass');
+#Variables
+my $hashref;
+my %mydata;
+my $topLevelDir;
+my @filelist;
+my $file;
+my @dirs;
+my $currDir;
+my $fileStat;
+my $fullname;
+
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+   while(<CONFIG>) {
+      s/\#.*//;
+      s/^\s+//;
+      s/\s+$//;
+      if(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+   }
+   close(CONFIG);
+  if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+$USER_FILE = "$LODN_ETC/userinfo";
+$LODN_CONFIG = LODN_CFG;
+if(!defined($user) || !defined($pass))
+{
+  print header();
+  print "<html><head><title>Error!</title></head><body>\n";
+  print "Not all required parameters were defined\n";
+  print "</body></html>";
+  exit;
+}
+
+#Loads The database into mydata
+$hashref = retrieve($USER_FILE);
+%mydata  = %{$hashref};
+
+unless(($mydata{$user}[3] eq $pass) || ($mydata{$user}[3] eq md5_hex($pass,$user))) 
+{
+   print header();
+   print "<html><head></head><body>\n";
+   print "Your password is not correct\n</body></html>";
+   exit;
+}
+$topLevelDir = "$CONTENT_DIR/$user/";
+@filelist;
+$file;
+@dirs = ("$CONTENT_DIR/$user/");
+$currDir;
+$fileStat;
+$fullname;
+
+print header();
+print "<html><head></head><body>";
+print "Filename\t\tSize\t\tModification Time<br>";
+while(scalar @dirs > 0)
+{
+  $currDir = pop(@dirs);
+
+  opendir(DIR, $currDir) or die "Can't open dir $topLevelDir";
+
+  while(defined($file = readdir(DIR)))
+  {
+    if($file =~ m/.*xnd$/)
+    { 
+      $fullname = $currDir . "/" . $file;
+      $fileStat = stat($fullname);
+
+      $fullname =~ s/^$CONTENT_DIR(.*)$/$1/;
+      print "$fullname" . " " . $fileStat->size . " " . $fileStat->mtime . "\n<br>";
+    }
+
+    if( -d "$currDir/$file/" ) 
+    {
+       if(($file =~ m/\./))
+       {
+       }else
+       {
+         push(@dirs, "$currDir/$file");
+       }
+    }
+  }
+
+  close(DIR);
+}
+
+
+#print the files
+
+foreach (@filelist)
+{
+   print "$_\n";
+}
+
+print "</body></html>";

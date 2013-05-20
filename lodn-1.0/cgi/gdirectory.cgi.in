@@ -1,0 +1,149 @@
+@PERL@ -T
+use strict;
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:netscape :standard *table vars canter img);
+use constant LODN_CFG => @LODN_CFG@;
+ my $LODN_ETC;
+
+#try to retrieve the user cookie from the user
+my $user = cookie("lodnuser");
+my %mydata;
+my $hashref;
+my $file;
+my $filewoext; # filename without extension (.xnd)
+my $admin="no";
+my $parent;
+my $dir=param('subdir');
+my @parts;
+my $serverscript;
+# Constants (as such)
+my $pub=0;
+my $pubfile;
+my $CONTENT_DIR;
+
+my $downdir;
+my @dirs;
+my $files;
+my $prev="";
+
+my $tmp;
+
+# CGI parameters
+
+
+# LOAD CONFIG FILE AND READ VALUES
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+      while(<CONFIG>) {
+          s/\#.*//;
+          s/^\s+//;
+          s/\s+$//;
+          if(/^CONTENT_DIR\s+(\S*)/) {
+              $CONTENT_DIR=$1;
+          }
+        if(/^LODN_ETC\s+(\S*)/){
+         $LODN_ETC=$1;
+        }
+
+       }
+       close(CONFIG);
+       if(!(defined $CONTENT_DIR)) {
+           print header();
+           print "<html><head></head><body>LoDN config incomplete</body></html>";
+           exit;
+       }
+ if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+
+}
+else {
+     print header();
+     print "<html><head></head><body>LoDN config file not found</body><html>";
+     exit;
+}
+
+
+
+$file = "$LODN_ETC/userinfo";
+$pubfile="$LODN_ETC/publishlist";
+
+
+$dir =~ s/\.\.\///g;
+$dir =~ s/\.\.//g;
+$downdir=$dir;
+$downdir =~ s/[a-zA-Z0-9_\-\.]*\/?$//;
+
+if(!(defined $dir)) {
+  $dir="/";
+}
+if(!($dir=~/\/$/)){
+  $dir.="/";
+}
+
+open(PUB, $pubfile);
+
+
+#
+# Print directory listing
+#
+
+print header();
+
+print "<html><head><title></title></head>";
+
+#print "<body bgcolor=\"#D0DCE0\">";
+print "<body bgcolor=\"#A8A9AD\">";
+
+
+#print "Current Directory:<br>$dir<br><br>\n";
+
+print "<br /><br /><b>Subdirectories:</b><br /><br />";
+
+if($dir ne "/") {
+
+  print "<a href=\"gdirectory.cgi?subdir=$downdir\"",
+    " onClick=\"top.glisting.location='glisting.cgi?subdir=$downdir';\">",
+    "<img src=\"../images/upfolder.png\" align=middle alt=\"up\" border=\"0\">[..]</a>",
+    "<br>\n";
+}
+
+unless (defined $user) {$user = "";}
+
+$files="";
+while(<PUB>) {
+  chomp();
+  if(/^$dir/) {
+      s/^$dir//;
+      s/([a-zA-Z0-9_\-\.]+\/?).*/$1/;
+      if(/\/$/) {
+	if($_ ne $prev) {
+
+	  if(/^$user/ && ($user ne /^guest/)) {
+	    $tmp = "<a href=\"lodn_browser.cgi?subdir=/$user\" target=\"_top\">";
+	    $tmp.= "<img src=\"../images/folder-home.png\" align=middle border=\"0\">$_</a>";
+	  } else {
+	    $tmp = "<a href=\"gdirectory.cgi?subdir=$dir$_\" onClick=\"top.glisting.location='glisting.cgi?subdir=$dir$_';\">";
+	    $tmp.= "<img src=\"../images/folder.gif\" align=middle border=\"0\">$_</a>";
+	  }
+
+	  $tmp.= "<br>\n";
+
+	  push(@dirs, $tmp);
+	  $prev=$_;
+	}
+      }
+      else { }
+    }
+}
+
+foreach $dir (@dirs) {
+    print "$dir";
+}
+
+print "\n<br><br>\n";
+print "</body></html>";
+

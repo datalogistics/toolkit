@@ -1,0 +1,54 @@
+#!/bin/sh
+
+IBP_BIN="./ibp/local/bin/"
+LORS_BIN="@LORS_TOOLS_BIN@"
+
+depotList=`${LORS_BIN}/client vertex.cs.utk.edu 6767 2>&1 | grep "received depot" | sed 's/^  received depot: \([^ ]*\).*:\([0-9]\{1,5\}\)/\1:\2/g'`; 
+
+site1="";
+site2="";
+site3="";
+
+i=0;
+
+for depot in $depotList; do
+
+    host=`echo $depot | cut -d ":" -f1`;
+    port=`echo $depot | cut -d ":" -f2`;
+
+    echo "Trying ${host}:${port}...";
+
+    (echo "$host $port c q e" | ${IBP_BIN}/ibp-slm | grep storage > depot_results) 2>/dev/null &
+
+    job=$!;
+
+    sleep 5;
+
+    kill -9 $job > /dev/null 2>&1 ;
+
+    if [ -s depot_results ]; then
+       echo "$host $port is good";
+
+       if [ `expr $i % 3` -eq 0 ]; then
+          site1="${site1}\t${depot}\n";
+       elif [ `expr $i % 3` -eq 1 ]; then
+          site2="${site2}\t${depot}\n";
+       else
+          site3="${site3}\t${depot}\n";
+       fi
+
+       i=`expr $i + 1`;
+
+    else
+       echo "$host $port is down";
+    fi
+
+done;
+
+rm -rf depot_results;
+
+printf "Site1:\n$site1" > master_warmer
+printf "Site2:\n$site2" >> master_warmer;
+printf "Site3:\n$site3" >> master_warmer;
+
+echo "Done.";

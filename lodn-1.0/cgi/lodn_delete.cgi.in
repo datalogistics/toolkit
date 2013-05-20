@@ -1,0 +1,386 @@
+@PERL@ -w
+use strict;
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:netscape :standard *table vars canter img);
+use File::Path;
+use File::Copy;
+use Digest::MD5 qw(md5_hex);
+use constant LODN_CFG => @LODN_CFG@;
+my $LODN_ETC;
+#try to retrieve the user cookie from the user
+#my $user = cookie("lodnuser");
+#user and password can be either be taken from the cookie or can be taken in param(from url)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+my $user;
+my $password;
+my %mydata;
+my $hashref;
+# put all code here to print out page or redirect user to good page
+# Constants (as such)
+my $CONTENT_DIR;
+my $TRASH_DIR; 
+my $userfile;
+my $pubfile;
+   my $info;
+# CGI parameters
+my $filestr;
+my $type; # 0 for directory, 1 for file
+my @files;
+my $s;
+my $dir;
+my @delete_files;
+my $delete_length = 0;
+
+####Checking of username and password(Cookie)############
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $user=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $user=$Puser;
+   $password=$Ppassword;
+  }
+
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+   while(<CONFIG>) {
+      s/\#.*//;
+      s/^\s+//;
+      s/\s+$//;
+      if(/^CONTENT_DIR\s+(\S*)/) {
+        $CONTENT_DIR=$1;
+      }
+      if(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+      if(/^LODN_TRASH\s+(\S*)/){
+        $TRASH_DIR=$1;
+        }
+
+   }
+   close(CONFIG);
+   if(!(defined $CONTENT_DIR) or !(defined $TRASH_DIR)) {
+      print header();
+      print "<html><head></head><body>LoDN config incomplete</body></html>";
+      exit;
+   }
+  if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+
+$userfile = "$LODN_ETC/userinfo";
+$pubfile = "$LODN_ETC/publishlist";
+#if the user has a cookie
+if(defined $user) {
+        eval
+        {
+          $info = retrieve ("$userfile");
+        };
+
+        if($@)
+        {
+             print header();
+             print "Error accessing user info database\n";
+             exit;
+        }
+
+        # alter entered password to match altered password saved in database
+         $password =md5_hex($password,$user);
+
+        # load info into hash
+         %mydata = %{$info};
+
+   if ($password eq $mydata{$user}[3])
+   {
+
+  #check to see if the user is logged on still (in the db)
+  if($mydata{$user}[6] eq "no") {
+
+  #if not, rediect the user to the login page
+  print redirect(-uri=>'../index.html');
+   exit(0);
+  }
+ }
+}
+else {
+  print redirect(-uri=>'../autologout.html');
+  exit;
+}
+
+# CGI parameters
+$filestr=param('file');
+$type=param('type'); # 0 for directory, 1 for file
+
+
+# if($type eq 0) {
+#   if(!($filestr =~ /^\/$user\// || $filestr =~ /^\/$user$/)) {
+#     print header();
+#     print "<html><head><title>Error!</title></head><body>\n";
+#     print "You do not have write permission for this directory\n";
+#     exit;
+#   }
+# }
+
+
+umask(0007);
+
+#@files = split ':', $filestr;
+
+# Splits target into its individual files
+while($filestr =~ m/\<file\>(.*?)\<\/file\>|(^.+$)/g)
+{
+    push(@files, (defined($1)) ? $1 : $2);
+}
+
+while(my $f = shift @files) {
+
+  # Delete file (and directories)
+  # Directories are done recursively, so be careful
+  $dir=$f;
+  $dir =~ s/\/[A-Za-z0-9_\.\s\:]*$//;
+  $f =~ s/ /\\ /g;
+if($type == "0")
+{
+     mkpath("$TRASH_DIR/$dir", 0, 0750);
+     
+     
+     
+     if(Recur_mvdir("$CONTENT_DIR/$f", $TRASH_DIR) or die "The directory move failed $!\n")
+     {
+        if(scalar(@delete_files) > 0)
+        {
+            #Use WARMER
+            my $pid = fork();
+            
+            if($pid == 0)
+            {
+                open(STDOUT, ">/dev/null");
+                open(STDERR, ">/dev/null");
+            
+                my $files_str;
+                foreach my $f (@delete_files)
+                {
+                 $files_str .= "\"$f\" ";
+                }
+            
+                exec("@LODN_TOOLS@/LoDNWarmerUpdater remove " . join(" ", $files_str));
+            
+           }else
+           {
+                waitpid($pid, 0);
+            
+                foreach my $f (@delete_files)
+                {   
+                    unlink($f);
+                }
+                
+                # Clear the list
+                @delete_files = ();
+            }
+        }
+      
+        rmtree("$CONTENT_DIR/$f");
+     }
+     
+}elsif($type=="1")
+{
+	my $version = 0;
+	my $parent_dir;
+	my $filename;  
+	
+	if($f =~ m/(.*?\/)([^\/]*?)\.xnd$/)
+	{
+		$parent_dir = $1;
+		$filename   = $2;
+		
+       mkpath("$TRASH_DIR/$parent_dir", 0, 0750);
+       
+       while( -f "$TRASH_DIR/${parent_dir}/${filename}-${version}.xnd" )
+       {
+       		$version++;
+       }
+       
+       copy("/$CONTENT_DIR/$f" , "$TRASH_DIR/${parent_dir}/${filename}-${version}.xnd") or die " can't copy CONTENT_DIR/$f, $TRASH_DIR \n";
+       
+       #Use WARMER
+       my $pid = fork();
+       
+       if($pid == 0)
+       {
+          	open(STDOUT, ">/dev/null");
+	  		open(STDERR, ">/dev/null");
+	  		exec "@LODN_TOOLS@/LoDNWarmerUpdater remove \"$CONTENT_DIR/$f\"";
+       }
+
+       waitpid($pid, 0);
+       
+       unlink("/$CONTENT_DIR/${f}.warmer");
+    }
+    
+    unlink("/$CONTENT_DIR/$f");
+}
+
+#`mv $CONTENT_DIR$f $TRASH_DIR/$dir`;
+
+  if( -f $pubfile ){
+ #   `grep -v $f $pubfile > .unpub.temp`;
+ #   `cat .unpub.temp > $pubfile`;
+ #   `rm .unpub.temp`;
+##################################################### # Relacement for the above 3 unix calls:
+open(PUBLIST,"$pubfile") or die "$pubfile file cannot be opened !!\n ";
+my @lines;
+my $line;
+(my $msubdir = $f) =~ s/\//\\\//g;
+while(defined($line=<PUBLIST>))
+   {
+      if($line=~ /(.*$msubdir)(.*)/)
+          {
+            # print "$2\n";
+          }
+      else
+          {
+              $lines[scalar(@lines)]=$line;
+          }
+
+   }
+close(PUBLIST);
+open(PUBWRITE,">$pubfile") or die "$pubfile file cannot be opened !!\n ";
+print PUBWRITE @lines;
+close(PUBWRITE);
+#####################################################
+
+
+
+
+  }
+  $s = $f;
+}
+
+$s =~ s/\/[a-zA-Z0-9\-_\.\:]*$//;
+
+if($type==0) {
+  print redirect("directory.cgi?subdir=$s");
+}
+
+if($type==1) {
+  print redirect("listing.cgi?subdir=$s");
+}
+
+
+###Subroutines
+
+sub Recur_mvdir
+{
+	my (@dirfile);
+	my $subdir;
+	my $source=shift(@_);
+	my $destination=shift(@_);
+	my $file;
+	my $filename;
+	
+	if($source =~ /(.*)(content\/)(.*)/)
+	{
+	   $subdir=$3;
+	}
+
+ 	if(! -d "$destination/$subdir")
+ 	{
+ 		mkpath("$destination/$subdir",0,0750) or die "can't mkdir $destination/$subdir\n";
+ 	}else
+ 	{
+  		print "AY:The $destination : $subdir exists\n";
+ 	}
+
+	opendir(DIR,$source) or die "can't open $source \n";
+	
+	while(defined($file=readdir(DIR)))
+	{
+       	chomp($file);
+       	if($file eq "." or $file eq "..")
+       	{
+       	}else
+       	{
+			$dirfile[scalar(@dirfile)]=$file;
+        }
+     }
+     
+     foreach $filename (@dirfile)
+     {
+     	# Get the current trash directory 
+     	if($source =~ /(.*)(content\/)(.*)/)
+        {
+        	$subdir=$3;
+        }
+        
+        my $full_filename = "$source/$filename";
+
+		# Copy the file to the trash bin */
+        if(-f $full_filename)
+        {
+        	copy($full_filename , "/$destination/$subdir/") or die " can't copy $full_filename to" , "/$destination/$subdir/";
+
+            push(@delete_files, $full_filename);
+
+            $delete_length += length($full_filename);
+            
+            if($delete_length > 40960)
+            {
+                #Use WARMER
+                my $pid = fork();
+                
+   			    if($pid == 0)
+   			    {
+     			   open(STDOUT, ">/dev/null");
+     			   open(STDERR, ">/dev/null");
+                    
+                   my $files_str;
+                   foreach my $f (@delete_files)
+                   {
+                        $files_str .= "\"$f\" ";
+                   }
+                    
+     			   exec("@LODN_TOOLS@/LoDNWarmerUpdater remove " . join(" ", $files_str));
+                    
+   			    }else
+                {
+                    waitpid($pid, 0);
+                    
+                    foreach my $f (@delete_files)
+                    {   
+                        unlink($f);
+                    }
+                    
+                    # Clear the list
+                    @delete_files = ();
+                }
+   			}
+   			
+   			
+   			
+   		# Continue to the recursively move the tree 
+  		}elsif(-d "$source/$filename") 
+		{
+ 			Recur_mvdir("$source/$filename",$destination);
+        }
+	}
+	
+	close(DIR);
+	return 1;
+}
+                                 

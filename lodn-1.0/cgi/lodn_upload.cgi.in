@@ -1,0 +1,185 @@
+@PERL@ -w
+use Digest::MD5 qw(md5_hex);
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:netscape :standard *table vars canter img);
+use File::Copy;
+use constant LODN_CFG => @LODN_CFG@;
+my $LODN_ETC;
+#user and password can be either be taken from the cookie or can be taken in param(from url)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+my $user;
+my $password;
+my $userfile;
+my $url=param('url');
+my $file=param('filename');
+my $uorf=param('uorf');
+my $loc=param('loc');
+my $copies=param('copies');
+my $type=param('type');
+my $bs=param('bs');
+my $outfile=param('outfile');
+#my $encrypt=param('encrypt');
+my $encrypt=' ';
+my $chksum=param('chksum');
+my $xnddir=param('xnddir');
+my $hashref;
+my %mydata;
+my $info;
+my $cmd;
+
+####Checking of username and password(Cookie)############
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $user=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $user=$Puser;
+   $password=$Ppassword;
+  }
+
+if (-f LODN_CFG) {
+   open(CONFIG,LODN_CFG ) or die "Cannot open config file\n";
+   while(<CONFIG>) {
+      s/\#.*//;
+      s/^\s+//;
+      s/\s+$//;
+      if(/^CONTENT_DIR\s+(\S*)/) {
+        $CONTENT_DIR=$1;
+      }
+      if(/^LORS_TOOLS_BIN\s+(\S*)/) {
+        $LORS_TOOLS_BIN=$1;
+      }
+      if(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+
+   }
+   close(CONFIG);
+   if(!(defined $CONTENT_DIR) || !(defined $LORS_TOOLS_BIN)) {
+      print header();
+      print "<html><head></head><body>LoDN config incomplete</body></html>";
+      exit;
+   }
+ if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+$userfile="$LODN_ETC/userinfo";
+
+#if the user has a cookie
+if(defined $user) { 
+        eval
+        {
+          $info = retrieve ("$file");
+        };
+
+        if($@)
+        {
+             print header();
+             print "Error accessing user info database\n";
+             exit;
+        }
+
+        # alter entered password to match altered password saved in database
+         $password =md5_hex($password,$user);
+
+        # load info into hash
+         %mydata = %{$info};
+
+   if ($password eq $mydata{$user}[3])
+   {
+    #check to see if the user is logged on still (in the db)
+    if($mydata{$user}[6] eq "no") {
+ 
+    #if not, rediect the user to the login page
+    print redirect(-uri=>'../');
+    exit(0);
+    }
+   }
+} 
+else {
+  print redirect(-uri=>'../');
+  exit;
+}
+
+if(!($xnddir =~ /^\/$user\// || $xnddir =~ /^\/$user$/)) {
+   print header();
+   print "<html><head><title>Error!</title></head><body>\n";
+   print "You do not have write permission for this directory\n";
+   exit;
+}
+
+
+$cmd="$LORS_TOOLS_BIN/lors_upload";
+print header();
+print '<html><head><title>LoDN - Upload</title>';
+print '<script language="JavaScript">',"\n",
+'<!--',"\n",
+'function refandclose() {',"\n",
+'  window.opener.location.reload();',"\n",
+'   window.close();',"\n",
+'}',"\n",
+' //-->',"\n",
+'</script>',"\n";
+print '</head><body>';
+if($uorf =~ /url/) { #We're slurping the upload from a URL 
+  print "Slurping File from $url...";
+  open(INURL, "wget -O - $url |") || die "Can't open wget";
+  open(TMPOUT, "> $CONTENT_DIR/$xnddir/$outfile") || die "Can't open file";
+  while(<INURL>) { 
+     print TMPOUT;
+  }
+  close INURL;
+  chmod(0640, "$CONTENT_DIR/$xnddir/$outfile");
+  print "Done<br>\n";
+}
+else {  #We're uploading a file from user's local disk
+
+  open(TMPOUT, "> $CONTENT_DIR/$xnddir/$outfile") || die "Can't open file";
+  while (<$file>) {
+    print TMPOUT;
+  }
+  print "File received<br>\n";
+}
+close TMPOUT;
+chmod(0640, "$CONTENT_DIR/$xnddir/$outfile");
+
+print "Beginning upload...\n";
+$cmd.= " $CONTENT_DIR/$xnddir/$outfile -o $CONTENT_DIR/$xnddir/$outfile.xnd $type -b $bs $encrypt $chksum -E 512k -D -V 2 -c $copies -l \"$loc\" -t 18 -T 5000 2> $CONTENT_DIR/$xnddir/.temp.out";
+
+
+`$cmd`;
+while(!( -f "$CONTENT_DIR/$xnddir/$outfile.xnd" )) {
+ sleep 5;
+ `$cmd`;
+}
+####`rm $CONTENT_DIR/$xnddir/.temp.out`;
+####`rm $CONTENT_DIR/$xnddir/$outfile`;
+unlink("$CONTENT_DIR/$xnddir/.temp.out");
+unlink("$CONTENT_DIR/$xnddir/$outfile");
+
+print "done<br><br><form action=\"javascript:refandclose()\"><input type=submit value=\"ok\"></form>\n";
+
+print "</body></html>\n";
+
+#Use WARMER
+if(fork() == 0)
+{
+   open(STDOUT, ">/dev/null");
+   open(STDERR, ">/dev/null");
+   exec "@LODN_TOOLS@/LoDNWarmerUpdater add \"$CONTENT_DIR/$xnddir/$outfile.xnd\"";
+}     

@@ -1,0 +1,120 @@
+package lodn;
+
+// protoc -I=./ --python_out=./ lodn.proto
+// 2to3 -w lodn_pb2.py
+// python3.0 testprotobuf/str_encoding_fix.py lodn_pb2.py
+
+
+// Stat structure
+message Stat
+{
+    // Inode of the file
+    optional uint64 inode                       = 1;
+    
+    // File type and ownership
+    optional uint32 mode                        = 2;
+    
+    // File type and ownership
+    optional uint32 nlinks                      = 3;
+    
+    // Apparent size of the file
+    optional uint64 size                        = 4;
+    
+    // Inode of the number of blocks
+    optional uint32 blocks                      = 5;
+    
+    // Times for files
+    optional uint32 atime                       = 6;
+    optional uint32 mtime                       = 7;
+    optional uint32 ctime                       = 8;
+    optional uint32 btime                       = 9;
+    
+    // Optimal blocksize
+    optional uint32 st_blksize                  = 10;
+}
+
+
+
+
+// IBP Capability
+message Capability
+{
+    enum WRM
+    {
+        WRITE  = 0;
+        READ   = 1;
+        MANAGE = 2;
+    }
+
+    // Fields of a capability
+    optional string host    = 1;
+    optional uint32 port    = 2;
+    optional string rid     = 3;
+    optional string key     = 4;    //key and the wrmkey with the /
+    optional WRM    wrm     = 5;
+}
+
+
+// Exnode Metadata type
+message Metadata
+{
+    enum Type
+    {
+        NONE        = 0;
+        STRING      = 1;
+        INTEGER     = 2;
+        DOUBLE      = 3;
+        METADATA    = 4;
+    }
+
+    optional string name  = 1;
+    optional Type   type  = 2;
+    optional string value = 3;
+}
+
+// Function
+message Function
+{
+    optional string name            = 1;
+    repeated Metadata metadata      = 2;
+    repeated Metadata arguments     = 3;
+
+    optional Function subfunction   = 4;
+}
+
+// Exnode Mapping
+message Mapping
+{
+ 
+
+    // Basic metadata
+    optional uint64 alloc_length    = 1;
+    optional uint64 alloc_offset    = 2;
+    optional uint64 e2e_blocksize   = 3;
+    optional uint64 exnode_offset   = 4;
+    optional uint64 logical_length  = 5;
+    
+    // Capability data
+    optional string host            = 6;
+    optional uint32 port            = 7;
+    optional string rid             = 8;
+    optional string readkey         = 9;       // key and the wrmkey with the /
+    optional string writekey        = 10;      // key and the wrmkey with the /
+    optional string managekey       = 11;      // key and the wrmkey with the /
+   
+
+    // Optional metadata
+    repeated Metadata metadata      = 13;
+
+    // Optional Function (and subfunctions)
+    optional string function        = 14;
+}
+
+
+// Exnode
+message Exnode
+{
+
+    repeated Metadata metadata     = 1;
+    repeated Mapping  mappings     = 2;
+}

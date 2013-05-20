@@ -1,0 +1,37 @@
+#!/bin/bash
+
+contentpath="@LODN_CONTENT_DIR@";
+logfile="";
+found=0;
+
+if [ `uname` == "Linux" ]; then
+   entries=`ps -eo pid,comm,args | grep " LoDNWarmer" | sed   "s/[ ]*\([0-9]\+\).*\-\-path[ =]*\([^ ]\+\).*/\1:\2/"`;
+elif [ `uname` == "Darwin" ]; then
+   entries=`ps -eo pid,command | grep " LoDNWarmer" | sed   "s/[ ]*\([0-9]\+\).*\-\-path[ =]*\([^ ]\+\).*/\1:\2/"`;
+fi
+
+
+for entry in $entries; do
+    pid=`echo $entry | cut -s -d ':' -f1`;
+    path=`echo $entry | cut -s -d ':' -f2`;
+
+    if [ "x${pid}" != "x" -a "x${path}" != "x" ]; then
+       
+       if [  -n `echo "${pid}" | grep "^[0-9]*$"` ]; then
+          if [ "${path}" == "${contentpath}" ] ; then
+             found=`expr $found + 1`;
+          fi
+       fi
+    fi
+done;
+
+if [ $found -eq 0 ]; then
+   echo "Warmer not found, restarting...";
+
+	if [ "x@WARMER_LOGFILE@" != "x" ]; then
+	   logfile="-o @WARMER_LOGFILE@";
+	fi
+
+   @LODN_TOOLS@/LoDNWarmer -t @WARMER_THREADS@ --path @LODN_CONTENT_DIR@ -b @WARMER_PERIOD@ $logfile -V @WARMER_VERBOSE@ >/dev/null 2>&1 &
+
+fi

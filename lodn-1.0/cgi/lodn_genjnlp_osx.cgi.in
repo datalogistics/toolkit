@@ -1,0 +1,212 @@
+@PERL@ -T
+use CGI qw/:standard/;
+use Storable qw(retrieve);
+use Digest::MD5 qw(md5_hex);
+use constant LODN_CFG =>@LODN_CFG@;
+ my $LODN_ETC;
+my $target=param("target");
+my $filename;
+my $user;
+my $userfile;
+#my $cookuser=cookie("lodnuser");
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+my $cookuser;
+my $password;
+my $hashref;
+my %mydata;
+my $hash;
+my $pub;
+my $pubfile;
+my $CODEBASE;
+my @files;
+my $size;
+my $info;
+my $protocol;
+
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $cookuser=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $cookuser=$Puser;
+   $password=$Ppassword;
+  }
+
+
+# LOAD CONFIG FILE AND READ VALUES
+if (-f LODN_CFG) {
+  open(CONFIG,LODN_CFG) or die "Cannot open config file\n";
+  while(<CONFIG>) {
+    s/\#.*//;
+    s/^\s+//;
+    s/\s+$//;
+    if(/^CODEBASE\s+(\S*)/) {
+      $CODEBASE=$1;
+    }
+    if(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+
+  }
+  close(CONFIG);
+  if(!(defined $CODEBASE)) {
+    print header();
+    print "<html><head></head><body>LoDN config incomplete</body></html>";
+    exit;
+  }
+ if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+$userfile="$LODN_ETC/userinfo";
+$pubfile="$LODN_ETC/publishlist";
+
+if(!(defined $target)){
+  print header();
+  print "<html><head><title>Error</title></head><body>\n";
+  print "You did not define a target";
+  print "</body><html>";
+  exit;
+}
+
+$serverscript  = $ENV{SERVER_NAME};
+$serverscript .= ":$ENV{SERVER_PORT}";
+$serverscript .= $ENV{SCRIPT_NAME};
+$serverscript  =~ s/\/lodn_genjnlp_osx.cgi.*$//;
+  
+$protocol    = $CODEBASE;
+$protocol    =~ s/^([^:]*):\/\/.*/$1/g;   
+
+#@files = split ':', $target;
+
+# Splits the target into its various files
+while($target =~ m/\<file\>(.*?)\<\/file\>|(^.+$)/g)
+{
+    push(@files, (defined($1)) ? $1 : $2);
+}
+
+$size = @files;
+
+foreach my $mytarget (@files) 
+{
+
+  $mytarget =~ s/\/+/\//g;  # remove multiple slash (ex: /home/jp//file.txt)
+  $mytarget =~ s/ /\%20/g;  # substitute space characters w/ %20
+  $mytarget =~ /\/([a-zA-Z0-9\.\-\_\%]*).xnd$/;
+  $filename=$1;
+  $filename.=".jnlp";
+  $mytarget =~ /^\/([a-zA-Z0-9\-\_\.]*)\//; 
+  $user=$1;
+
+  $pub=0;
+  open(PUB, $pubfile) || die "Can't access publishlist";
+  while(<PUB>) {
+    if(/^$mytarget$/) {
+      $pub=1;
+      last;
+    }
+  }
+  close(PUB);
+
+
+  if(($pub == 0) && (!(defined $cookuser) ||($user ne $cookuser))) {
+    print header();
+    print "<html><head><title>Error</title></head><body>";
+    print "\nYou are not authorized to access this exNode</body></html>";
+    exit;
+  }
+
+  if(defined $cookuser && $pub == 0)
+  {
+        eval
+        {
+          $info = retrieve ("$userfile");
+        };
+
+        if($@)
+        {
+             print header();
+             print "Error accessing user info database\n";
+             exit;
+        }
+
+        # alter entered password to match altered password saved in database
+         $password =md5_hex($password,$cookuser);
+
+        # load info into hash
+         %mydata = %{$info};
+
+        if ($password eq $mydata{$cookuser}[3])
+        {
+             $hash=$mydata{$user}[3];
+             $hash=md5_hex($hash, $mytarget);
+  
+             $mytarget = "$protocol://$serverscript/lodn_getro.cgi?file=" . $mytarget . "&user=$user&hash=$hash";
+        }else
+	{
+            print header();
+            print "<html><head><title>Error</title></head><body>";
+            print "\nYou are not authorized to access this exNode</body></html>";
+	    exit;
+	}
+	
+   }elsif($pub != 0)
+   {
+        $mytarget = "$protocol://$serverscript/lodn_getro.cgi?file=" . $mytarget;
+   }else
+   {
+        print header();
+        print "<html><head><title>Error</title></head><body>";
+        print "\nYou are not authorized to access this exNode</body></html>";
+	exit;
+   }
+}
+
+
+
+print "Content-Type: application/x-java-jnlp-file\n";
+print "Content-Disposition: filename=$filename\n\n";
+
+print "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>",
+"<jnlp spec=\"1.0+\" codebase=\"$CODEBASE\">",
+"<information>",
+"<title>LoDN Download Client</title>",
+"<vendor>LoCI</vendor>",
+"</information>",
+"<security>",
+"  <all-permissions/>",
+"</security>",
+"<resources>",
+"<j2se initial-heap-size=\"-1\" max-heap-size=\"-1\" version=\"1.4+\"/>",
+#"<j2se version=\"1.4+\"/>",
+"  <jar href=\"LoDN.jar\"/>",
+#"  <jar href=\"looks-1.2.1.jar\"/>",
+"  <jar href=\"forms-1.0.4.jar\"/>",
+"  <jar href=\"jhall.jar\"/>",
+"</resources>",
+"<application-desc main-class=\"edu.utk.cs.loci.lodnclient.LoDNClient\">";
+
+foreach my $f (@files) {
+  print "<argument>$f</argument>\n";
+}
+print "</application-desc>",
+"</jnlp>";
+
+
+
+#  <jar href="jhall.jar"/>

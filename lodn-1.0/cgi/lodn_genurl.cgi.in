@@ -1,0 +1,14 @@
+@PERL@ -w
+use CGI qw(:standard);
+$file=param("file");
+
+$serverscript=$ENV{SERVER_NAME};
+$serverscript.=$ENV{SCRIPT_NAME};
+$serverscript =~ s/\/lodn_genurl.cgi.*$//;
+
+print header();
+print "<html><head><title>LoDN - Publication URL</title></head><body>\n";
+print "<b>To publish this file, link to:</b><br>\n";
+print "http://$serverscript/lodn_genjnlp.cgi?target=$file";
+print "</body></html>";
+

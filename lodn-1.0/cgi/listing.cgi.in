@@ -1,0 +1,801 @@
+@PERL@ -T
+use strict;
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:netscape :standard *table vars canter img);
+use Digest::MD5 qw(md5_hex);
+
+use constant LODN_CFG => @LODN_CFG@;
+my $LODN_ETC;
+#user and password can be either be taken from the cookie or can be taken in param(from url for future use)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+my $user;
+my $password;
+
+my %mydata;
+my $hashref;
+my $filewoext; # filename without extension (.xnd)
+my $admin="no";
+my $parent;
+my $dir;
+my @parts;
+my $serverscript;
+# Constants (as such)
+my $pub=0;
+my $CONTENT_DIR;
+# CGI parameters
+my $subdir=param('subdir');
+my $unitsize=param('unitsize');
+my $size;
+my $file;
+my $pubfile;
+ my $info;
+my (@files);
+my $dirname;
+
+my $server_name = $ENV{"SERVER_NAME"};
+my $server_port = $ENV{"SERVER_PORT"};
+
+
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $user=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $user=$Puser;
+   $password=$Ppassword;
+  }
+
+
+$subdir =~ s/\.\.\///g;
+$subdir =~ s/\.\.//g;
+if(!($subdir =~ /^\//)) { $subdir="\/".$subdir;}
+if(($subdir =~ /\/$/)) { chop($subdir);}
+
+if(!($subdir =~ /^\/$user$/) && !($subdir =~ /^\/$user\//)) {
+#  print redirect(-uri=>"lodn_published.cgi?subdir=$subdir");
+  print redirect(-uri=>"../autologout.html");
+  exit;
+}
+
+# LOAD CONFIG FILE AND READ VALUES
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+      while(<CONFIG>) {
+          s/\#.*//;
+          s/^\s+//;
+          s/\s+$//;
+          if(/^CONTENT_DIR\s+(\S*)/) {
+              $CONTENT_DIR=$1;
+          }elsif(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+
+       }
+       close(CONFIG);
+       if(!(defined $CONTENT_DIR)) {
+           print header();
+           print "<html><head></head><body>LoDN config incomplete</body></html>";
+           exit;
+       }
+       if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+}
+else {
+     print header();
+     print "<html><head></head><body>LoDN config file not found</body><html>";
+     exit;
+}
+
+
+$file = "$LODN_ETC/userinfo";
+$pubfile="$LODN_ETC/publishlist";
+
+#IF USER HAS A COOKIE
+if(defined $user) {
+        eval
+        {
+          $info = retrieve ("$file");
+        };
+
+        if($@)
+        {
+             print header();
+             print "Error accessing user info database\n";
+             exit;
+        }
+
+        # alter entered password to match altered password saved in database
+         $password =md5_hex($password,$user);
+
+        # load info into hash
+         %mydata = %{$info};
+
+   if ($password eq $mydata{$user}[3])
+   {
+ 
+  #load the database into mydata
+  $hashref=retrieve($file);
+  %mydata=%{$hashref};
+  
+  #check to see if user is an admin 
+  if($mydata{$user}[7] eq "yes") {
+    $admin="yes";
+  }
+  
+  #check to see if the user is logged on still (in the db)
+  if($mydata{$user}[6] eq "no") {
+    $user="guest";
+    $admin="no";
+  }
+ }  
+}
+else {
+  $user="guest";
+  $admin="no";
+}
+
+# Generate file list
+$dirname = "$CONTENT_DIR$subdir";
+opendir(DIR,$dirname) or die "can't open CONTENT_DIR/$subdir \n";
+#foreach my $file (`ls $CONTENT_DIR$subdir`) {
+while(defined(my $file = readdir(DIR))){
+        chomp($file);
+        next if $file eq "." or $file eq ".." or $file eq "index.php";
+        if(-d "$CONTENT_DIR$subdir/$file") {}
+        else { push(@files,$file); }
+}
+close(DIR);
+
+# Default unitsize is kilobytes
+if(not defined($unitsize))
+{
+	$unitsize = "KB";
+	$size     = 1024;
+}
+
+# Bytes
+if($unitsize =~ m/^b$/i)
+{
+	$unitsize = "B";
+	$size     = 1;
+	
+# Kilobytes
+}elsif($unitsize =~ m/^kb$/i)
+{
+	$unitsize = "KB";
+	$size     = 1024;
+	
+# Megabytes
+}elsif($unitsize =~ m/^mb$/i)
+{
+	$unitsize = "MB";
+	$size     = 1048576;
+	
+# Gigabytes
+}elsif($unitsize =~ m/^gb$/i)
+{
+	$unitsize = "GB";
+	$size     = 1073741824;
+
+# Terabytes
+}elsif($unitsize =~ m/^tb$/i)
+{
+	$unitsize = "TB";
+	$size     = 1099511627776;
+
+# Default for any other is Kilobytes
+}else
+{
+	$unitsize = "KB";
+	$size     = 1024;
+}
+
+
+
+sub get_original_filesize_from_xndfile
+{
+  my ($xndfile) = @_;  # my $xndfile = $_[0];
+
+  open(XND, "$xndfile") || die "Cannot open $xndfile";
+  while(<XND>) 
+  {
+    if(/<exnode:metadata\s+name=\"original_filesize\"\s+type=\"integer\">\s*(\d+)\s*<\/exnode:metadata>/) 
+	{
+      my ($ofs) = $1;
+      return $ofs;
+      last;
+    }
+  }
+  return undef;
+}
+
+sub get_status_from_xndfile
+{
+  my ($xndfile) = @_;
+
+  open(XND, "$xndfile") || die "Cannot open $xndfile";
+  while(<XND>)
+  {
+    if(/<exnode:metadata\s+name=\"status\"\s+type=\"string\">\s*(\w+)\s*<\/exnode:metadata>/) 
+	{
+      my ($status) = $1;
+      return $status;
+      last;
+    }
+  }
+  return undef;
+}
+
+
+print header();
+
+print "<html><head><link rel=\"shortcut icon\" href=\"../images/favicon.ico\"></head>";
+
+print "<script language=\"JavaScript\" type=\"text/javascript\">","\n",
+
+  "function javaconfirm() {\n",
+
+  "if(javawsInstalled  || (navigator.userAgent.indexOf(\"Gecko\") !=-1)) {\n",
+  '  return true;',"\n",
+  "}\n",
+  "else { \/\/ User does not have JavaWS installed\n",
+  'var insjavaws=confirm("You do not have appear to have Java WebStart',
+  ' , which is required to use the download now function, installed.',
+  '  Press ok to download and install it, or cancel to continue with',
+  ' the download now operation");', "\n",
+  '  if (insjavaws){ //user wants to install it',"\n",
+  '    window.open("../get-javaws.html", "jwin");', "\n",
+  "    return false;\n",
+  "  }\n",
+  "  else { \/\/user does not want to install it\n",
+  "    return true;\n",
+  "  }\n",
+  "}\n",
+  "}\n",
+  "</script>";
+
+
+
+print "<script language=\"JavaScript\" type=\"text/javascript\">\n",
+  "<!--\n",
+  "\n",
+  "// 1=published, 2=deleted, 4=..., 8=...\n",
+  "\n",
+  "var Flags = new Array();",
+  "\n",
+  "\n",
+
+  "function makeSelection(whichForm)\n",
+
+  "{\n",
+  "    if (whichForm == 1) {\n",
+  "        flag = document.select1.filter.options[document.select1.filter.selectedIndex].value;\n",
+  "    } else {\n",
+  "        flag = document.select2.filter.options[document.select2.filter.selectedIndex].value;\n",
+  "    }\n",
+  "\n",
+  "    if (flag.substring(0, 1) == \"-\") {\n",
+  "      for (var i = 0; i < document.messages.elements.length; i++) {\n",
+  "        document.messages.elements[i].checked = !document.messages.elements[i].checked;\n",
+  "      }\n",
+  "    } else\n",
+  "      \n",
+  "    if (flag.substring(0, 1) == \"!\") {\n",
+  "        selectFlagged(parseInt(flag.substring(1)), false);\n",
+  "    } else {\n",
+  "        selectFlagged(parseInt(flag), true);\n",
+  "    }\n",
+  "\n",
+  "    // reset the form\n",
+  "    if (whichForm == 1) {\n",
+  "        document.select1.reset();\n",
+  "    } else {\n",
+  "        document.select2.reset();\n",
+  "    }\n",
+  "}\n",
+  "\n",
+
+  "function selectFlagged(flag, val)\n",
+
+  "{\n",
+  "    shift = 0;\n",
+  "    for (var i = 0; i < document.messages.elements.length; i++) {\n",
+  "        while (document.messages.elements[i].name != \"indices[]\") {\n",
+  "            i++;\n",
+  "            shift++;\n",
+  "            if (!document.messages.elements[i]) {\n",
+  "                return;\n",
+  "            }\n",
+  "        }\n",
+  "        if (flag & Flags[i - shift]) {\n",
+  "            document.messages.elements[i].checked = val;\n",
+  "        } else {\n",
+  "            document.messages.elements[i].checked = !val;\n",
+  "        }\n",
+  "    }\n",
+  "}\n",
+
+  "function delconf(f) {\n",
+
+  " var agree=confirm(\"Are you sure you wish to delete this \" + f);\n",
+  " if(agree) return true;\n",
+  " return false;\n",
+  "}\n",
+
+  "//-->\n",
+  "</script>\n",
+  "\n";
+
+
+print "<script language=\"JavaScript\" type=\"text/javascript\">\n",
+  "<!--\n",
+
+  "function view(f) {\n",
+
+  "  var url=\"lodn_view.cgi?file=\"+f;",
+  "  var name=\"Viewer\";",
+  "  var features=\"width=700,height=400,locationbar=no,",
+  "  menubar=no,personalbar=no,scrollbars=yes,statusbar=no,",
+  "  toolbar=no\";",
+  "  window.open(url,name,features,null);",
+  "}\n",
+
+  "function augment(f) {",
+  "  var url=\"lodn_warmer_control.cgi?file=\"+f+\"&action=window\";",
+  "  var name=\"Warmer Control\";",
+  "  var features=\"width=400,height=200,locationbar=no,",
+  "  menubar=no,personalbar=no,scrollbars=yes,statusbar=no,",
+  "  toolbar=no\";",
+  "  window.open(url,name,features,null);",
+  "}\n",
+
+
+  "function runOperation(op) {\n",
+
+  "  if(op == \"null\") return;",
+  "  var str = '';",
+  "  for (var i = 0; i < document.messages.elements.length; i++) {\n",
+  "    if(document.messages.elements[i].checked)\n",
+  "      str += \"<file>$subdir\/\" + document.messages.elements[i].value + \"</file>\"",
+  "  }\n",
+  "  if(str.length == 0) {",
+  "    alert(\"Please select one or more files before running an operation.\");",
+  "    return;",
+  "  }",
+
+  "  switch (op) {\n",
+  "    case \"download\": ",
+  "    window.location=\"lodn_genjnlp.cgi?target=\" + str;\n",
+  "    break;",
+
+#  "    case \"download_osx\": ",
+#  "    window.location=\"lodn_genjnlp_osx.cgi?target=\" + str;\n",
+#  "    break;",
+
+  "    case \"augment\": ",
+  "    augment(str);\n",
+  "    break;",
+
+  "    case \"delete\": ",
+  "    window.location=\"lodn_delete.cgi?type=1\&file=\" + str;\n",
+  "    break;",
+
+  "    case \"publish\": ",
+  "    window.location=\"lodn_publish.cgi?file=\" + str;\n",
+  "    break;",
+
+  "    case \"unpublish\": ",
+  "    window.location=\"lodn_unpublish.cgi?file=\" + str;\n",
+  "    break;",
+
+  "    case \"rename\": ",
+  "    break;",
+
+  "    case \"roexnode\": ",
+  "    break;",
+
+  "    case \"rwexnode\": ",
+  "    break;",
+
+#  "    case \"cdburn\": ",
+#  "    window.location=\"../LoDN_Burn.php?file=\" + str;\n",
+#  "    break;",
+
+# "    case \"trim\": ",
+# "    break;",
+
+  "    default:",
+  "    alert(\"Unknown Operation.\");",
+  "  }",
+  "  document.operation1.reset();\n",
+  "  document.operation2.reset();\n",
+  "",
+  "",
+  "",
+  "}",
+  "//-->\n",
+  "</script>\n",
+  "\n";
+
+#
+# Rename file (i.e. exNode file name)
+#
+
+print "<script language=\"JavaScript\" type=\"text/javascript\">\n",
+  "<!-- \n",
+  "function rename_exnode (f) {",
+
+  "  var url=\"lodn_rename_exnode.cgi?file=\"+f;",
+  "  var name=\"Rename File\";",
+  "  var features=\"width=600, height=200, locationbar=no,",
+  "  menubar=no, personalbar=no, scrollbars=yes, statusbar=no,",
+  "  toolbar=no\";",
+  "  window.open(url,name,features,null);",
+  "}\n";
+
+print "// --></script>\n";
+
+
+print "<body bgcolor=\"#F5F5F5\">\n";
+
+# DISPLAY README FILE IF AVAILABLE
+
+if (-f "$CONTENT_DIR$subdir"."/README") {
+   open(RDM, "$CONTENT_DIR$subdir"."/README") or die "Can not open README file\n";
+   print "<div><pre>\n";
+   while(<RDM>) {
+     print $_;
+   }
+   print "</pre></div><hr>\n";
+ }
+
+# END OF DISPALY README FILE
+
+if(defined($subdir) && ($subdir ne '')) {
+      print "<table align=\"left\" border=\"0\" cellspacing=\"0\" width=\"99%\">",
+            "<tr><td><b>Current Directory: </b> ";
+
+
+      my $currdir = '/';
+      my $tmpdir  = '/';
+
+      print "<a target=\"_top\" href='lodn_published.cgi?subdir=$currdir' >",
+            "$tmpdir</a>";
+
+
+      for $tmpdir (split(/\//, $subdir))
+      {
+          if($tmpdir ne '')
+          {
+             $currdir .= "$tmpdir/";
+
+             print "<a target=\"directory\" href='directory.cgi?subdir=$currdir' ",
+                   "onClick=\"top.listing.location='listing.cgi?subdir=$currdir';",
+                   "top.control.location='control.cgi?subdir=$currdir';\">",
+                   "$tmpdir/</a>";
+          }
+      }
+
+      print "<tt>&nbsp &nbsp &nbsp</tt><a target=\"directory\" href=\"javascript:void(0)\" onClick='javascript:augment(\"$subdir/$dir\")'>",
+            "<img src=\"../images/button_edit.png\" alt=\"augment\" border=\"0\"></a></td>",
+            "<td><tt>&nbsp;&nbsp;&nbsp;&nbsp;</tt></td></tr></table><br/><br/>";
+} else {
+        print "<b>Current Directory: </b><br>/",
+              "<br><br>\n";
+}
+
+print "    <table width=\"100%\">",
+  "        <tr>\n",
+  "          <td>\n",
+  "            <form name=\"select1\" action=\"javascript:void(0)\" onsubmit=\"return false\">\n",
+  "              <select name=\"filter\" size=1 onchange=\"makeSelection(1);\">\n",
+  "                <option value=\"\" selected=\"selected\">Select:</option>\n",
+  "                <option value=\"!0\">All</option>\n",
+  "                <option value=\"0\">None</option>\n",
+  "                <option value=\"-\">Reverse</option>\n",
+  "                <option value=\"1\">Published</option>\n",
+  "                <option value=\"!1\">Unpublished</option>\n",
+#  "                <option value=\"2\">Deleted</option>\n",
+#  "                <option value=\"!2\">Not Deleted</option>\n",
+  "              </select>\n",
+  "            </form>\n",
+  "          </td>\n",
+
+  "          <td align=\"center\">\n",
+  "          </td>\n",
+
+  "          <td align=\"right\">\n",
+  "            <form name=\"operation1\" size=1>\n",
+  "            <select name=\"operation1\" size=1>\n",
+  "              <option value=\"null\" selected=\"ope\">Operation:</option>\n",
+  "              <option value=\"download\">Download</option>\n",
+#  "              <option value=\"download_osx\">Download (OS X)</option>\n",
+  "              <option value=\"augment\">Augment</option>\n",
+  "              <option value=\"delete\">Delete</option>\n",
+  "              <option value=\"publish\">Publish</option>\n",
+  "              <option value=\"unpublish\">Unpublish</option>\n",
+# "              <option value=\"cdburn\">Burn CD</option>\n",
+# "              <option value=\"rename\">Rename(NA)</option>\n",
+# "              <option value=\"roexnode\">Get read only exNode(NA)</option>\n",
+# "              <option value=\"rwexnode\">Get read/write exNode(NA)</option>\n",
+# "              <option value=\"trim\">Trim(NA)</option>\n",
+  "            </select>\n",
+  "            <input type=\"button\" value=\"GO\" onclick=javascript:runOperation(operation1.value)>\n",
+  "            </form>",
+  "          </td>\n",
+  "        </tr>\n",
+  "</table>\n";
+
+
+
+print "<form method=\"post\" name=\"messages\">\n",
+  "<table width=\"100%\" border=\"0\" cellspacing=\"1\" cellpadding=\"0\">\n",
+  "<thead>\n",
+  "<tr align=\"left\" bgcolor=\"#000000\" style=\"color:#FFFFFF;\">\n",
+  " <th>",
+  #<img src=\"../images/down.gif\" border=\"0\" alt=\"Sort Direction\" title=\"Sort Direction\" />",
+  " Filename <font size=\"-2\">(click for Java download)</font></th>",
+  " <th width=70 align=center>View</th>\n",
+  " <th width=70 align=center>Augm.</th>\n",
+  " <th width=70 align=center>Delete</th>\n",
+  " <th width=70 align=center>exNode</th>\n",
+  " <th width=70 align=center>",
+  #"<img src=\"../images/down.gif\" border=\"0\" alt=\"Sort Direction\" title=\"Sort Direction\" />",
+  " Status</th>\n",
+  "</tr>\n",
+  "</thead>\n",
+  "<tbody>\n";
+
+my $asize;
+if(($asize = @files) eq 0) {
+  print "<tr><td nowrap=\"nowrap\">",
+    "<i>No file available here.</i>",
+      "</td></tr>\n";
+} else {
+
+  my $fileURLcompliant;
+
+  foreach my $file (sort @files) {
+    if($file =~ /\.xnd$/) {
+      ($filewoext = $file) =~ s/\.xnd$//; # discard trailing .xnd extension
+      ($fileURLcompliant = $file) =~ s/ /\%20/g; # compliant URL encoding
+
+      # retrieve file size if available
+      my $original_filesize = "";
+      my $s = get_original_filesize_from_xndfile("$CONTENT_DIR$subdir/$file");
+	  $original_filesize = " <font size=-2>(" . int($s / $size) . "$unitsize)</font>";
+     
+
+      # retrieve file status if available
+      my $xnd_status = "";
+      if(get_status_from_xndfile("$CONTENT_DIR$subdir/$file")) {
+      SWITCH: {
+	  if(/NEW/)    { $xnd_status = "new"; last SWITCH; }
+	  if(/GOOD/)   { $xnd_status = "good"; last SWITCH; }
+	  if(/DANGER/) { $xnd_status = "danger"; last SWITCH; }
+	  if(/BROKEN/) { $xnd_status = "broken"; last SWITCH; }
+	  if(/DEAD/)   { $xnd_status = "dead"; }
+ 	}
+      }
+      if($xnd_status eq "") {
+	$xnd_status = "button_view";
+      }
+      $xnd_status = " <img src=\"../images/" . $xnd_status . ".png\" alt=\"" . $xnd_status . "\"";
+      $xnd_status .= " border=0 align=middle>";
+
+
+      print "<tr bgcolor=\"#A8A9AD\" onmouseover=\"javascript:style.backgroundColor='#CAC697'\" onmouseout=\"javascript:style.backgroundColor='#A8A9AD'\">\n",
+	"<td nowrap=\"nowrap\">",
+	"<input type=\"checkbox\" name=\"indices[]\" value=\"$file\" />",
+
+    "<a href=\"lodn://$server_name:${server_port}${subdir}/$filewoext\"><img src=\"../images/plus.png\" border=\"0\" /></a>&nbsp",
+
+	"<a onClick=\"return javaconfirm()\" href=\"lodn_genjnlp.cgi?target=$subdir/$fileURLcompliant\">",
+	"$filewoext</a>&nbsp;",
+
+#	"<a onClick=\"return javaconfirm()\" href=\"lodn_genjnlp_osx.cgi?target=$subdir/$fileURLcompliant\">",
+#	"<img src=\"../images/apple.png\" alt=\"osx\" border=\"0\" align=middle></a>",
+
+	$original_filesize,
+
+	"</td>\n";
+
+      print "<td align=center>",
+	"<a href=\"javascript:void(0)\" onClick=\'javascript:view(\"$subdir/$file\");\'>",
+	$xnd_status . "</a>",
+	  # "<img src=\"../images/button_view.png\" alt=\"view\" border=\"0\"></a>",
+	"</td>";
+
+      print "<td align=center>",
+	"<a href=\"javascript:void(0)\" onClick=\'javascript:augment(\"$subdir/$file\");\'>",
+	"<img src=\"../images/button_edit.png\" alt=\"augment\" border=\"0\"></a>",
+        "<tt>&nbsp</tt>",
+        "<a href=\"lodn_delete.cgi?file=$subdir/${file}.warmer\&type=1\" onClick=\"return delconf('file')\">",
+	"<img src=\"../images/button_drop.png\" alt=\"del\" border=\"0\"></a> ",
+	"</td>";
+
+      print "<td align=center>",
+	"<a href=\"lodn_delete.cgi?file=$subdir/$file\&type=1\" onClick=\"return delconf('file')\">",
+	"<img src=\"../images/button_drop.png\" alt=\"del\" border=\"0\"></a> ",
+	"</td>";
+
+      print "<td align=center>",
+
+	"<a href=\"lodn_getxnd.cgi?file=$subdir/$file\">",
+	"<img src=\"../images/button_insert.png\" alt=\"RW\" border=\"0\"></a> ",
+
+	"<a href=\"lodn_getro.cgi?file=$subdir/$file\">",
+	"<img src=\"../images/button_ro.png\" alt=\"RO\" border=\"0\"></a> ",
+
+	"<a target=\"listing\" href=\"javascript:void(0)\" onClick='javascript:rename_exnode(\"$subdir/$file\")'>",
+        "<img src=\"../images/button_rename.png\" alt=\"Rename file\" border=\"0\"></a>",
+
+	"</td>";
+
+      print "<td align=\"center\" nowrap=\"nowrap\">";
+
+      open(PUB, "$pubfile") || die "Cannot open file";
+      $pub=0;
+      while(<PUB>) {
+	if(/$subdir\/$file$/) {
+	  $pub=1;
+	  print "<a href=\"lodn_unpublish.cgi?file=$subdir/$file\">\n",
+	    "<img src=\"../images/green.gif\" alt=\"published\" border=\"0\"></a></td>\n";
+
+	  print "<script language=\"JavaScript\" type=\"text/javascript\">\n",
+	    "<!--\n",
+	    "  Flags.push(\"1\")\n;",
+	    "//-->\n",
+	    "</script>\n";
+	  last;
+	}
+      }
+      close PUB;
+      if($pub==0) {
+	print "<a href=\"lodn_publish.cgi?file=$subdir/$file\">\n",
+	  "<img src=\"../images/red.gif\" alt=\"unpublished\" border=\"0\"></a></td>\n";
+
+	print "<script language=\"JavaScript\" type=\"text/javascript\">\n",
+	  "<!--\n",
+	  "  Flags.push(\"0\")\n;",
+	  "//-->\n",
+	  "</script>\n";
+	
+      }
+      print "</tr>\n";
+    }
+  }
+}
+print "<input type=\"hidden\" name=\"page\" value=\"1\" />\n",
+  "</form></tbody></table>";
+
+
+print "\n",
+  "    <table width=\"100%\">",
+  "        <tr>\n",
+  "          <td>\n",
+  "            <form name=\"select2\" action=\"javascript:void(0)\" onsubmit=\"return false\">\n",
+  "              <select name=\"filter\" size=1 onchange=\"makeSelection(2);\">\n",
+  "                <option value=\"\" selected=\"selected\">Select:</option>\n",
+  "                <option value=\"!0\">All</option>\n",
+  "                <option value=\"0\">None</option>\n",
+  "                <option value=\"-\">Reverse</option>\n",
+  "                <option value=\"1\">Published</option>\n",
+  "                <option value=\"!1\">Unpublished</option>\n",
+#  "                <option value=\"2\">Deleted</option>\n",
+#  "                <option value=\"!2\">Not Deleted</option>\n",
+  "              </select>\n",
+  "            </form>\n",
+  "          </td>\n",
+  "          <td align=\"center\">\n",
+#  "            <img src=\"../images/first-grey.gif\" border=\"0\" alt=\"\" />&nbsp;\n",
+#  "            <img src=\"../images/prev-grey.gif\" border=\"0\" alt=\"\" />        \n",
+#  "            <input type=\"text\" name=\"page\" value=\"1\" size=\"2\" />\n",
+#  "            <img src=\"../images/next-grey.gif\" border=\"0\" alt=\"Next Page\" title=\"Next Page\" /></a>&nbsp;\n",
+#  "            <img src=\"../images/last-grey.gif\" border=\"0\" alt=\"Last Page\" title=\"Last Page\" /></a>\n",
+  "          </td>\n",
+
+
+  "          <td align=\"right\">\n",
+  "            <form name=\"operation2\" size=1>\n",
+  "            <select name=\"operation2\" size=1>\n",
+  "              <option value=\"null\" selected=\"ope\">Operation:</option>\n",
+  "              <option value=\"download\">Download</option>\n",
+  "              <option value=\"download_osx\">Download (OS X)</option>\n",
+  "              <option value=\"augment\">Augment</option>\n",
+  "              <option value=\"delete\">Delete</option>\n",
+  "              <option value=\"publish\">Publish</option>\n",
+  "              <option value=\"unpublish\">Unpublish</option>\n",
+# "              <option value=\"cdburn\">Burn CD</option>\n",
+# "              <option value=\"rename\">Rename(NA)</option>\n",
+# "              <option value=\"roexnode\">Get read only exNode(NA)</option>\n",
+# "              <option value=\"rwexnode\">Get read/write exNode(NA)</option>\n",
+# "              <option value=\"trim\">Trim(NA)</option>\n",
+  "            </select>\n",
+  "            <input type=\"button\" value=\"GO\" onclick=javascript:runOperation(operation2.value)>\n",
+  "            </form>\n",
+  "          </td>\n",
+  "        </tr>\n",
+  "</table>\n";
+
+print "\n",
+"    <table border=\"0\" width=\"100%\">\n",
+"        <tr>\n",
+"          <td align=\"right\">\n",
+#"            <a href=\"\">Hide Deleted</a> | <a href=\"\">Purge Deleted</a>\n",
+#"            <font color=\"lightgrey\">Hide Deleted | Purge Deleted</font>\n",
+"          </td>\n",
+"        </tr>\n",
+"    </table>\n";
+
+
+print "<font size=\"-1\">",
+  "<img src=\"../images/green.gif\"/>/<img src=\"../images/red.gif\"/>",
+  ": Published/Unpublished<br>\n",
+
+  "<img src=\"../images/button_insert.png\">/<img src=\"../images/button_ro.png\">",
+  ": Download the full or read-only exNode<br>\n",
+
+  "<img src=\"../images/button_rename.png\">",
+  ": Rename file<br>\n",
+
+#  "<img src=\"../images/apple.png\" align=middle>",
+#  ": Click the apple to download file under OS X<br>\n",
+
+  "<img src=\"../images/new.png\">:NEW: file has just been uploaded<br>\n",
+  "<img src=\"../images/good.png\">:GOOD: file was successfully read and warmed when the warmer last ran with 3 or more complete copies<br>\n",
+  "<img src=\"../images/danger.png\">:DANGER: one (or more) block has less than three copies available (still downloadable)<br>\n",
+  "<img src=\"../images/broken.png\">:BROKEN: hole(s) in the file (maybe downloadable later)<br>\n",
+  "<img src=\"../images/dead.png\">:DEAD: lot of holes (probably no chance to recover this file)</br>\n",
+
+  "<br></font>\n";
+
+
+
+print "<table frame='box' rules='none'>",
+  "<tr><td>Upload exNode</td></tr>",
+  "<tr><td><form action=\"lodn_create.cgi\"",
+  "              name=\"uploadexnode\"",
+  "              method=\"post\"",
+  "              enctype=\"multipart/form-data\">\n",
+  "<input type='file'   name='filename'>",
+  "<input type='hidden' name='subdir' value='$subdir'>",
+  "<input type='hidden' name='type'   value='1'>",
+  "<input type='submit' value='Upload'></form></td></tr>\n",
+  "</table>\n";
+
+
+# TEXT AREA TO UPDATE THE README FILE (displayed for published content)
+print "<br>";
+
+print "<table frame='box' rules='none'><tr><td>Directory comments</td></tr>",
+  "<tr><td><form action=\"lodn_readme.cgi\"",
+  "              name=\"updatereadme\"",
+  "              method=\"post\">\n",
+  "  <textarea rows=8 cols=80 name=readmetext>";
+
+if (-f "$CONTENT_DIR$subdir"."/README") {
+  open(RDM, "$CONTENT_DIR$subdir"."/README") or die "Can not open README file\n";
+  while(<RDM>) {
+    print $_;
+  }
+}
+
+print "</textarea><br>\n",
+  "  <input type='hidden' name='subdir' value='$subdir'>\n",
+  "  <input type='submit' value='Update'>\n",
+  "</td></tr></form>\n",
+  "</table>\n";
+
+
+print "</body></html>";

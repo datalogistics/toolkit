@@ -1,0 +1,601 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>LoDN Help - Content Publishing</title>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<META HTTP-EQUIV="EXPIRES" CONTENT="0">
+<META NAME="RESOURCE-TYPE" CONTENT="DOCUMENT">
+<META NAME="DISTRIBUTION" CONTENT="GLOBAL">
+<META NAME="AUTHOR" CONTENT="LoCI">
+<META NAME="COPYRIGHT" CONTENT="Copyright (c) 2002 by LoCI">
+<META NAME="KEYWORDS" CONTENT="News, news, New, new, Technology, technology, Headlines, headlines, 
+
+Nuke, nuke, PHP-Nuke, phpnuke, php-nuke, Geek, geek, Geeks, geeks, Hacker, hacker, Hackers, hackers, 
+
+Linux, linux, Windows, windows, Software, software, Download, download, Downloads, downloads, Free, 
+
+FREE, free, Community, community, MP3, mp3, Forum, forum, Forums, forums, Bulletin, bulletin, Board, 
+
+board, Boards, boards, PHP, php, Survey, survey, Kernel, kernel, Comment, comment, Comments, comments, 
+
+Portal, portal, ODP, odp, Open, open, Open Source, OpenSource, Opensource, opensource, open source, 
+
+Free Software, FreeSoftware, Freesoftware, free software, GNU, gnu, GPL, gpl, License, license, Unix, 
+
+UNIX, *nix, unix, MySQL, mysql, SQL, sql, Database, DataBase, database, Mandrake, mandrake, Red Hat, 
+
+RedHat, red hat, Slackware, slackware, SUSE, SuSE, suse, Debian, debian, Gnome, GNOME, gnome, Kde, KDE, 
+
+kde, Enlightenment, enlightenment, Intercative, interactive, Programming, programming, Extreme, 
+
+extreme, Game, game, Games, games, Web Site, web site, Weblog, WebLog, weblog, Guru, GURU, guru">
+<META NAME="DESCRIPTION" CONTENT="Logistical Networking and Internetworking Laboratory">
+<META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
+<META NAME="REVISIT-AFTER" CONTENT="1 DAYS">
+<META NAME="RATING" CONTENT="GENERAL">
+<META NAME="GENERATOR" CONTENT="PHP-Nuke 5.5 - http://phpnuke.org">
+<LINK REL="SHORTCUT ICON" HREF="../images/favicon.ico">
+<LINK REL="StyleSheet" HREF="../style.css" TYPE="text/css">
+<script language="JavaScript">
+<!--
+    function framebreaker()
+	{
+	   if (top.location != location) {
+           top.location.href = document.location.href 
+	   }
+         }
+-->
+</script>
+							    
+
+</head>
+
+<body><div align="left"><table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td 
+
+width="150" rowspan="6" align="right" valign="top"><table border="0" cellpadding="0" cellspacing="0" 
+
+width="100%">
+<tr><td align="right">
+<div><a href="http://www.reddnet.org"><img src="../images/reddnet-26.jpg" width=144 height=152 
+
+border=0></a></div><br></td></tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr><td class="menubox" align="right">
+&nbsp;<a href="http://loci.cs.utk.edu/">Home</a><br>
+<a href="http://loci.cs.utk.edu/people/about_us.php">About Us</a><br>
+              <a href="http://loci.cs.utk.edu/projects/index.php">Projects</a><br>
+              <a href="http://loci.cs.utk.edu/publications/index.php">Publications</a><br>
+              <a href="http://loci.cs.utk.edu/downloads/">Software/Docs</a><br>
+              <a href="http://loci.cs.utk.edu/projects/related/">Related Projects</a><br><br>
+              <a href="http://loci.cs.utk.edu/people/">|<b>People</b>|</a><br>
+              <a href="http://loci.cs.utk.edu/projects/faqs.php">FAQs</a><br>
+
+<br></td><td width="23"><img alt="" src="../images/pixel.gif" width="23" 
+
+height="1"></td></tr>
+</table>
+<br><br><table cellpadding="4">
+<!-- <tr>
+ <td class="buttons" align="left"><b><a target="_blank" 
+ 
+ href="http://loci.cs.utk.edu/modules.php?name=Content&pa=showpage&pid=35"><img align="left" 
+ 
+ src="../images/IBPvo_button.gif" border="0"></a></b></td>
+ </tr> 
+<tr>
+<td class="buttons2"><a target="_blank" 
+ 
+ href="http://loci.cs.utk.edu/modules.php?name=Content&pa=showpage&pid=35" 
+ 
+ style="font-size:13px;color:#DBD7A8;">Record your favorite show on TV!</a><br></td> 
+ </tr>
+ <tr>
+  <td class="buttons" align="left"><b><a target="_blank" 
+  
+  href="http://loci.cs.utk.edu/modules.php?name=Content&pa=showpage&pid=41"><img 
+  
+  src="../images/linux_button.gif" border="0"></a></b></td>
+  </tr>
+  <tr>
+  <td class="buttons2"><a target="_blank" 
+  
+  href="http://loci.cs.utk.edu/modules.php?name=Content&pa=showpage&pid=41"  
+  
+  style="font-size:13px;color:#DBD7A8;">Download the latest version of Linux!</a></td>
+  </tr> -->
+  </table></td><td height="26" width="10"><img alt="" 
+  
+  src="../images/topleft_corner.gif" width="10" height="26"></td><td 
+  
+  class="titlecell" height="26" align="center" ><img alt=""src="../images/LoCI_Title.gif" width="407" height="26"></td><td 
+  
+  height="26" ><img alt="" src="../images/topright_corner.gif" 
+  
+  height="26" ></td></tr><tr><td colspan="3" height="2" bgcolor="#68272c"><img alt="" 
+  
+  src="../images/pixel.gif" width="1" height="2"></td></tr><tr><td 
+  
+  rowspan="2" width="10" class="footcell"></td><td class="leftcolumn" valign="top">
+
+
+<! -------------------------------------The Content starts here------------------------------------>   
+
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF"><tr><td>
+    <br>
+   <h1><center><i>..::<b>LoDN Content Publishing - Web Interface::..</b></i></center></h1>   
+   <br>
+   <h2>Logging In</h2><br>
+   
+    <p><font>From the LoDN welcome page 
+    (<a href="@LODN_URL@" target="_blank">@LODN_URL@</a>)
+    you can sign up for a new LoDN account, log in to an existing account, or browse
+    LoDN's public directory as a guest. Logging in to your own account takes you
+    to your home area, where you can upload or download files and manage your stored
+    content. Logging in as a guest allows you to access stored content that other
+    LoDN users have made available to the public.</font></p><br><br>
+    
+    <h2>Browse as Guest</h2><br>
+    <p><font face="Times New Roman">From the LoDN welcome page, click the &quot;browse
+    files as guest&quot; link to access LoDN's public directory. You do not need
+    a LoDN account to browse as a guest. When browsing the public directory you
+    can access published content made available by registered LoDN users. With LoDN,
+    registered users have the option to &quot;publish&quot; an exNode (a pointer
+    to stored content). Publishing an exNode makes a read-only version of the exNode
+    publicly accessible. Guests can use the read-only exNode to download file content
+    from the network without having access to any data management options&#151;i.e.
+    guests cannot alter or delete published data.</font></p>
+    <p><font face="Times New Roman">The public directory interface, like the interface
+    for registered users, is based on an IMAP email interface, so the look and feel
+    of the page should be familiar to most users. On the public directory page,
+    you will find the current directory path displayed near the top of the left-hand
+    frame; below this is a directory list that allows you to navigate the publicly
+    accessible LoDN subdirectories. </font></p><br>
+    
+    <ul>
+    <li><font>To <b>open a subdirectory</b>, click the directory
+    name or folder icon. When you open a subdirectory, the exNode list (in the
+    main frame of the page) will display the published exNodes in that folder.
+    <br>
+    <br>
+    </font></li>
+    <li><font>To<b> move up one directory level</b>, click
+    &quot;<b><u>..</u></b>&quot;. </font></li>
+    </ul>
+    <p><font>From the exNode list in the main frame of the
+    page, you may download file content, view an exNode file, or get a read-only
+    exNode file.</font></p>
+    <ul>
+    <li><font>To <b>download file content</b>, click the
+    exNode name for the file you wish to download; this will start the LoDN Java
+    Download Client. Use the download client window to select a location and filename
+    for the output file and indicate your connection speed, then click <i>Download</i>.
+    (For more information about using the Download Client, see <a href="DownloadClient.htm" target="_blank">Download
+    Client Help</a>, also accessible from the download client window under Help&#150;&gt;Contents.)<br>
+    <br>
+    </font></li>				
+    <li><font>To <b>download multiple files</b>, use the
+    check boxes to select one or more exNodes from the list, then choose &quot;Download&quot;
+    from the Operations drop-down menu and click <i>Go</i>. The LoDN download
+    client window will appear. Use the download client window to select your connection
+    speed, then click <i>Download</i>. The selected files will be downloaded in
+    succession and placed in the local directory specified in the &quot;Output
+    File&quot; field.<br>
+    <br>
+    </font></li>
+    <li><font>To <b>view an exNode file</b> (display a list
+    of the storage allocations referenced by that exNode), click the &quot; <img src="button_view.gif" width="14" height="13">
+    &quot; icon to the right of the exNode name. Information found in the exNode
+    file includes the allocation type, IP address and port number of storage depot,
+    and expiration date and time for each data block. <br>
+    <br>
+    </font></li>
+    <li><font>To <b>get a read-only exNode file</b>, click
+    the &quot;<img src="button_exro.gif" width="13" height="12"> &quot; icon.
+    For more information about read-only exNodes, see the &quot;Read-Only vs.
+    Full Capability ExNodes&quot; section below. </font></li>
+    </ul>
+
+    <p><font><b>Note:</b> While browsing as a guest you have
+    access to read-only versions of published exNodes. However, you cannot perform
+    data management operations (augment, delete, publish/unpublish) on stored content
+    using a read-only exNode. If you wish to maintain your own copy of a published
+    file, download the file content from the public directory, then upload the content
+    using the LoDN upload client to produce an exNode with full (not just read-only)
+    capabilities. Do not import a read-only exNode into your LoDN directory, as
+    the exNode warmer (see &quot;ExNodes and Warming&quot;) will not be able to
+    maintain the stored content using a read-only exNode. </font></p><br><br>
+											
+    <h2>Your Home Area</h2><br>
+    <p><font face="Times New Roman">The directory interface to your LoDN home area
+    is based on the interface used for accessing IMAP email accounts, so the look
+    and feel of your home area will most likely be familiar. Log in to your home
+    area from LoDN's welcome page at <a href="@LODN_URL@" target="_blank">@LODN_URL@</a>.
+    From your home area, you can upload and download content to and from network
+    storage, and manage your stored content. </font></p><br><br>
+    
+    <h2>ExNodes and &quot;Warming&quot;</h2><br>
+    <p><font> The logistical networking storage that LoDN uses
+    is designed to be globally scalable and sharable. To offer maximum scalability,
+    the storage allocations are lightweight and best effort; and for maximum sharability,
+    they are also time-limited. Using best effort, time-limited storage means that
+    reliability, fault tolerance, and extended storage duration are implemented
+    by aggregating multiple weak storage allocations to achieve strong service characteristics
+    not offered by any single allocation. The exNode is a metadata filetype that
+    accommodates the aggregation of individual storage allocations into a &quot;network
+    file&quot; by holding the metadata necessary to manage distributed content.
+    For more info about logistical networking and LoDN, click <a href="Intro.htm" target="_blank">here</a>.</font></p><br>
+		      
+    <p><font>When a file is uploaded with LoDN, the file content
+    is broken into small data blocks. Each data block is then replicated and the
+    replicas are distributed across multiple remote storage locations (called storage
+    &quot;depots&quot;) accessed via the network, with each data block placed in
+    a separate allocation. Scattering fragmented replicas of file content over multiple
+    storage locations helps to ensure that stored content will remain accessible
+    in case of a machine or network outage. An exNode is used to keep track of each
+    block of stored data: where the block is stored, when its storage &quot;lease&quot;
+    expires, etc. In essence, the exNode is a pointer to stored file content. The
+    exNode acts like a pointer to file content stored over the network, in the same
+    way that the UNIX inode is a pointer to storage allocations on a hard drive.</font></p><br>
+    
+    <p><font>LoDN uses time-limited storage, so, in order to
+    maintain file content in storage for longer than the length of an allocation's
+    time limit, each allocation's lease must be periodically renewed. An exNode
+    &quot;warmer&quot; is used to take the burden of exNode maintenance off the
+    user. When you place an exNode in your LoDN directory (by uploading a file or
+    importing an exNode), LoDN's warmer automatically renews the storage leases
+    for you, and makes sure that enough copies of each data block are available
+    to provide acceptable fault-tolerance. The warmer operates on all exNodes in
+    your LoDN directory, whether they are &quot;published&quot; (made available
+    for download by other LoDN users or guests) or &quot;unpublished&quot; (accessible
+    only by you). ExNodes that are not warmed will deteriorate over time, as allocations
+    holding blocks of the stored content expire and the data is erased from those
+    expired allocations. If you wish to keep stored content available for an extended
+    period (i.e., longer than a day or two), it is recommended that you place the
+    exNode in your LoDN directory. </font></p><br>
+    
+    <p><font>Users can control how their exnodes are warmed and augmented. By 
+    clicking the augment button a window pops up allowing the user to create,
+    modify and delete sites for exnodes and directories.  Each site is a 
+    collection of depots that the warmer can use. The warmer tries to keep one 
+    complete copy of the data per site (a minimum of three sites with depots 
+    should be specified for the exnode to have good status). The warmer uses the 
+    closest hierarchical specification to the exnode meaning it examines if 
+    there is a specification for the exnode, then the directory containing the 
+    exnode, then the next higher directory.  It continues to look for a 
+    specification until it finds one or the root of the content directory is reached. 
+    </font></p><br><br>
+							  
+    <h2>LoDN Directories</h2><br>
+    <p><fontIn your home area, the directory list at the left
+    of the page allows you to navigate within your LoDN folders. The current directory
+    path is given near the top of the left-hand frame. Just below this, folders
+    within the current directory are shown. ExNodes within the current directory
+    are listed to the right, in the main portion of the page. </font></p><br>
+    <ul>
+    <li><font>To <b>open a directory</b>, click the directory
+    name to the right of the folder icon. When you open a directory, the exNode
+    list (in the main frame of the page) will display the exNodes in that folder.
+    <BR>
+    <BR>
+    </font></li>
+    <li><font>To <b>move up one directory level</b>, click
+    &quot;<u><b>..</b></u>&quot;. <br>
+    <br>
+    </font></li>
+    <li><font>To <b>create a new subdirectory</b> within
+    the current directory, enter a folder name in the &quot;Create Directory&quot;
+    box, and then click <i>Create</i>.<br>
+    </font></li>
+    </ul>
+    <p><font><b>Note:</b> Placing an exNode in a LoDN directory
+    means that it is maintained or &quot;warmed&quot; automatically by the LoDN
+    server. ExNodes that are not warmed will deteriorate over time. </font></p><br><br>
+    
+    <h2>Uploading Data and ExNodes</h2><br>
+    <p><font>From your home area there are two options for
+    placing an exNode in your LoDN directory: uploading the contents of a file or
+    importing an already existing exNode into the LoDN directory.</font></p>
+    <ul>
+    <li><font>To <b>import an exNode</b> created using the
+    LoRS Tools, received via e-mail, etc., from your local system to your current
+    LoDN directory: Enter a filepath in the box labeled &quot;Upload ExNode,&quot;
+    or click <i>Browse</i> and select a <font face="Courier New">.xnd</font> file
+    to upload, then click <i>Upload</i>. <b>Note:</b> The LoDN exNode warmer will
+    maintain exNodes in your LoDN directory (see &quot;ExNodes and Warming&quot;
+    above), but the warmer cannot replace lost data from allocations that have
+    already expired. Before importing, you may wish to use the LoRS Tools software
+    (<a href="http://loci.cs.utk.edu/lors/" target="_self">http://loci.cs.utk.edu/lors/</a>)
+    to &quot;List&quot; the exNode and confirm that at least one complete replica
+    of the content is available, especially if the exNode has been out of a warmer
+    for a day or more. </font><br>
+    <br>
+    </li>
+    <li><font>To <b>upload the contents of a file</b> from
+    your local system into storage and automatically create an exNode in your
+    current LoDN directory: <br>
+    Click the &quot;<i>Launch Java Upload Client</i>&quot; button to start the
+    LoDN Publisher Java Upload client. In the publisher window (Fig. 1), enter
+    the name of the file to be uploaded in the box labeled &quot;Input File&quot;
+    or click <i>Browse</i> to choose a file to upload. Adjust upload parameters
+    (see below) and then click <i>Upload</i>. The &quot;Transfer Progress&quot;
+    window will appear, showing the status of the upload. When the upload is complete,
+    click OK to close the Transfer Progress window. If the new exNode does not
+    immediately appear in your exNode directory list, use your browser's refresh
+    command to reload the page.</font></li>
+    </ul><br>
+    
+    <p><font><b>Note:</b> Placing an exNode in a LoDN directory
+    does not automatically give others access to that exNode. An exNode in your
+    directory is private until you<i> Publish</i> it (see below).</font></P><br><br>
+    
+    <b><font>LoDN Publisher Java Upload Client</font></b><br><br>
+    <p><font>Information in this section can also be accessed
+    from the LoDN Publisher window, under Help&#150;&gt;Contents. </font></p>
+    <p><font><b>Figure 1: </b>The LoDN Upload Client</font><br>
+    <img src="PublishFig1.jpg" width="414" height="387"></p><br>
+    
+    <b><i><font>Input File</font></b></i><br>
+    <p><font>Enter the name of the file you wish to upload
+    in the box provided, or click <i>Browse</i> to choose a file to upload.</font></p><br>
+    
+    <b><i><font>Output File</font></b></i><br>
+    <p><font>Specifies the LoDN directory location where your
+    exNode will be placed. When you upload a file, the upload client will create
+    an exNode (a pointer to the stored content). The exNode is named by appending
+    the <font face="Courier New" >.xnd</font> extension to the name of the uploaded
+    file. A copy of the exNode will be stored in the current LoDN directory, where
+    it will be automatically maintained by LoDN's exNode &quot;warmer&quot;. </font></p><br>
+    <b><i><font>Location
+    and Connection Type:</font></b></i><br><br>
+    <b><i><font>Location Type and Code</font></b></i><br>
+    <p><font>The &quot;Location Type&quot; and &quot;Location
+    Code&quot; boxes allows you to request that your data be stored near a specific
+    geographical location. LoDN will place your data in available storage as near	
+    as possible to your specified location. If the data is to be downloaded from
+    a remote location, consider storing the data near the download site. For content
+    that will be broadly or globally distributed, you may upload content and then
+    create copies of the content at multiple geographical locations using the &quot;Augment&quot;
+    function (accessible in your LoDN home area).</font></p><br>
+    <p><font>To specify a geographical location, use the drop
+    down menu to select a location type: &quot;zip&quot;, &quot;state&quot;, &quot;country&quot;,
+    or &quot;airport&quot;. Then use the box labeled &quot;Location Code&quot; to
+    enter the appropriate location code: a five digit zip code (US only), two letter
+    state abbreviation (US only), three letter airport code, or two letter ISO country
+    code. LoDN will store your content as near as possible to your specified location
+    (dependent upon storage availability in the specified area). </font></p><br>
+    <b><i><font>Connection Type</font></b></i><br>
+    <p><font>Use the radio buttons to choose the type of connection
+    you are using to access the Internet. Default values of &quot;Number of Connections&quot;
+    and &quot;Block Size&quot; will be adjusted according to your connection type.
+    </font></p><br>	
+    <b><i><font>Advanced Parameters:</font></b></i><br><br>
+    <b><i><font>Number of Connections</font></b></i><br>
+    <p><font>&quot;Number of connections&quot; refers to the
+     maximum number of data transfer operations to be performed concurrently during
+    upload. Each connection, or &quot;thread,&quot; is an individual transfer (i.e.
+    TCP) stream, delivering a separate block of data. Maximizing upload performance	
+    is a matter of balancing the number of connection threads with available resources
+    (local memory, bandwidth, etc.). Using more connection threads usually means
+    faster performance, provided that sufficient bandwidth and memory (on your local
+    system) is available to the upload client. For transfers over public wide area
+    networks, use one to three threads for TCP friendliness. For transfers over
+    high-speed links (e.g., Abilene, ESNet, etc.), or dedicated links between research
+    facilities, try using ten or more threads for maximum performance. See Figure
+    2 for further suggestions. To specify the number of connections, you may choose
+    integer. </font></p><br>
+    <p><font><b>Figure 2:</b> Recommended Connection Settings</font><br>
+    <img src="PublishFig2.gif" width="235" height="117"> </p><br>
+    <b><i><font>Block Size</font></b></i><br>
+    <p><font>Since the IBP storage depots used by LoDN offer
+    a best effort service, LoDN relies on the combined use of replication, fragmentation,
+    and striping of file fragments across multiple depots to strengthen assurance
+    of sustained data accessibility. As on the hard drive of a computer, a file
+    stored with IBP may be fragmented into many blocks of data, with each data block
+    stored in a separate location. The fragments may be spread across several IBP
+    depots, or stored in separate allocations within the same depot. A small file
+    may be left whole (one fragment), while larger files can be split into many
+    smaller data blocks. With LoDN, fragmenting the file into data blocks is controlled
+    by specifying a block size. &quot;Block Size&quot; indicates the size of the
+    data blocks into which your data will be divided. The number of fragments into
+    which a file is partitioned will equal the total file size divided by the specified
+    block size. If you choose a block size larger than the file size, the file will
+    not be fragmented. </font></p><br>
+    <p><font>Enter a positive integer in the box labeled &quot;Block
+    Size,&quot; then use the radio buttons to choose units of kilobytes (KB) or
+    megabytes (MB). Choose a block size small enough to cause sufficient fragmentation
+    for fault tolerance considerations, but large enough to allow good upload performance.
+    Larger block size allows faster uploads of large data sets by decreasing the
+    number of allocation operations necessary to store the file content, but the
+    effect is asymptotic. A block size between 512 KB and 2 MB is optimal for most
+    routine applications. </font></p><br>
+    <b><i><font>Number of Copies</font></b></i><br>
+    <p><font>&quot;Copies&quot; specifies the number of replicas
+    of your content that should be stored. Storing multiple copies guards against
+    inaccessibility due to a network outage or data loss if one storage allocation
+    fails. However, the value of each additional replica is balanced by the storage
+    capacity needed to house it. Please remember that the storage resources employed
+    by LoDN are shared resources. Two to three copies provides sufficient backup
+    in most instances. Use the drop-down menu labeled &quot;Copies&quot; to select
+    a value. </font></p><br>
+    
+    <b><i><font>Number of Depots</font></b></i><br>
+    <p><font>As mentioned above, since the IBP storage depots
+    used by LoDN offer a best effort service, LoDN relies on the combined use of
+    replication, fragmentation, and striping of file fragments across multiple depots
+    to strengthen assurance of sustained data accessibility. When a file is uploaded,
+    the file content is divided into blocks of data. Those data blocks are replicated
+    and then distributed over several IBP depots for storage. Using multiple storage
+    depots to house data replicas provides greater fault tolerance in case one depot
+    fails. Using multiple depots will also improve download performance, as the
+    download client will maximize speed by retrieving data from the fastest source
+    depot. Choose the number of depots over which the data will be distributed to
+    ensure a reasonable level of fault tolerance and download performance for the
+    number of data blocks to be stored. A value of five depots is optimal in most
+    instances. </font></p><br><br>
+    
+    <b><font>LoRS Upload</font></b><br><br>
+    <p><font face="Times New Roman" >For more fine-grained control over uploading
+    file content or adding replicas of stored content, consider using the Logistical
+    Runtime System Tools (LoRS Tools) software. If you wish, you may use LoRS to
+    upload file content to storage and generate an exNode, and then use LoDN's web
+    interface to import the exNode into your LoDN directory. The LoRS software is
+    engineered for high-performance, multi-threaded downloads and is available for
+    all major OS platforms. The LoRS Tools software is available for free download
+    from <a href="http://loci.cs.utk.edu/lors/downloads/" target="_self">http://loci.cs.utk.edu/lors/downloads/</a>
+    . Downloading and installing the LoRS Tools takes only a few minutes. For more
+    information about installing and using the LoRS Tools software, please refer
+    to the LoRS user manual, available at
+    <a href="http://loci.cs.utk.edu/lors/distributions/LoRS_Manual_v0_82.pdf/" target="_blank">http://loci.cs.utk.edu/lors/distributions/LoRS_Manual_v0_82.pdf/</a>.</font></p><br>
+    <p><font><b>Note:</b> If you use LoRS to upload file content
+    it is recommended that you import the exNode into LoDN as soon as possible to
+    avoid data loss and take advantage of LoDN's exNode warmer (see &quot;ExNodes
+    and Warming&quot; section above). </font></p><br><br>
+    
+    <h2>Managing ExNodes</h2><br>
+    <b><font>The exNode List</font></b><br><br>
+    <p><font>In your home area, a list of the exNodes within
+    the current directory is found in the main frame of the page. This exNode list
+    behaves similarly to the familiar IMAP email interface&#151;you can select or
+    deselect items in the list using the check boxes and then perform operations
+    on the selected items using commands from the drop-down menus. Some commands
+    are also available by clicking the icons to the right of each exNode name. </font></p><br>
+    <b><font>Select Menu</font></b><br><br>
+    <p><font>Use the <b>&quot;Select&quot; drop down menu</b>
+    to select all items in exNode list, deselect all items, or reverse the currently
+    selected and unselected items. </font></p><br>
+    <b><font>Operation Menu</font></b><br><br>
+    <p><font>Use the <b>&quot;Operation&quot; drop down menu
+    </b>to perform a download, augment, delete, or publish/unpublish operation on
+    one or more selected exNodes from the exNode list. If more than one exNode is
+    selected, the chosen operation will act on each selected exNode sequentially.
+    To select an exNode, check the box to the left of the exNode name. See Figure
+    3 for a description of the exNode operations. </font></p><br>
+    <b><font>Quick Commands</font></b><br><br>
+    <p><font>Operations to be performed on only one exNode
+    may be executed by clicking the quick command icons to the right of each exNode
+    name. Clicking one of these icons is equivalent to selecting a single exNode
+    and then choosing the corresponding operation from the operation drop-down menu.
+    In addition to the operations available via the operation menu (download, augment,
+    delete, and publish/unpublish), there is also a quick command icon for the view
+    command. Figure 3 gives a description of each command. </font></p><br>
+    <p><font>
+    <b>Figure 3: </b>ExNode Operations</font><br>	
+    <img src="PublishFig3.jpg" width="501" height="572" usemap="#map2" border="0">
+    <map name="map2">
+    <area shape="rect" coords="354,87,401,98" href="DownloadClient.htm" target="_blank">
+    <area shape="rect" coords="104,98,155,110" href="DownloadClient.htm" target="_blank">
+    </map>
+    </p><br>
+    <h2>Read Only vs. Full Capability ExNodes</h2>
+    <br>
+    <p><font>ExNodes are pointers to stored content, and are
+    used to access and manage that content. Full exNodes include read, write, and
+    manage capabilities that allow the user to perform the range of operations described
+    in the &quot;ExNode Management&quot; section above. Read-only exNodes include
+    only the read capability and allow the user to download the file content. Read-only
+    exNodes are analogous to read-only files; users may access, but not alter content
+    using a read-only exNode. </font></p><br>
+    <p><font>When you use LoDN to publish file content, a read-only
+    version of the exNode is posted in the public directory. This allows other users
+    and guests to use the read-only exNode to download file content, without granting
+    them access to manage or delete the stored content. Users logged on as guests
+    have access to read-only versions of published exNodes, but do not have access
+    to the full capability exNodes. </font></p><br>
+    <p><font>You can access read-only and full capability versions
+    of your exNodes from your home area. In the exNode list, clicking the &quot;<img src="button_exro.gif" width="13" height="12">
+    &quot; icon downloads a read-only version of the exNode, while clicking the
+    &quot;<img src="button_exrw.gif" width="13" height="12"> &quot; icon downloads
+    the full capability exNode (these commands download the <font face="Courier New">.xnd</font>
+    file, not the stored content). If you or your colleagues are LoRS Tools users,
+    you might wish to send an exNode file via email, ftp, etc., to be downloaded
+    using the LoRS Tools. (For more information about the LoRS Tools software, visit
+    <a href="http://loci.cs.utk.edu/lors" target="_self">http://loci.cs.utk.edu/lors</a>).
+    </font></p><br>
+
+    <p><font>Remember that you cannot perform data management
+    operations (augment, delete, publish/unpublish) on stored content using a read-only
+    exNode. If you use a read-only exNode to access stored content and you wish
+    to maintain your own copy of the content, use the read-only exNode to download
+    the content, then use LoDN's upload client to store your own copy of the content
+    and produce an exNode with full capabilities. </font></p><br>
+    
+    <p><font><b>Note:</b> Do not import a read-only exNode
+    into your LoDN directory, as the exNode warmer (see &quot;ExNodes and Warming&quot;)
+    will not be able to maintain the stored content using a read-only exNode.</font></p><br><br>
+    
+    <h2>Content Distribution</h2><br>
+    
+    <p><font>You can make LoDN data files available by placing
+    an active &quot;LoDN link&quot; on a webpage, sending a LoDN link by email,
+    or sharing published content via the LoDN directory. To get a LoDN link url
+    for sharing your file content, go to your LoDN home area and right-click the	
+    appropriate exNode name, choose <i>Copy Shortcut</i>, and paste the link where
+    needed. You can copy and paste this link directly into a webpage, email, document,
+    spreadsheet, etc., just as with any other url. Users access stored content by
+    clicking a LoDN link, which starts the LoDN Download Client, and then use the
+    download client to retrieve the content directly from network storage.</font>
+    </p><br>
+    
+    <p><font>Keep in mind that if you are publishing content
+    using a LoDN link, it will be helpful to your users if you include some descriptive
+    information about the content (file size, file type, etc.) and some information
+    about the LoDN Download client (that it requires Java Web Start, etc.). In order
+    to use the LoDN Download client, a user must have Java Web Start installed on
+    their computer. For Windows users, Java Web Start will be automatically detected
+    and installed if necessary. Other users should manually install Java Web Start,
+    which is included with the free download of the Java 2 Runtime Environment,
+    Standard Edition (JRE) v1.4.2 (information and downloads are available at <a href="http://java.sun.com" target="_self">java.sun.com</a>).
+    When starting the LoDN client for the first time, it may take a few seconds
+    for the client files to be configured. A dialog box will appear, verifying that
+    you wish to install and run the LoDN Download client. LoDN's security certificate
+    is digitally signed by the University of Tennessee and the user must accept
+    the certificate prior to running the application for the first time. </font></p><br>
+    <p><font><b>! Note:</b> LoDN is a tool designed to assist
+    users in the managing and publication of their own content. Use of all content
+    must conform to applicable copyright restrictions. The accounts of users who
+    use copyrighted content inappropriately will be canceled. Thank you for your
+    cooperation. </font></p><br><br>
+    
+    <hr>
+    <p><font>If you have any questions or suggestions for LoDN,please subscribe to the 
+    <a href="http://lists.cs.utk.edu/listinfo/loci-interest">LoCI interest </a>
+    mailing list or send us an email at <img border="0" src="../images/lodn_mail.gif" 
+    width="170" height="18" align=middle></font></p><br><br><br>
+    </table>
+    
+ <! -------------------------------------The Content ends here------------------------------------>   
+ 
+ </td><td class="footcell" width="10" rowspan="2" ></td></tr><tr><td class="cellcontent" valign="bot
+tom" colspan="1"><center>
+<table><tr><td><p>                  <a target="_blank" href="http://www.vanderbilt.edu/" title="Vanderbilt home"><img src="../images/vubw.jpg"
+                     height="55"  alt="Vanderbilt home" title="Vanderbilt home" border=0></a>
+                    <a target="_blank" href="http://www.utk.edu" title="UTK home"><img src="../images/ut1.gif" 
+                     width="90"  alt="UTK home" title="UTK home" border=0></a>
+
+&nbsp;&nbsp;<a target="_blank" href="http://citr.cs.utk.edu"><img alt="" src="../images/citr.gif" width="95" height="75" border=0></a>&nbsp;&nbsp;&nbsp;
+
+<!--<a target="_blank" href="http://icl.cs.utk.edu/sinrg/index.html"><img alt="" src="images/sinrg.gif" width="95" height="75" border=0></a>&nbsp;&nbsp; -->
+
+<a target="_blank" href="http://www.reddnet.org" title="Reddnet"><img
+src="../images/reddnet-27.png" width="140"  alt="Reddnet" title="Reddnet" border=0></a> 
+
+<a target="_blank" href="http://www.energy.gov" title="DOE"><img src="../images/doe.gif" width="140" height="75" alt="DOE" title="DOE" border=0></a>
+
+<a target="_blank" href="http://www.nsf.gov" title="NSF"><img src="../images/nsf.gif" width="130" height="75" alt="NSF" title="NSF" border=0></a>&nbsp;&nbsp;
+</p></td></tr></table></center></td></tr><tr><td height="25"><img alt="" src="../images/bottomleft_corner.gif" 
+height="25" ></td>
+
+<td class="footcell" height="26">
+<center>
+<a href="http://loci.cs.utk.edu/">Home</a>
+<a href="http://loci.cs.utk.edu/people/about_us.php">About Us</a>&nbsp;
+<a href="http://loci.cs.utk.edu/projects/index.php">Projects</a>&nbsp;
+<a href="http://loci.cs.utk.edu/publications/index.php">Publications</a>&nbsp;
+<a href="http://loci.cs.utk.edu/downloads/">Software/Docs</a>&nbsp;
+<a href="http://loci.cs.utk.edu/projects/related/">Related Projects</a>&nbsp;
+<a href="http://loci.cs.utk.edu/people/"><b>People</b></a>&nbsp;
+<a href="http://loci.cs.utk.edu/projects/faqs.php">FAQs</a>
+</center></td><td>
+<img alt="" src="../images/bottomright_corner.gif" height="25"></td></tr></table></div></body>
+</html>

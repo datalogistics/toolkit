@@ -1,0 +1,4 @@
+To launch Logistical* command
+
+java -cp cli.jar edu.utk.cs.loci.cli.LogisticalUpload
+

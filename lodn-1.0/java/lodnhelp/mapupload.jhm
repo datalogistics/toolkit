@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<map version="2.0">
+	<mapID target="upload" 			  url="UploadClient.html"/>
+	<mapID target="PublisherWindow"           url="UploadClient.html#PublisherWindow"/>
+	<mapID target="LocationandConnectionType" url="UploadClient.html#LocationandConnectionType"/>
+	<mapID target="AdvancedParameters"        url="UploadClient.html#AdvancedParameters"/>
+</map>

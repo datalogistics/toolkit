@@ -1,0 +1,112 @@
+<html>
+<head>
+<title>LoDN Help - Fault Tolerance </title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<h1>Fault Tolerance in LoDN</h1>
+<p>The following information about how LoDN maintains stored data should aid you 
+  in implementing replication and geographical distribution in order to provide 
+  acceptable levels of fault tolerance for your data. But remember, LoDN uses 
+  &quot;soft storage.&quot; Data stored with LoDN may be lost due to network disruption, 
+  machine outage, or the attrition of individual stored data blocks. While higher 
+  levels of replication can provide greater stability, there are no guarantees 
+  and no backups. </p>
+<h2>Soft Storage</h2>
+<p><font face="Times New Roman">The foundational service underpinning logistical 
+  networking and LoDN is IBP (<a href="/redirect?http://loci.cs.utk.edu/ibp/">http://loci.cs.utk.edu/ibp/</a>), 
+  a best-effort service for managing allocations on storage &quot;depots.&quot; 
+  IBP is designed to provide a globally scalable and sharable storage platform, 
+  composed of privately maintained storage depots around the world. IBP masks 
+  the underlying differences between systems and storage types (disk or ram), 
+  and provides uniform access to all depots via the network. To offer maximum 
+  scalability, IBP storage allocations are lightweight and best effort; and for 
+  maximum sharability, they are also time-limited. </font></p>
+<p><font face="Times New Roman">IBP depots offer two types of storage allocations, 
+  soft or hard. Soft storage allocations are made using free space in the local 
+  file system&#151;space that may be reclaimed at any time according to the needs 
+  of the local system. Hard storage allocations are made using dedicated IBP storage 
+  space that will not be reclaimed by the local system. Hard storage is highly 
+  stable and offers stronger guarantees that your stored data will remain intact 
+  and accessible for a specified duration. Soft storage makes weaker guarantees, 
+  but is offered by IBP depots in great abundance. And, accessibility of both 
+  soft and hard storage allocations are vulnerable to machine and network outages. 
+  At the moment, LoDN utilizes only soft storage allocations. </font></p>
+<p><font face="Times New Roman">Because LoDN uses best effort, time-limited storage, 
+  all stronger services (reliability, fault tolerance, extended storage duration, 
+  large file size) are provided &quot;end-to-end&quot; by layers of middleware 
+  implemented on top of IBP. For example, an exNode metadata file enables aggregation 
+  of multiple weak storage allocations in order to achieve strong service characteristics 
+  not offered by any single allocation; the exNode keeps track of the metadata 
+  necessary to manage distributed content.</font></p>
+<h2><font face="Times New Roman">Exnode Warming</font><font face="Times New Roman"> 
+  </font></h2>
+<p><font face="Times New Roman">LoDN uses time-limited storage, so, in order to 
+  maintain file content in storage for longer than the length of an allocation's 
+  time limit, each allocation's lease must be periodically renewed. And, since 
+  data blocks held in soft storage may become temporarily or permanently unavailable, 
+  data replicas must be actively maintained, with new replicas being created as 
+  others decay. An exNode &quot;warmer&quot; is used to take the burden of exNode 
+  maintenance off the user. When you place an exNode in your LoDN directory (by 
+  uploading a file or importing an exNode), LoDN's warmer automatically renews 
+  the storage leases for you. The exNode warmer also maintains fault tolerance 
+  by checking that the specified number of copies of each data block are accessible, 
+  and automatically creating new replicas when necessary. ExNodes that are not 
+  warmed will deteriorate over time, as allocations holding blocks of the stored 
+  content expire and the data is erased from those expired allocations, or as 
+  blocks decay and become inaccessible. If you wish to keep stored content available 
+  for an extended period (i.e., longer than a day or two), it is recommended that 
+  you place the exNode in your LoDN directory where it will be actively maintained. 
+  </font></p>
+<h2>Using Replication and Distribution</h2>
+<p><font face="Times New Roman">LoDN facilitates the combined use of replication, 
+  fragmentation, and striping of file fragments across multiple depots to provide 
+  fault tolerance and sustained data accessibility. When a file is uploaded, the 
+  file content is divided into blocks of data, which are replicated and then distributed 
+  over several IBP depots for storage. Scattering the fragmented replicas of file 
+  content over multiple storage locations helps to ensure that stored content 
+  will remain accessible in case of a machine or network outage, or the attrition 
+  of individual soft storage blocks. </font></p>
+<h4><font face="Times New Roman">Block Size</font></h4>
+<p><font face="Times New Roman">As on the hard drive of a computer, a file stored 
+  with IBP may be fragmented into many blocks of data, with each data block stored 
+  in a separate location. The fragments may be spread across several IBP depots, 
+  or stored in separate allocations within the same depot. A small file may be 
+  left whole (one fragment), while larger files can be partitioned into many smaller 
+  data blocks. With LoDN, fragmenting the file into data blocks is controlled 
+  by specifying a block size. &quot;Block Size&quot; indicates the size of the 
+  data blocks into which your file will be divided. The number of fragments into 
+  which a file is partitioned will equal the total file size divided by the specified 
+  block size. If you choose a block size larger than the file size, the file will 
+  not be fragmented. </font></p>
+<p><font face="Times New Roman">Choose a block size small enough to cause sufficient 
+  fragmentation for fault tolerance considerations, but large enough to allow 
+  good upload performance. Larger block size allows faster uploads of large data 
+  sets by decreasing the number of allocation operations necessary to store the 
+  file content, but the effect is asymptotic. A block size between 512 KB and 
+  2 MB is optimal for most routine applications. </font></p>
+<h4><font face="Times New Roman">Number of Copies</font></h4>
+<p><font face="Times New Roman">LoDN allows you to specify</font><font face="Times New Roman"> 
+  the number of replicas of your file content that should be stored. Storing multiple 
+  copies guards against inaccessibility due to a network outage or data loss. 
+  However, the value of each additional replica is balanced by the storage capacity 
+  needed to house it. Please remember that the storage resources employed by LoDN 
+  are shared resources. Two to three copies provides sufficient backup in most 
+  instances.</font><font face="Times New Roman"> </font></p>
+<h4><font face="Times New Roman">Number of Depots</font></h4>
+<p><font face="Times New Roman">Storing replicas of data blocks on multiple depots 
+  helps to prevent inaccessibility or data loss if one depot fails. Using multiple 
+  depots will also improve download performance, as the download client will maximize 
+  speed by retrieving data from the fastest source depot. Although LoDN does not 
+  provide explicit control over where individual data blocks are stored (the user 
+  specifies a general geographical location and number of depots for the entire 
+  file), a desirable striping and redundancy pattern may be achieved by distributing 
+  multiple copies of fragmented data across several depots. A value of five depots 
+  is optimal in most instances. </font></p>
+<p>&nbsp;</p>
+<p><b>Further Information may be found in the <a href="http://promise.cs.utk.edu/lodn/doc/Publish.htm">LoDN 
+  Documentation</a>.</b></p>
+</body>
+</html>
+ÿÿ

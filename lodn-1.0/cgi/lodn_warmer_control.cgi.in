@@ -1,0 +1,1064 @@
+@PERL@ -w
+use strict;
+use CGI qw(:standard);
+use Storable qw(store retrieve freeze thaw dclone);
+use Digest::MD5 qw(md5_hex);
+use Socket;
+use constant LODN_CFG => @LODN_CFG@;
+my $LODN_ETC;
+# Name of the cookie
+#user and password can be either be taken from the cookie or can be taken in param(for future work)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $lodn_config;
+my $lodn_userinfo;
+my $CONTENT_DIR ;
+# Get the params;
+my $username = $Cuser || param('user');
+my $password = $Cpassword || param('pass');
+my $filenames = param('file');
+my $action      = param("action");
+my $list_depots = undef;
+my $run_warmer  = undef;
+my %sites;	
+my @addDepots = ();
+my @removeDepots = ();
+my $curr_path;
+my $actionNum=0;
+my $depot;
+my $sitename;
+my $depotname;
+my $depotport;
+my $serialform;
+my $fullpathname;
+my $filename;
+my @files;
+my @tmpFiles;
+
+
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+   while(<CONFIG>) {
+      s/\#.*//;
+      s/^\s+//;
+      s/\s+$//;
+      if(/^CONTENT_DIR\s+(\S*)/) {
+      $CONTENT_DIR=$1;
+    }elsif(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+    }
+
+   close(CONFIG);
+ if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+# Checks that the username has been given
+if ( !defined($username) ) 
+{ 
+    # Prints the html header
+    print header();
+    print "<html><head></head><body>Error: No LoDN user info file</body><html>\n";
+    print "Username not specified\n";
+    exit(1);
+}
+
+# Checks that the password has been been given
+if ( !defined($password) ) 
+{
+    # Prints the html header
+    print header();
+    print "<html><head></head><body>Error: No LoDN user info file</body><html>\n";
+    print "Password not specified\n";
+    exit(1);
+}
+
+$lodn_config   = LODN_CFG;
+$lodn_userinfo = "$LODN_ETC/userinfo";
+
+if(-f $lodn_userinfo)
+{
+	my %user_hash = %{retrieve($lodn_userinfo)};
+
+	if(!defined($user_hash{$username}))
+	{
+            # Prints the html header
+            print header();
+            print "<html><head><title>Error!</title></head><body>\n";
+    	    print "username invalid</body>\n";
+    	    exit;
+	}
+
+
+	if(($user_hash{$username}[3] ne $password) &&
+	   ($user_hash{$username}[3] ne md5_hex($password, $username)))
+	{
+            # Prints the html header
+            print header();
+	    print "<html><head><title>Error!</title></head><body>\n";
+    	    print "pasword invalid</body>\n";
+    	    exit;
+	}
+
+}else
+{
+
+    # Prints the html header
+    print header();
+    print "<html><head></head><body>Error: No LoDN user info file</body><html>\n";
+    exit;
+}
+
+
+
+# Checks that the name of the file has been given
+if ( !defined($filenames)) 
+{
+    # Prints the html header
+    print header();
+    print "<html><head></head><body>Error: No LoDN user info file</body><html>\n";
+    print "filenames not specified\n";
+    exit(1);
+}
+
+
+#@files = split(/:/, $filenames);
+
+# Gets the individual files
+while($filenames =~ m/\<file\>(.*?)\<\/file\>|(^.+$)/g)
+{
+    push(@files, (defined($1)) ? $1 : $2);
+}
+
+# Iterates over the files
+foreach $filename (@files)
+{
+    # Checks the username of the filename
+    if (!($filename =~ m/^\/$username/))
+    {
+        # Prints the html header
+        print header();
+        print "<html><head></head><body>Error: No LoDN user info file<br/>\n";
+        print "$username does not permission for writing to $filename</body><html>\n";
+        exit(1);
+    }
+
+    # Constructs the full path name
+    $fullpathname = $CONTENT_DIR . '/' . $filename;
+
+    # Checks that the file or directory exists.
+    if (! -e $fullpathname)
+    {
+        print header();
+        print "<html><head></head><body>Error: $filename does not exist</body><html>\n";
+        exit(1);
+    }
+
+    # If the file is a directory then it appends / to the end.
+    if ( -d $fullpathname)
+    {
+        $fullpathname .= '/';
+    }
+
+    # Puts the file onto the end of the tmp files array
+    push(@tmpFiles, $fullpathname);
+}
+
+# Reassigns the tmpFiles to files.
+@files = @tmpFiles;
+
+print header();
+
+# Defines the routine for finding appropriate warmer for the exnode.
+sub find_warmer_file()
+{	
+        my $filename = $_[0];
+
+        my $input_warmer_file;
+        my $output_warmer_file;
+
+	# Builds the complete starting path for the warmer file for the exnode
+	$curr_path   = $filename;
+	
+
+	# Removes any extra /.
+	$curr_path =~ s/\/+/\//g;
+
+	if(-f $curr_path)
+	{
+		$output_warmer_file = $curr_path . ".warmer";
+		
+		# Checks if the warmer file for the particular exists and if not then it
+		# resets the warmer file to being the warmer for the directory.
+		if ( !-f $output_warmer_file ) 
+		{
+			$output_warmer_file =~ s/\/[A-Za-z0-9_\-]*\.warmer$//;
+			$output_warmer_file =~ s/(\/[A-Za-z0-9_\-]*)$/${1}${1}\.warmer/;
+		}
+		
+	} elsif( -d $curr_path)
+	{
+		if(!($curr_path =~ m/\/$/))
+		{
+			$curr_path .= '/';
+		}
+		
+		$output_warmer_file = $curr_path . ".warmer";
+		#$output_warmer_file =~ s/\/([A-Za-z0-9_\-]*)$/$1\/\.warmer/;
+		
+	} else
+	{
+		die "Path is not a valid path\n";
+	}
+	
+	
+	$input_warmer_file = $output_warmer_file;
+
+	# If there isn't a warmer for the file then it loops until a valid directory warmer
+	# file is found or the main content directory is reached.
+	while ( !( -f "$input_warmer_file" ) ) 
+	{
+		# Removes the current warmer from the path.
+		$input_warmer_file =~ s/(.*)\/[A-Za-z0-9_\-\.\/]+\.warmer$/${1}/;
+
+		# Stops the search loop when it reaches the content directory.
+		if ( $input_warmer_file eq "${CONTENT_DIR}" ) 
+		{
+			# Adds the next directory warmer to search for.
+			$input_warmer_file =~ s/(\/[A-Za-z0-9_\-\.]*)$/${1}\/\.warmer/;
+			last;
+		}
+
+		# Adds the next directory warmer to search for.
+		$input_warmer_file =~ s/(\/[A-Za-z0-9_\-\.]*)$/${1}\/\.warmer/;
+	}
+
+	# If no warmer is found then it resets
+	if ( !( -f $input_warmer_file ) ) 
+	{
+		$input_warmer_file = $output_warmer_file;
+	}
+
+        return $input_warmer_file;
+}
+
+
+
+sub read_in_warmer()
+{
+        my $warmerfilenames = $_[0];
+
+	my $sitename;
+	my $depotname;
+	
+	if(defined($warmerfilenames))
+	{
+		# Opens the warmer file for this file. 
+		open( WARMER_FILE, "<$warmerfilenames" ) or return %sites;
+
+		# Reads in the depots for this file.
+		while (<WARMER_FILE>) 
+		{
+			# Trims the line of whitespaces and new lines.
+			chomp($_);	
+			s/^\s+(.*)\s$/$1/;
+			
+			# Skips blank lines
+			next if($_ eq "");
+		
+			# Gets the sitename;
+			if(m/^\s*[A-Za-z0-9\.\-_:]+:\s*$/)
+			{
+				$_ =~ s/^\s*([A-Za-z0-9\.\-_:]+):\s*$/$1/g;
+				$sitename = $_;
+			
+			# Gets the current depot name and port
+			}elsif(m/^\s*[A-Za-z0-9\.\-_]+:\d+\s*$/)
+			{
+				$_ =~ s/^\s*([A-Za-z0-9\.\-_]+:\d+)\s*$/$1/g;
+				$depotname = $_;
+			
+				if(!defined($sitename))
+				{
+					print "Error no site for depot\n";
+					exit;	
+				}
+			
+				$sites{$sitename}{$depotname} = $depotname;
+			
+			# Gets the comment;
+			}elsif(m/^\s*\#/)
+			{
+	
+			# Invalid line
+			}else
+			{
+				print "Error invalid line $_\n";
+				exit;	
+			}
+		}
+
+		# Closes the file handle
+		close(WARMER_FILE);
+	}
+	
+	return %sites;
+}
+
+sub verify_warmer()
+{
+     my %sites = %{$_[0]};
+
+
+    foreach $sitename (sort keys %sites)
+    {
+        if($sitename eq "")
+        {
+            $sitename = $depotname;
+
+            $sites{$sitename} = $sites{""};
+            next;
+
+        }elsif($sitename =~ m/[^A-Za-z0-9\.\_-]/)
+	{
+	    print "$sitename is not a valid sitename\n";
+            delete $sites{$sitename};
+	}
+
+	foreach $depot (keys %{$sites{$sitename}})
+	{
+                if($depot =~ m/^([A-Za-z0-9\.\_-]+):([0-9]{1,5})$/)
+                {
+                    my $hostname = $1;
+                    my $port     = $2;
+
+                    if(gethostbyname($hostname))
+                    {
+                      if($port =~ m/\D/ || $port < 1 || $port > 65535)
+		      {
+			print "$port is not a valid port\n";
+                        delete $sites{$sitename}{$depot};	
+		      }
+                    }else
+                    {
+                        print "$hostname is an invalid hostname\n";
+                        delete $sites{$sitename}{$depot};
+                    }
+                }else
+                {
+                    print "$depot is an invalid depot\n";
+                    delete $sites{$sitename}{$depot};
+                }
+	}
+    }
+
+}
+
+sub write_warmer()
+{
+        my %sites = %{$_[0]};
+        my $output_warmer_file = $_[1];
+
+	my $sitename;
+	my $depotname;
+	
+	if(defined($output_warmer_file))
+	{
+		# Opens the warmer file for this file. 
+		open( WARMER_FILE, ">$output_warmer_file" ) or die "Can't open warmer file: $output_warmer_file\n";
+
+		foreach $sitename (sort keys %sites)
+		{
+			print WARMER_FILE "$sitename:\n";
+			
+			foreach $depotname (keys %{$sites{$sitename}})
+			{
+				print WARMER_FILE "\t${depotname}\n";
+			}
+		}
+
+		# Closes the file handle
+		close(WARMER_FILE);
+		chmod(0640, $output_warmer_file);
+	}
+}
+
+
+# Name: deserialize_warmer
+# Description: Takes the serialized form of the warmer and converts it
+#              to a usable data structure and then returns it.
+# Input: warmerString - text string of the warmer
+# Output: It returns the sites table with the sites and depot as a
+#         hash.
+sub deserialize_warmer()
+{
+   # Gets the parameters 
+   my $warmer = $_[0];
+   
+   # Variables for holding the current site and the sites table.
+   my $currSite;
+   my %sites; 
+
+   # Checks that the warmer variable is defined
+   if(!defined($warmer))
+   {
+      return %sites;
+   }
+
+   # Iterates through the warmer string using the #'s as 
+   # separators
+   while(($warmer =~ s/#(.+?)(#.*)/$2/g))
+   {
+      # Gets the key and value for each part by seperating on the = 
+      my ($key, $value) = ($1 =~ m/(.+?)=(.+)/);
+    
+      # If either key or value is not defined then its an error.
+      if(!defined($key) or !defined($value))
+      {
+         print "Error: Invalid Warmer Input\n";
+	 exit;
+      }
+
+      # Site Entry
+      if($key =~ m/^site$/)
+      {
+         # Stores the current site name
+         $currSite = $value;
+
+         # If the site has not been seen before then put it into 
+         # the site hash with an empty hash for the depots.
+         if(!defined($sites{$currSite}))
+	 {
+             $sites{$currSite} = {};
+	 }
+
+      # Depot Entry
+      }elsif($key =~ m/^depot$/)
+      {
+         # If no site has been encountered yet then abort.
+         if(!defined($currSite))
+	 {
+             print "Error: Invalid Warmer Input: No site defined for depot\n";
+	     exit;
+	 }
+
+         # Checks that the depot value is valid hostname:port
+         if(not $value =~ m/^([\w\.\d_\-]+):([\d]{1,5})$/)
+	 {
+             print "Error: Invalid Warmer Input: Bad depot $value\n";
+             exit;
+	 }
+
+         # Puts the depot into the hash for the current site.
+         $sites{$currSite}->{$value} = 0;
+
+      # Invalid key value.
+      }else
+      {
+         print "Error: Invalid Warmer Input\n";
+	 exit;
+      }
+   }
+
+   # Returns the sites hash.
+   return %sites;
+}
+
+
+sub serialize_warmer()
+{
+    # Gets the parameter list
+    my $sites      = $_[0];
+
+    # Variables for holding the current site and depot values.
+    my $site;
+    my $depot;
+    my $str = "";
+
+    #Traverses over the sites in the hash and prints the sitename
+    for $site (keys(%{$sites}))
+    {
+        $str .= "#site=${site}";
+  
+        # Traverses the depots for the current site and prints the depots.
+        for $depot (keys(%{$sites->{$site}}))
+        {
+           $str .= "#depot=${depot}";
+        }
+    }
+
+    $str .= "#";
+
+    return $str;
+}
+
+
+sub display()
+{
+
+    my $serializedWarmer = $_[0];
+print "<html>\n";
+print "<head>\n";
+print "\n";
+print "<script type=\"text/javascript\">\n";
+print "\n";
+print "//var sites = new Array();\n";
+print "//var newDepotRow;\n";
+print "\n";
+print "\n";
+print "// Description: This removes a depot from its site\n";
+print "// Input: id is the sitename and depot to remove\n";
+print "function deleteDepot(id)\n";
+print "{\n";
+print "	// Gets the row that corresponds to the id and has its parent remove it\n";
+print "    var row = document.getElementById(id);\n";
+print "    row.parentNode.removeChild(row);\n";
+print "}\n";
+print "\n";
+print "// Description: This function returns an array of the site names.\n";
+print "// Output:  It returns an array of the site names.\n";
+print "function getSites()\n";
+print "{\n";
+print "	// Gets the sites table\n";
+print "	var sitesTableNode = document.getElementById(\'sites-table\');\n";
+print "	\n";
+print "	var siteList = new Array();\n";
+print "	\n";
+print "	// Traverses the elements of the site table to get the sites.\n";
+print "	for (var i=0; i < sitesTableNode.rows.length-1; i += 2)\n";
+print "	{\n";
+print "		// Gets the current site\n";
+print "		siteName = sitesTableNode.rows[i].id;\n";
+print "		\n";
+print "		// Adds the sitename to the list\n";
+print "		siteList.push(siteName);\n";
+print "	}\n";
+print "\n";
+print "	// Returns the array of Sites.\n";
+print "	return siteList;\n";
+print "}\n";
+print "\n";
+print "// Description: This function adds the new depot to the site table with the delete button\n";
+print "//              and the add depot button for the site.\n";
+print "// Input: sitename - name of the site\n";
+print "function addDepot(sitename)\n";
+print "{\n";
+print " 	// Gets the hostname and port of the new depot\n";
+print "    var hostname = document.getElementById(\'hostInput\').value;\n";
+print "    var port     = parseInt(document.getElementById(\'portInput\').value);\n";
+print "	\n";
+print "	var skipDepot = false;\n";
+print "	\n";
+print "	// Checks the hostname\n";
+print "	if(hostname.match(/^[\\w\\.\\d_\\-]+\$/) == null)\n";
+print "	{\n";
+print "		alert(hostname + \" is an invalid hostname\");\n";
+print "		skipDepot = true;\n";
+print "	}\n";
+print "	\n";
+print "	// Checks that the port is valid\n";
+print "	if(isNaN(port) || port < 1 || port > 65535)\n";
+print "	{\n";
+print "		alert(document.getElementById(\'portInput\').value + \" is an invalid port!\");\n";
+print "		skipDepot = true;\n";
+print "	}\n";
+print "	\n";
+print "    var form = document.getElementById(\'addDepotForm\');\n";
+print "    form.parentNode.removeChild(form);\n";
+print "    \n";
+print "    // Removes the add depot row button\n";
+print "    for (var i=1; i<oldDepotRow.cells.length; i++)\n";
+print "    {\n";
+print "        oldDepotRow.removeChild(oldDepotRow.cells[i]);\n";
+print "    }\n";
+print "    \n";
+print "    // Skips bad depot input\n";
+print "    if(!skipDepot)\n";
+print "    {\n";
+print "		// Builds the absolute id of the new depot\n";
+print "		var id = sitename+\':\'+hostname+\':\'+port;\n";
+print "		\n";
+print "		// Creates a table row that holds the depot and delete button.\n";
+print "		var newDepotRow = document.createElement(\'tr\');\n";
+print "		newDepotRow.setAttribute(\'id\', id);\n";
+print "		\n";
+print "		// Creates the depot name cell\n";
+print "		var newDepotCell = document.createElement(\'td\');\n";
+print "		newDepotCell.appendChild(document.createTextNode(hostname + \':\' + port));\n";
+print "		\n";
+print "		// Creates the depot delete cell\n";
+print "		var newDepotDeleteCell = document.createElement(\'td\');\n";
+print "		\n";
+print "		// Creates the depot delete button and adds it to the cell\n";
+print "		var newDepotDeleteButton = document.createElement(\'input\');\n";
+print "		newDepotDeleteButton.setAttribute(\'type\', \'button\');\n";
+print "		newDepotDeleteButton.setAttribute(\'value\', \'Delete\');\n";
+print "		newDepotDeleteButton.setAttribute(\'onClick\', \'deleteDepot(\"\'+id+\'\")\');\n";
+print "	\n";
+print "		newDepotDeleteCell.appendChild(newDepotDeleteButton);\n";
+print "	\n";
+print "		// Puts all of the new cells into the row and then the row into the table    \n";
+print "		newDepotRow.appendChild(newDepotCell);\n";
+print "		newDepotRow.appendChild(newDepotDeleteCell);\n";
+print "		oldDepotRow.parentNode.appendChild(newDepotRow);\n";
+print "		\n";
+print "    }\n";
+print "    \n";
+print "    // Creates a row that holds the button for holding the add depot button\n";
+print "    var newAddDepotRow  = document.createElement(\'tr\');\n";
+print "    newAddDepotRow.setAttribute(\'id\', sitename+\'-addDepotClick\');\n";
+print "    \n";
+print "    // Creates the cell\n";
+print "    var newAddDepotCell = document.createElement(\'td\');\n";
+print "   \n";
+print "   	// Creates the button\n";
+print "    var newAddDepotButton = document.createElement(\'input\');\n";
+print "    newAddDepotButton.setAttribute(\'type\', \'button\');\n";
+print "    newAddDepotButton.setAttribute(\'value\', \'Add Depot\');\n";
+print "    newAddDepotButton.setAttribute(\'onClick\', \'addDepotClick(\"\'+sitename+\"-addDepotClick\"+\'\")\');\n";
+print "   \n";
+print "   	// Adds the button to the cell\n";
+print "    newAddDepotCell.appendChild(newAddDepotButton);\n";
+print "   \n";
+print "   	// Adds the row to the row\n";
+print "    newAddDepotRow.appendChild(newAddDepotCell);\n";
+print "    \n";
+print "    // Replaces the old row with the new row\n";
+print "    oldDepotRow.parentNode.appendChild(newAddDepotRow);\n";
+print "    oldDepotRow.parentNode.removeChild(oldDepotRow);\n";
+print "}\n";
+print "\n";
+print "\n";
+print "// Description: This function handles the add depot callback action. It changes the\n";
+print "//              row that the add depot button is found in so it take input from the user\n";
+print "//              for the new depot entry.\n";
+print "function addDepotClick(id)\n";
+print "{\n";
+print "\n";
+print "	// Gets the name of the site\n";
+print "    var sitename = id.split(\'-\')[0];\n";
+print "    \n";
+print "    // Gets the corresponding row that the add depot button was click\n";
+print "    var row = document.getElementById(id);\n";
+print "    \n";
+print "   	// Removes the children from the row\n";
+print "    for (var i=0; i<row.cells.length; i++)\n";
+print "    {\n";
+print "    	row.removeChild(row.cells[i]);\n";
+print "    }\n";
+print "        \n";
+print "    // Adds the new depot text cell\n";
+print "    var y = document.createElement(\'td\');\n";
+print "    y.appendChild(document.createTextNode(\'new depot\'));\n";
+print "    row.appendChild(y);\n";
+print "    \n";
+print "    y = document.createElement(\'td\');\n";
+print "    \n";
+print "    // Creates a form for adding the depot data\n";
+print "    var depotForm = document.createElement(\'form\');\n";
+print "    depotForm.setAttribute(\'id\', \'addDepotForm\');\n";
+print "    \n";
+print "    // Creates the hostname input field\n";
+print "    var hostInput = document.createElement(\'input\');\n";
+print "    hostInput.setAttribute(\'type\', \'text\');\n";
+print "    hostInput.setAttribute(\'name\', \'hostname\');\n";
+print "    hostInput.setAttribute(\'value\', \'hostname\');\n";
+print "    hostInput.setAttribute(\'id\', \'hostInput\');\n";
+print "    \n";
+print "    // Creates the port input field\n";
+print "    var portInput = document.createElement(\'input\');\n";
+print "    portInput.setAttribute(\'type\', \'text\');\n";
+print "    portInput.setAttribute(\'name\', \'port\');\n";
+print "    portInput.setAttribute(\'value\', \'port\');\n";
+print "    portInput.setAttribute(\'id\', \'portInput\');\n";
+print "    \n";
+print "    // Creates the add button\n";
+print "    var submit = document.createElement(\'input\');\n";
+print "    submit.setAttribute(\'type\', \'button\');\n";
+print "    submit.setAttribute(\'value\', \'Add\');\n";
+print "    submit.setAttribute(\'onClick\', \'addDepot(\"\'+sitename+\'\")\');\n";
+print "    \n";
+print "    oldDepotRow = row;\n";
+print "    \n";
+print "    // Adds the fields to the cell.\n";
+print "    depotForm.appendChild(hostInput);\n";
+print "    depotForm.appendChild(portInput);\n";
+print "    depotForm.appendChild(submit);\n";
+print "    y.appendChild(depotForm);\n";
+print "    row.appendChild(y);\n";
+print "}\n";
+print "\n";
+print "\n";
+print "\n";
+print "// Description: This function takes the serialized form of the warmer and transforms into an\n";
+print "//              an array of sites with each site having an array of the depots that belong\n";
+print "//              to it.\n";
+print "// Input:  s - string that holds the serialized form of the warmer.\n";
+print "function deserializeWarmer(s)\n";
+print "{\n";
+print "\n";
+print "	// Holds the  sites\n";
+print "    var sites     = new Array();\n";
+print "    \n";
+print "    // Holds the current site and depot\n";
+print "    var currSite  = \"\";\n";
+print "    var currDepot = \"\";\n";
+print "\n";
+print "	// Splits the input string into substrings based on the # delimiter\n";
+print "    substrings = s.split(\'#\');\n";
+print "\n";
+print "    // Traverses the substrings handling the site and depot entries.\n";
+print "    for (var i in substrings)\n";
+print "    {\n";
+print "    	// Finds a new site.\n";
+print "        if(substrings[i].match(/site=.*/))\n";
+print "        {\n";
+print "        	//Gets the name of the current site\n";
+print "            currSite = substrings[i].slice(5);\n";
+print "            \n";
+print "			// Creates an entry for the new site in the sites array.\n";
+print "            if(sites[currSite] == null)\n";
+print "            {\n";
+print "                sites[currSite] = new Array();\n";
+print "            }\n";
+print "\n";
+print "		// Finds a new depot for the current site.\n";
+print "        }else if(substrings[i].match(/depot=.*/))\n";
+print "        {\n";
+print "        	//Gets the name of the current depot\n";
+print "            currDepot = substrings[i].slice(6);\n";
+print "            \n";
+print "			// Appends the depot to the list of depots for the current site.\n";
+print "            sites[currSite][sites[currSite].length] = currDepot;\n";
+print "        }\n";
+print "    }\n";
+print "\n";
+print "   	// Returns the current site.\n";
+print "    return sites;\n";
+print "}\n";
+print "\n";
+print "// Description: This function removes a site hierachy from the table.\n";
+print "// Input: sitename - string that holds the name of the site to remove.\n";
+print "function deleteSite(sitename)\n";
+print "{\n";
+print "   // Gets the rows for the sitename and depots     \n";
+print "   var siteNode       = document.getElementById(sitename);\n";
+print "   var siteDepotsNode = document.getElementById(sitename+\"-depots\");\n";
+print "   \n";
+print "   // Removes them from the sites table.\n";
+print "   siteDepotsNode.parentNode.removeChild(siteDepotsNode);\n";
+print "   siteNode.parentNode.removeChild(siteNode);\n";
+print "}\n";
+print "\n";
+print "// Description: This function serializes the warmer held in the document to a string.\n";
+print "// Output: It returns the serialized string of the warmer.\n";
+print "function serializeWarmer()\n";
+print "{\n";
+print "	// Initializes the string that holds the serialized form of the warmer\n";
+print "	var output   = \"\";\n";
+print "	\n";
+print "	// Gets the sites table\n";
+print "	var sitesTableNode = document.getElementById(\'sites-table\');\n";
+print "	\n";
+print "	// Traverses the elements of the site table to get the sites and the depots for each\n";
+print "	// site.\n";
+print "	for (var i=0; i < sitesTableNode.rows.length-1; i += 2)\n";
+print "	{\n";
+print "		// Gets the current row.\n";
+print "		var trNode = sitesTableNode.rows[i];\n";
+print "	\n";
+print "		// Adds the site to the serialized string.\n";
+print "		output += \'#site=\' + trNode.id;\n";
+print "		\n";
+print "		// Gets the depots for the site\n";
+print "		var depotTrNode = sitesTableNode.rows[i+1];\n";
+print "		\n";
+print "		if (depotTrNode.id == (trNode.id + \"-depots\"))\n";
+print "		{\n";
+print "			// Gets the depot table.\n";
+print "			var depotsTableNode = depotTrNode.cells[0].childNodes[0];\n";
+print "			\n";
+print "			// Traverses the rows of the depot table getting each depot listed.\n";
+print "			for (var j=0; j<depotsTableNode.rows.length; j++)\n";
+print "			{\n";
+print "				depotRowNode = depotsTableNode.rows[j];\n";
+print "				\n";
+print "				// Adds the depot to the serialized string.\n";
+print "				if(depotRowNode.cells.length == 2)\n";
+print "				{\n";
+print "					output += \'#depot=\' + depotRowNode.cells[0].childNodes[0].data;\n";
+print "				}\n";
+print "			}\n";
+print "		}\n";
+print "	}\n";
+print "	\n";
+print "	// Ends the serialized string.\n";
+print "	output += \'#\';\n";
+print "	\n";
+print "	return output;\n";
+print "}\n";
+print "\n";
+print "function submit()\n";
+print "{\n";
+print "   var serializedWarmer = serializeWarmer();\n";
+print "   document.warmerForm.serializedWarmer.value = serializedWarmer;\n"; 
+print "   document.warmerForm.submit();\n"; 
+print "}\n";
+print "\n";
+print "// Function: This function reads the input from the new site input field and adds the\n";
+print "//           site to the sites table.  It then restores the button for adding a site.\n";
+print "function addSite()\n";
+print "{\n";
+print "	// Gets the input field for the site entry field.\n";
+print "	var newSiteNameInput = document.getElementById(\'new-site-input\');\n";
+print "\n";
+print "	// Gets the name of the new site from the field.\n";
+print "	sitename = newSiteNameInput.value;\n";
+print "\n";
+print "	var skipAdding = false;\n";
+print "	\n";
+print "	// Gets an array of all of the sites.\n";
+print "	var siteList = getSites();\n";
+print "\n";
+print "	// Searches the list for duplicate sites and if one is found then it informs the\n";
+print "	// user.\n";
+print "	for (var i in siteList)\n";
+print "	{\n";
+print "		if(siteList[i] == sitename)\n";
+print "		{\n";
+print "			skipAdding = true;\n";
+print "			 \n";
+print "			// Displays an alert\n";
+print "    		alert(\'Site \' + sitename +\' already exists!\');\n";
+print "    \n";
+print "			break;\n";
+print "		}\n";
+print "	}\n";
+print "\n";
+print "	// Assuming the name is valid it adds it to the site table along with the depot table for\n";
+print "	// the site.\n";
+print "	if(sitename.length > 0 && !skipAdding)\n";
+print "	{ \n";
+print "		// Gets the html node for the site table.\n";
+print "		var sitesTableNode = document.getElementById(\'sites-table\');\n";
+print "		\n";
+print "		// Creates a row for the sitename.\n";
+print "		var siteRow =  sitesTableNode.insertRow(sitesTableNode.rows.length); \n";
+print "		siteRow.setAttribute(\'id\', sitename);\n";
+print "		\n";
+print "		// Inserts a cell with name of the site into the site row. \n";
+print "		var siteNameCell = siteRow.insertCell(0); \n";
+print "		siteNameCell.appendChild(document.createTextNode(sitename));\n";
+print "		\n";
+print "		// Inserts a cell into the row with the delete site input button.\n";
+print "		var deleteSiteCell = siteRow.insertCell(1); \n";
+print "		\n";
+print "		// Creates and adds the button for removing the site.\n";
+print "		var deleteSiteButton = document.createElement(\'input\');\n";
+print "		deleteSiteButton.setAttribute(\'type\', \'button\');\n";
+print "		deleteSiteButton.setAttribute(\'value\', \'Delete\');\n";
+print "		deleteSiteButton.setAttribute(\'onClick\', \'deleteSite(\"\'+sitename+\'\")\');\n";
+print "		deleteSiteCell.appendChild(deleteSiteButton);\n";
+print "	   \n";
+print "		// Inserts a row for holding the depots that belong to the site.\n";
+print "		var depotsRow = sitesTableNode.insertRow(sitesTableNode.rows.length);   \n";
+print "		depotsRow.setAttribute(\'id\', sitename+\'-depots\');\n";
+print "		\n";
+print "		// Creates the depot table\n";
+print "		var depotTableNode = document.createElement(\'table\');\n";
+print "		depotTableNode.setAttribute(\'border\', \'1\');\n";
+print "		\n";
+print "		// Puts the table into the depot row.\n";
+print "		var cell = depotsRow.insertCell(0);\n";
+print "		cell.appendChild(depotTableNode);\n";
+print "		\n";
+print "		// Creates row for the add depot button\n";
+print "		var addDepotRow = depotTableNode.insertRow(depotTableNode.rows.length);\n";
+print "		addDepotRow.setAttribute(\'id\', sitename+\'-addDepotClick\');\n";
+print "		\n";
+print "		// Creates a cell for the row for holding the button.\n";
+print "		var addDepotCell = addDepotRow.insertCell(0);\n";
+print "		\n";
+print "		// Creates the add depot button and adds it to the above cell.\n";
+print "		var addDepotButton = document.createElement(\'input\');\n";
+print "		addDepotButton.setAttribute(\'type\', \'button\');\n";
+print "		addDepotButton.setAttribute(\'value\', \'Add Depot\');\n";
+print "		addDepotButton.setAttribute(\'onClick\', \'addDepotClick(\"\'+sitename+\'-addDepotClick\")\');\n";
+print "		addDepotCell.appendChild(addDepotButton);\n";
+print "    }\n";
+print "    \n";
+print "    // Gets the table for adding a new site\n";
+print "    var newSiteTableNode = document.getElementById(\'new-site-table\');\n";
+print "    \n";
+print "    // Deletes the row containing the fields for inputing a new site.\n";
+print "    newSiteTableNode.deleteRow(0);\n";
+print "    \n";
+print "    // Inserts a row with a new cell into the newSiteTable.\n";
+print "    var newSiteRow = newSiteTableNode.insertRow(0);\n";
+print "    var newSiteTextCell = newSiteRow.insertCell(0);\n";
+print "    \n";
+print "    // Creates and adds the Add Site button to the newSiteRow for adding a new site\n";
+print "    var newSiteInput = document.createElement(\'input\');\n";
+print "    newSiteInput.setAttribute(\'type\', \'button\');\n";
+print "    newSiteInput.setAttribute(\'value\', \'Add Site\');\n";
+print "    newSiteInput.setAttribute(\'onClick\', \'addSite2()\');\n";
+print "    newSiteTextCell.appendChild(newSiteInput);\n";
+print "}\n";
+print "\n";
+print "// Description: This function transforms the add Site row for taking input from the user\n";
+print "//              for the name of the site.\n";
+print "function addSite2()\n";
+print "{\n";
+print "	//  Gets the html node for adding a new site.\n";
+print "	var newSiteTableNode = document.getElementById(\'new-site-table\');\n";
+print "	\n";
+print "	// Deletes the current Add Site button and the row containing it.\n";
+print "	newSiteTableNode.deleteRow(0);\n";
+print "	\n";
+print "	// Inserts a new row for holding the new fields.\n";
+print "	var newSiteRow = newSiteTableNode.insertRow(0);\n";
+print "	\n";
+print "	// Inserts a text cell with the new site text.\n";
+print "	var newSiteTextCell = newSiteRow.insertCell(0);\n";
+print "	newSiteTextCell.appendChild(document.createTextNode(\'New Site:\'));\n";
+print "	\n";
+print "	// Inserts a cell with an html text input field for entering the new sitename.\n";
+print "	var newSiteNameCell  = newSiteRow.insertCell(1);\n";
+print "	var newSiteNameInput = document.createElement(\'input\');\n";
+print "	newSiteNameInput.setAttribute(\'id\', \'new-site-input\');\n";
+print "	newSiteNameInput.setAttribute(\'type\', \'text\');\n";
+print "	newSiteNameCell.appendChild(newSiteNameInput);\n";
+print "\n";
+print "	// Inserts a cell with the an html input button for adding the new site.\n";
+print "	var newSiteNameButtonCell = newSiteRow.insertCell(2);\n";
+print "	var newSiteNameButton     = document.createElement(\'input\');\n";
+print "	newSiteNameButton.setAttribute(\'type\', \'button\');\n";
+print "	newSiteNameButton.setAttribute(\'value\', \'Add\');\n";
+print "	newSiteNameButton.setAttribute(\'onClick\', \'addSite()\');\n";
+print "	newSiteNameButtonCell.appendChild(newSiteNameButton);\n";
+print "}\n";
+print "\n";
+print "// Description: This function initializes the html webpage with a sites table and buttons for\n";
+print "//              manipulating the content.\n";
+print "// Input: serializedWarmer - string that holds a representation of the warmer.\n";
+print "function initialize(serializedWarmer)\n";
+print "{\n";
+print "   	// Gets an array description of the warmer.\n";
+print "    sites = deserializeWarmer(serializedWarmer);\n";
+print "\n";
+print "	// Creates the table \n";
+print "    document.writeln(\'<table id=\"sites-table\" border=\"2\">\');\n";
+print "    \n";
+print "    // Traverses the sites array adding each site and depot.\n";
+print "    for (s in sites)\n";
+print "    {\n";
+print "    	// Inserts the name of the site and depot.\n";
+print "        document.writeln(\'<tr id=\"\'+s+\'\"><td>\'+s+\'</td><td><input type=\"button\" value=\"Delete\" onClick=\"deleteSite(\\\'\'+s+\'\\\')\" /></td></tr>\');\n";
+print "        document.writeln(\'<tr id=\"\'+s+\'-depots\'+\'\"><td><table border=\"1\">\');\n";
+print "\n";
+print "		// Adds the depots for the current site.\n";
+print "        for (d in sites[s])\n";
+print "        {\n";
+print "            var id = s + \':\' + d;\n";
+print "\n";
+print "            document.writeln(\'<tr id=\"\'+id+\'\">\');\n";
+print "            document.writeln(\"<td>\" +sites[s][d] + \"</td>\" + \'<td><input type=\"button\" value=\"Delete\" onclick=\"deleteDepot(\\\'\'+id+\'\\\')\" /></td>\');\n";
+print "            document.writeln(\"</tr>\");\n";
+print "        }\n";
+print "        document.writeln(\'<tr id=\"\'+s+\'-addDepotClick\">\');\n";
+print "        document.writeln(\'<td><input type=\"button\" value=\"Add Depot\" onclick=\"addDepotClick(\\\'\' + s+\"-addDepotClick\" +\'\\\')\"></td>\');\n";
+print "        document.writeln(\'</tr>\');\n";
+print "\n";
+print "        document.writeln(\"</table></td></tr>\");\n";
+print "    }\n";
+print "\n";
+print "    document.writeln(\'</table>\');\n";
+print "    \n";
+print "   	// Adds a button for inputing new sites \n";
+print "    document.writeln(\'<table id=\"new-site-table\"><tr><td><input type=\"button\" value=\"Add Site\" onClick=\"addSite2()\" /></td></tr></table>\');\n";
+print "    \n";
+print "   	// Adds a button for submitting the new warmer to lodn\n";
+print "    document.writeln(\'<input type=\"button\" onClick=\"submit()\" value=\"Save Warmer\">\'); \n";
+print "document.writeln(\'<form name=\"warmerForm\" action=\"lodn_warmer_control.cgi\">\');\n";
+print "document.writeln(\'<input type=\"hidden\" name=\"action\" value=\"write\">\');\n";
+print "document.writeln(\'<input type=\"hidden\" name=\"serializedWarmer\" value=\"\">\');\n";
+print "document.writeln(\'<input type=\"hidden\" name=\"file\" value=\"$filenames\">\');\n";
+print "document.writeln(\'</form>\');\n";
+print "}\n";
+print "\n";
+print "\n";
+print "</script>\n";
+print "\n";
+print "</head>\n";
+print "\n";
+print "<body>\n";
+print "\n";
+print "<script type=\"text/javascript\">\n";
+print "<!--\n";
+print "    initialize(\"$serializedWarmer\");\n";
+print "//-->\n";
+print "</script>\n";
+print "\n";
+print "</body>\n";
+print "</html>\n";
+
+
+
+}
+
+# Handles the actions
+if(defined($action))
+{
+        # Show the warmer window.
+	if ( $action eq "window" ) 
+	{
+                # Finds the warmer file.
+                my $warmerfile = &find_warmer_file($files[0]);
+
+                # Gets the sites
+                %sites  = &read_in_warmer($warmerfile);
+		
+                # Gets a serialized form of the warmer
+                $serialform = &serialize_warmer(\%sites);
+
+                # Diplays the window for warmer updating and display
+                &display($serialform);
+
+        # Writes the warmer
+	}elsif ( $action eq "write" )
+	{
+                # Gets the serialized form of the warmer from the parameters
+	        $serialform = param('serializedWarmer');
+
+                # Gets a hash representation of sites from the serialized form.
+                %sites = &deserialize_warmer($serialform);
+
+                # Checks the validility of the entries for the sites.
+                &verify_warmer(\%sites);
+
+                # Iterates over the files writing their warmers.
+                for $fullpathname (@files)
+                {
+                   # Writes the warmer
+	               &write_warmer(\%sites, $fullpathname.".warmer");
+	               
+	               print "<br/>Successfully Updated Warmer for $fullpathname!\n";
+                }
+	}else 
+	{
+		print "<html><head><title>Error!</title></head><body>\n";
+		print "Invalid action</body>\n";
+		exit;
+	}
+}
+

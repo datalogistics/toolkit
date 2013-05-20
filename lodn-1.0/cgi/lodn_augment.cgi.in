@@ -1,0 +1,214 @@
+@PERL@ -w
+use Digest::MD5 qw(md5_hex);
+use strict;
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:netscape :standard *table vars canter img);
+use constant LODN_CFG =>@LODN_CFG@;
+my $LODN_ETC;
+#user and password can be either be taken from the cookie or can be taken in param(from url for future work)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+my $user;
+my $password;
+my %mydata;
+my $hashref;
+my $userfile ;
+my $LORS_TOOLS_BIN;
+my $CONTENT_DIR;
+my $info;
+my $filestr;
+my @files;
+my $form;
+my $copies;
+my $type;
+my $days;
+my $location;
+#read from config file
+
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $user=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $user=$Puser;
+   $password=$Ppassword;
+  }
+
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+   while(<CONFIG>) {
+      s/\#.*//;
+      s/^\s+//;
+      s/\s+$//;
+      if(/^CONTENT_DIR\s+(\S*)/) {
+        $CONTENT_DIR=$1;
+      }
+      if(/^LORS_TOOLS_BIN\s+(\S*)/) {
+        $LORS_TOOLS_BIN=$1;
+      }if(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+
+   }
+   close(CONFIG);
+   if(!(defined $CONTENT_DIR) || !(defined $LORS_TOOLS_BIN)) {
+      print header();
+      print "<html><head></head><body>LoDN config incomplete</body></html>";
+      exit;
+   }
+  if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+
+$userfile = "$LODN_ETC/userinfo";
+#if the user has a cookie
+if(defined $user) { 
+        eval
+        {
+          $info = retrieve ("$userfile");
+        };
+
+        if($@)
+        {
+             print header();
+             print "Error accessing user info database\n";
+             exit;
+        }
+
+        # alter entered password to match altered password saved in database
+         $password =md5_hex($password,$user);
+
+        # load info into hash
+         %mydata = %{$info};
+
+   if ($password eq $mydata{$user}[3])
+   {
+    #check to see if the user is logged on still (in the db)
+    if($mydata{$user}[6] eq "no") {
+      #if not, redirect the user to the login page
+      #print redirect(-uri=>'../login.html');
+      print header();
+      print "<html><head><title>Oops!</title></head><body>\n";
+      print "User still no longer in the db.<br><hr>\n",
+      "<center><form onSubmit='javascript:window.close()'>",
+      "<input type='submit' value='OK'>",
+      "</form></center>",
+      "</body></html>";
+      exit(0);
+      }
+    }
+}
+else {
+  #print redirect(-uri=>'../autologout.html');
+   print header();
+   print "<html><head><title>Time expired!</title></head><body>\n";
+   print "Your time is expired. Please log in.<br><hr>\n",
+     "<center><form onSubmit='javascript:window.close()'>",
+     "<input type='submit' value='OK'>",
+     "</form></center>",
+     "</body></html>";
+  exit;
+}
+
+# put all code here to print out page or redirect user to good page
+
+
+
+# Constants (as such)
+
+# CGI parameters
+$filestr=param('file');
+$form=param('form');
+$copies=param('copies');
+$type=param('type');
+$days=param('days');
+$location=param('location');
+
+
+print header,
+      start_html('LoDN - Augment exNode');
+
+unless($form) {
+  print "\n<form action='lodn_augment.cgi'>",
+    # "<input type='hidden' name='subdir' value='$subdir'>\n",
+    "<input type='hidden' name='file' value='$filestr'>\n",
+    "<input type='hidden' name='form' value=1>\n",
+    "<table>",
+    "  <tr>",
+    "    <td>Copies:</td>",
+#copies
+    "    <td><select name='copies'>\n",
+    "         <option>1\n",
+    "         <option>2\n",
+    "         <option>3\n",
+    "        </select></td></tr>",
+    "  <tr><td>Storage Type:</td>",
+    "    <td>",
+#type
+    "    <select name='type'>\n",
+    "      <option value='-s'>Soft\n",
+    "      <option value='-h'>Hard\n",
+    "    </select></td></tr>\n",
+    "  <tr><td>Duration:</td><td>\n",
+#days
+    "    <select name='days'>\n",
+    "      <option value='1h'>1 Hour\n",
+    "      <option value='6h'>6 Hours\n",
+    "      <option value='12h'>12 Hours\n",
+    "      <option selected value='1d'>1 Day\n",
+    "      <option value='3d'>3 Days\n",
+    "    </select></td></tr>",
+    "  <tr><td>Location:</td><td><input type=text name='location'></td></tr>",
+    "</table>\n",
+    "<input type='submit' value='Augment'>",
+    "</form>\n";
+
+  goto FALLOFF;
+}
+
+print "Augmenting file (this could take a while)...<br>";
+
+
+
+@files = split ':', $filestr;
+
+while(my $f = shift @files) {
+
+  $f =~ s/ /\\ /g;
+  print "$f ...";
+  `$LORS_TOOLS_BIN\/lors_augment $CONTENT_DIR$f -o $CONTENT_DIR$f $type -d $days -c $copies -l \"$location\" -t 18`;
+  print " done<br>";
+}
+
+
+# $file =~ s/ /\\ /g;
+# `$LORS_TOOLS_BIN\/lors_augment $CONTENT_DIR/$subdir/$file -o $CONTENT_DIR/$subdir/$file $type -d $days -c $copies -l \"$location\" -t 18`;
+
+
+
+
+
+
+print "\n",
+      "<p>",
+      "<form onSubmit='javascript:window.close()'>",
+      "<input type='submit' value='OK'>",
+      "</form>";
+
+FALLOFF:
+print end_html();

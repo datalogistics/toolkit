@@ -1,0 +1,43 @@
+@PERL@ -w
+
+use strict;
+use File::Find ();
+use Fcntl ':flock';
+
+
+# Prevents multiple instances of the program from running at the same time.
+open(SELF, "<$0") or die "Can't access my own code for reading";
+if(not flock(SELF, LOCK_EX | LOCK_NB))
+{
+	exit(0);
+}
+
+
+# Free exnode command
+my $LODN_FREE_EXNODE = "@LODN_TOOLS@/LoDN_Free_Exnode";
+
+# Used by the find function to execute the free
+# exnode command on the exnode files.
+sub freeExnode 
+{
+   # Exnode file so free it
+   if( -f $_ && m/.*\.xnd$/ )
+   {
+      `$LODN_FREE_EXNODE $_`;
+      `rm -f $_`;
+   }elsif(-d $_ && ($_ ne "."))
+   {
+      `rmdir $_`;
+   }
+
+}
+
+if(defined($ARGV[0]))
+{
+   # Gets the directory or file to free
+   my @directories = ($ARGV[0]);
+
+   # Recursively searches for the exnode files to free under
+   # the given directory or file using the specified function.  
+   File::Find::finddepth(\&freeExnode, @directories);
+}

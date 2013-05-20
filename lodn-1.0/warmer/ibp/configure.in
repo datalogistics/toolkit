@@ -1,0 +1,196 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(ibp,1.4.0.4)
+AC_CONFIG_SRCDIR(src/ibp_main.c)
+
+dnl AC_INIT(src/ibp_main.c)
+
+dnl Checks for system 
+AC_CANONICAL_SYSTEM
+dnl AC_CANONICAL_HOST
+
+dnl setup IBP version
+version_major="1.4"
+version_minor="0.4"
+
+AC_SUBST(version_major)
+AC_SUBST(version_minor)
+
+dnl automake 
+AC_CONFIG_HEADER(include/config-ibp.h)
+dnl AM_INIT_AUTOMAKE("ibp","${version_major}.${version_minor}")
+AM_INIT_AUTOMAKE
+
+dnl setup default prefix 
+AC_PREFIX_DEFAULT("`pwd`/local")
+TOP_SRCDIR="`pwd`"
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_GCC_TRADITIONAL
+AC_PROG_INSTALL
+AC_AIX
+AC_FUNC_ALLOCA
+AC_PROG_MAKE_SET
+dnl AC_PROG_RANLIB
+AC_PROG_LN_S
+
+dnl Check path for ping
+AC_PATH_PROG(IBP_NFU_PING,ping,"ping","/usr/sbin:/sbin:/usr/bin:/bin")
+
+dnl Checks for libtool
+dnl AC_DISABLE_SHARED
+AM_PROG_LIBTOOL
+dnl AC_PROG_LIBTOOL
+AC_SUBST(LIBTOOL_DEPS)
+
+dnl Checks for libraries.
+AC_CHECK_LIB(pthread,pthread_create,,AC_CHECK_LIB(pthread,__pthread_mutex_init))
+AC_CHECK_LIB(c_r,pthread_create)
+AC_CHECK_LIB(socket, connect)
+AC_CHECK_LIB(getpagesize,c)
+AC_CHECK_LIB(nsl,getaddrinfo)
+AC_CHECK_LIB(nsl,gethostbyname)
+AC_CHECK_LIB(ssl,SSL_free)
+AC_CHECK_LIB(crypto,X509_NAME_get_text_by_NID)
+AC_CHECK_LIB(m,pow)
+AC_CHECK_LIB(dl,dlopen)
+
+dnl Checks for header files.
+AC_HEADER_DIRENT
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS(fcntl.h limits.h malloc.h strings.h sys/file.h sys/time.h unistd.h ctype.h)
+AC_CHECK_HEADERS(sys/utsname.h sys/wait.h sys/stat.h sys/select sys/un.h)
+AC_CHECK_HEADERS(pthread.h ,  , AC_MSG_ERROR("Can not find pthread.h!"))
+if test "$ac_cv_header_pthread_h" != "yes"; then
+    PTHREAD_SUPPORTED=0
+else
+    PTHREAD_SUPPORTED=1
+fi
+AC_SUBST(PTHREAD_SUPPORTED)
+AC_CHECK_HEADERS( sys/mman.h arpa/inet.h  sys/socket.h netinet/in.h netdb.h)
+AC_CHECK_HEADERS(sys/statvfs.h sys/vfs.h sys/resource.h sys/socketvar.h)
+AC_CHECK_HEADERS(sys/sockio.h sys/param.h sys/mount.h assert.h stdint.h dlfcn.h)
+AC_CHECK_HEADERS(openssl/ssl.h)
+AC_ENABLE_AUTHENTICATION
+if test "x$ac_cv_header_openssl_ssl_h" = "xyes"; then
+    if test "x$enable_authentication" = "xyes"; then
+        AC_DEFINE([IBP_AUTHENTICATION], 1, [Define to 1 if use authentication.])
+    fi
+fi
+if test "X$enable_authentication" = "xyes"; then
+    if test "x$ac_cv_header_openssl_ssl_h" = "xno"; then
+        AC_MSG_ERROR("Can not find openssl library!")
+    fi
+fi
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
+TYPE_SOCKLEN_T
+TYPE_INT64_T
+AC_CHECK_TYPE(ulong_t, unsigned long int)
+AC_CHECK_TYPE(ushort_t, unsigned short int)
+
+dnl checking struct addrinfo 
+AC_CHECK_MEMBERS([struct addrinfo.ai_family],,,[#include <netdb.h>])
+if test "$ac_cv_member_struct_addrinfo_ai_family" = "yes"; then
+    HAVE_STRU_ADDRINFO=1
+else
+    HAVE_STRU_ADDRINFO=0
+fi
+AC_CHECK_MEMBERS([struct statvfs64.f_bsize],,,[#include <sys/statvfs.h>])
+AC_CHECK_MEMBERS([struct sockaddr_in.sin_len],,,[#include <stdio.h>
+                                                 #include <netinet/in.h>])
+dnl Checks for library functions.
+AC_TYPE_SIGNAL
+AC_FUNC_VPRINTF
+AC_CHECK_FUNCS(gettimeofday select socket strdup strerror uname)
+AC_CHECK_FUNCS(statvfs statfs)
+AC_CHECK_FUNCS(strtok_r)
+AC_CHECK_FUNCS(getaddrinfo freeaddrinfo)
+AC_CHECK_FUNCS(getrlimit setrlimit)
+AC_CHECK_FUNCS(statvfs64)
+if test "$ac_cv_func_getaddrinfo" = "yes"; then
+    HAVE_FUNC_GETADDRINFO=1
+else
+    HAVE_FUNC_GETADDRINFO=0
+fi
+
+OSF_OS=0
+DYN_LIB_SUFFIX=so
+MDNS_FLAGS=""
+dnl configure fails to check getaddrinfo correctly on osf 
+case "$build_os" in
+linux*)
+    MDNS_FLAGS="-DNOT_HAVE_SA_LEN "
+    ;;
+openbsd*)
+    MDNS_FLAGS="-DHAVE_BROKEN_RECVDSTADDR"
+    ;;
+osf*)
+    HAVE_FUNC_GETADDRINFO=1
+    OSF_OS=1
+    ;;
+solaris*|sunos4*)
+    MDNS_FLAGS="-DNOT_HAVE_DAEMON -DNOT_HAVE_SA_LEN -D_XPG4_2 -D__EXTENSIONS__ -DHAVE_BROKEN_RECVIF_NAME"
+    AC_DEFINE([_POSIX_PTHREAD_SEMANTICS], 1, [Define to 1 if use solaris.])
+    ;;
+darwin*)
+    DYN_LIB_SUFFIX=dylib
+esac
+AC_SUBST(OSF_OS)
+AC_SUBST(DYN_LIB_SUFFIX)
+AC_SUBST(MDNS_FLAGS)
+
+if test "$ac_cv_func_freeaddrinfo" = "yes"; then
+    HAVE_FUNC_FREEADDRINFO=1
+else
+    HAVE_FUNC_FREEADDRINFO=0
+fi
+
+AC_ENABLE_PERSISTENT
+if test "x$enable_persistent" = "xyes"; then
+    PERSISTENT_CONN=1
+else
+    PERSISTENT_CONN=0
+fi
+
+AC_ENABLE_BONJOUR
+if test "x$enable_bonjour" = "xyes"; then
+    ENABLE_BONJOUR=1
+else
+    ENABLE_BONJOUR=0
+fi
+
+AM_CONDITIONAL(BONJOUR, test x$enable_bonjour = xyes)
+
+AC_SUBST(PERSISTENT_CONN)
+AC_SUBST(ENABLE_BONJOUR)
+AC_SUBST(HAVE_STRU_ADDRINFO)
+AC_SUBST(HAVE_FUNC_GETADDRINFO)
+AC_SUBST(HAVE_FUNC_FREEADDRINFO)
+
+dnl if test "x$prefix" = xNONE; then
+dnl     PREFIX=$ac_default_prefix
+dnl else
+dnl     PREFIX=$prefix
+dnl fi
+
+dnl enable debug
+AC_ENABLE_DEBUG
+if test "x$enable_debug" = "xyes"; then
+    AC_DEFINE([IBP_DEBUG], 1, [Define to 1 if in debug mode.])
+fi
+AM_CONDITIONAL(DEBUG, test x$enable_debug = xyes)
+
+dnl build ibp client library only
+AC_ENABLE_IBPCLIENT_ONLY
+AM_CONDITIONAL(CLIENTONLY, test x$enable_clientonly = xyes )
+
+AC_OUTPUT(Makefile src/Makefile include/Makefile include/ibp_errno.h
+          include/ibp_net.h include/ibp_version.h src/BLASTER/Makefile
+          include/ibp_mdns.h src/TCP/Makefile src/MULTICAST/Makefile 
+          etc/nfu.cfg etc/ibp.cfg
+          src/nfuops/Makefile etc/Makefile doc/Makefile )

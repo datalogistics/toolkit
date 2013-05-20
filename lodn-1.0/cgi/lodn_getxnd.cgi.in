@@ -1,0 +1,142 @@
+@PERL@ -w
+use Digest::MD5 qw(md5_hex);
+use CGI qw(:netscape :standard *table vars canter img);
+use Storable qw(retrieve);
+use constant LODN_CFG =>@LODN_CFG@;
+my $LODN_ETC;
+my $file;
+my $shortfile;
+my $userfile;
+my $dir;
+my $cmd;
+my $line;
+my $size;
+my $CONTENT_DIR;
+#user and password can be either be taken from the cookie or can be taken in param(from url for future work)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+#my $user;
+my $password;
+my $info;
+
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $user=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $user=$Puser;
+   $password=$Ppassword;
+  }
+  
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+   while(<CONFIG>) {
+      s/\#.*//;
+      s/^\s+//;
+      s/\s+$//;
+      if(/^CONTENT_DIR\s+(\S*)/) {
+        $CONTENT_DIR=$1;
+      }if(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+
+   }
+   close(CONFIG);
+   if(!(defined $CONTENT_DIR) ) {
+      print header();
+      print "<html><head></head><body>LoDN config incomplete</body></html>";
+      exit;
+   }
+  if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+$userfile="$LODN_ETC/userinfo";
+
+$file=param("file");
+$shortfile=$file;
+$shortfile =~ s/.*\/([a-zA-Z0-9_\-\.]*.xnd)/$1/;
+
+if(!(defined $file) || !(defined $shortfile) || !($file =~ /xnd/) ) {
+
+      print redirect(-uri=>'lodn_browser.cgi');
+      exit;
+}
+
+if( !( -f "$CONTENT_DIR/$file" )) {
+    print header();
+    print "Error accessing file $file\n";
+    exit;
+}
+
+
+#if the user has a cookie
+if(defined $user) {
+        eval
+        {
+          $info = retrieve ("$userfile");
+        };
+
+        if($@)
+        {
+             print header();
+             print "Error accessing user info database\n";
+             exit;
+        }
+
+        # alter entered password to match altered password saved in database
+         $password =md5_hex($password,$user);
+
+        # load info into hash
+         %mydata = %{$info};
+
+ if ($password eq $mydata{$user}[3])
+  {
+    #check to see if the user is logged on still (in the db)
+    if($mydata{$user}[6] eq "no") {
+    
+      #if not, redirect the user to the login page
+      print redirect(-uri=>'../index.html');
+      exit(0);
+    }
+ }
+}
+else {
+  print redirect(-uri=>'../autologout.html');
+  exit;
+}
+
+$cmd = "cat $CONTENT_DIR/$file";
+open(RO, "$cmd |") || die "Content-Type: text/txt\n Error\n";
+
+$line = join '', <RO>;
+$line =~ s/\s*<exnode:metadata name="(warmer|status|broken_since|number_of_copies|original_filesize).*?<\/exnode:metadata>//msg;
+
+$size = length $line;
+
+if( $size<50) {
+
+  print header();
+  print "Error accessing file $file\n";
+  exit;
+}
+
+print "Content-Type: application/x-xnd\n";
+print "Content-Length: $size\n";
+print "Content-Disposition: filename=$shortfile\n\n";
+print $line;
+

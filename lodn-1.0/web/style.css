@@ -1,0 +1,601 @@
+/*To go back to original chance background-color of boxcontent and boxitem to E6F2FF */
+
+/* Theme Classes */
+
+body {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px;
+background-color: #4c4f41;
+background-image: url(images/bgstripe.gif);
+margin-left: 0px;
+margin-top: 30px;
+margin-right: 15px;
+margin-bottom: 50px;
+line-height: 15px;
+}
+
+div.readme {
+  background-color: blue; 
+  border-style: none;
+}
+
+p {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px;
+margin-top: 0px;
+margin-bottom: 0px;
+line-height: 15px;
+}
+
+li {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px;
+}
+
+p li {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px;
+}
+
+h1 {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-weight: "bold";
+font-size: 13px;
+letter-spacing: 0em;
+text-align: left;
+margin-top: 0px;
+margin-bottom: 0px;
+color: 934600;
+}
+
+h2 {
+font-family: Arial, Helvetica, sans-serif;
+font-weight: "bold";
+font-size: 12px;
+letter-spacing: 0em;
+margin-top: 0px;
+margin-bottom: 0px;
+}
+
+h3 {
+font-family: Arial, Helvetica, sans-serif;
+font-size: 12px;
+letter-spacing: 0em;
+margin-top: 0px;
+margin-bottom: 0px;
+text-align: center;
+}
+
+
+FONT { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 11px; 
+}
+
+INPUT, SELECT, TEXTAREA, FORM { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 11px; 
+}
+
+a { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+color: #336699; 
+text-decoration: none; 
+font-size: 11px; 
+}
+
+a:active { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+color: #336699; 
+text-decoration: none; 
+font-size: 11px; 
+}
+a:visited { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+color: #336699; 
+text-decoration: none; 
+font-size: 11px; 
+}
+
+a:hover { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+color: #FF0000; 
+text-decoration: none; 
+font-size: 11px; 
+}
+
+a.header { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+color: #FFFFFF; 
+text-decoration: none; 
+}
+
+a.header:active { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+color: #FFFFFF; 
+text-decoration: none; 
+}
+
+a.header:visited { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+color: #FFFFFF; 
+text-decoration: none; 
+}
+
+a.header:hover { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+color: #FF0000; 
+text-decoration: none; 
+}
+
+td.menubox a {
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 11px; 
+color: #000000; //#4c4f41;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+}
+
+td.menubox a:active {
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 11px; 
+color: #4c4f41;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+}
+
+td.menubox a:visited {
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 11px; 
+color: #4c4f41;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+}
+
+td.menubox a:hover {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px; 
+color: #000000;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+}
+
+
+td.projectmenucell a {
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 11px; 
+color: #ffffff;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+padding-right: 25px;
+}
+
+td.projectmenucell a:active {
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 11px; 
+color: #ffffff;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+padding-right: 25px;
+}
+
+td.projectmenucell a:visited {
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 11px; 
+color: #ffffff;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+padding-right: 25px;
+}
+
+td.projectmenucell a:hover {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px; 
+color: #cccccc;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+padding-right: 25px;
+}
+
+td.footcell {
+background-color: #68272C;
+color #FFFFFF;
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+}
+
+td.footcell a {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px;
+color: #ffffff;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+}
+
+td.footcell a:active {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px;
+color: #ffffff;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+}
+
+td.footcell a:visited {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px;
+color: #ffffff;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+}
+
+td.footcell a:hover {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px;
+color: #cccccc;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+}
+
+
+
+
+/* PHP-Nuke Classes */
+
+.title { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+background: none; 
+color: #446688; 
+font-size: 13px; 
+font-weight: bold; 
+text-decoration: none; 
+text-align: left;
+}
+
+.pubmenu { 
+font-family: Arial, Helvetica, sans-serif; 
+background: none; 
+color: #934600; 
+font-size: 22px; 
+text-decoration: none; 
+text-align: left;
+}
+
+.pubsubmenu { 
+font-family: Arial, Helvetica, sans-serif; 
+background: none; 
+color: #FFFFFF; 
+font-size: 12px; 
+text-decoration: none; 
+text-align: left;
+}
+
+.pubtitle { 
+font-family: Arial, Helvetica, sans-serif; 
+background: none; 
+color: #446688; 
+font-size: 22px; 
+text-decoration: none; 
+text-align: left;
+}
+
+.pubtitle a:active {
+font-family: Arial, Helvetica, sans-serif; 
+color: #446688;
+font-size: 22px:
+text-align: center
+}
+
+.pubtitle a:visited {
+font-family: Arial, Helvetica, sans-serif; 
+color: #446688;
+font-size: 22px:
+text-align: center
+}
+
+.pubtitle a:hover {
+font-family: Arial, Helvetica, sans-serif; 
+color: #335577;
+font-size: 22px:
+text-align: center
+}
+
+
+.storytitle { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+background-color: #E6F2FF; 
+color: #336699; 
+font-size: 13px; 
+font-weight: bold; 
+}
+
+
+.content { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+background-color:transparent/*#FFFFFF*/; 
+color: #000000; 
+font-size: 11px; 
+}
+
+td.content {
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+background-color:transparent/*#FFFFFF*/; 
+color: #000000; 
+font-size: 11px; 
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+}
+
+.storycat { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+background: none; 
+color: #000000; 
+font-size: 13px; 
+font-weight: bold; 
+text-decoration: none 
+}
+
+.boxtitle { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+background-color: #336699; 
+color: #00ff00; 
+font-size: 12px; 
+font-weight: bold; 
+}
+
+.boxcontent { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-weight: bold; 
+color: #000000; 
+font-size: 11px; 
+}
+
+.menubox { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-weight: normal;
+}
+
+.blockitem { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+background-color:#FFFFFF; 
+color: #00ff00; 
+font-size: 12px; 
+}
+
+.option { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+background: none; 
+text-align: left;
+color: #4b6673; 
+font-size: 13px; 
+font-weight: bold; 
+text-decoration: none 
+}
+
+.tiny { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+background: none; 
+color: #000000; 
+font-size: 10px; 
+font-weight: normal; 
+text-decoration: none 
+}
+
+
+/* Alison's Classes */
+
+td.buttons {
+font-size: 25px;
+color: #444444;
+}
+
+td.buttons2 {
+font-size: 13px;
+color: #A2A5B0;
+}
+
+.leftcolumn {
+background-color: #ffffff;
+padding-top: 20px;
+padding-left: 20px;
+padding-right: 20px;
+padding-bottom: 20px;
+}
+
+.rightcolumn {
+background-color: #ffffff;
+//background-image: url(../images/dottedline.gif);
+//padding-top: 20px;
+//padding-left: 20px;
+//padding-right: 20px;
+//padding-bottom: 20px;
+}
+
+.cellcontent {
+background-color: #ffffff;
+}
+
+.titlecell {
+background-color: #68272C;
+vertical-align: top;
+height: 26px;
+}
+
+td.titlecell {
+background-color: #68272C;
+height: 26px;
+}
+
+.footcell {
+background-color: #68272C;
+color #FFFFFF;
+vertical-align: bottom;
+}
+
+.projecttitlecell {
+background-color: #333333;
+padding-left: 23px;
+text-align: center;
+}
+
+.projectmenucell {
+background-color: #68272c;
+text-align: center;
+padding-left: 25px;
+padding-top: 1px;
+padding-bottom: 2px;
+vertical-align: center;
+}
+
+.welcome {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-weight: "bold";
+font-size: 13px;
+letter-spacing: 0em;
+text-align: left;
+margin-top: 0px;
+margin-bottom: 0px;
+color: 4b6673;
+}
+
+.nsexnodecell {
+background-color: #ACC8CC;
+}
+
+.nsexnodecell a:hover {
+background-color: #D1F3F7;
+}
+
+.nslbonecell {
+background-color: #ACC8CC;
+}
+
+.nslbonecell a:hover {
+background-color: #D1F3F7;
+}
+
+.nsdsicell {
+background-color: #ffffff;
+}
+
+.nsdsicell a:hover {
+background-color: #C7C5C5;
+}
+
+.nsibpcell {
+background-color: #ACC8CC;
+}
+
+.nsibpcell a:hover {
+background-color: #D1F3F7;
+}
+
+.nslorscell {
+background-color: #ACC8CC;
+}
+
+.nslorscell a:hover {
+background-color: #D1F3F7;
+}
+
+//Block styles, catagorizes according to text needs (LD: left dark, LL: left light)
+/*****************************/
+
+td.LLBlocks {
+font-size: 13px;
+color: #68272C;
+}
+
+td.LLBlocks a {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 13px;
+color: #A2A5B0;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+}
+
+td.LLBlocks a:active {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 13px;
+color: #A2A5B0;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+}
+
+td.LLBlocks a:visited {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 13px;
+color: #A2A5B0;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+}
+
+td.LLBlocks a:hover {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 13px;
+color: #999999;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+}
+
+td.LDBlocks {
+font-size: 11px;
+color: #68272C;
+}
+
+td.LDBlocks a {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px;
+color: #68272C;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+}
+
+td.LDBlocks a:active {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11;
+color: #68272C;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+}
+
+td.LDBlocks a:visited {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px;
+color: #68272C;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+}
+
+td.LDBlocks a:hover {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px;
+color: #000000;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+}
+
+

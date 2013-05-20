@@ -1,0 +1,154 @@
+@PERL@ -w
+use strict;
+use Storable qw(store retrieve freeze thaw dclone);
+use CGI qw(:netscape :standard *table vars canter img);
+use Digest::MD5 qw(md5_hex);
+use constant LODN_CFG => @LODN_CFG@;
+# Constants (as such)
+my $CONTENT_DIR;
+my $LODN_ETC;
+#try to retrieve the user cookie from the user
+#user and password can be either be taken from the cookie or can be taken in param(from url for future work)#
+my @userpwd = cookie("lodnuser");
+my $Cuser=$userpwd[0];
+my $Cpassword=$userpwd[1];
+my $Puser= param("user");
+my $Ppassword= param("password");
+my $user;
+my $password;
+my %mydata;
+my $hashref;
+my $userfile;
+my $info;
+my $subdir;
+my $text;
+my $size;
+
+if(defined($Cuser) and defined($Cpassword))
+  {
+   $user=$Cuser;
+   $password=$Cpassword;
+  }
+elsif(defined($Puser) and defined($Ppassword))
+  {
+   $user=$Puser;
+   $password=$Ppassword;
+  }
+
+if (-f LODN_CFG) {
+   open(CONFIG, LODN_CFG) or die "Cannot open config file\n";
+   while(<CONFIG>) {
+      s/\#.*//;
+      s/^\s+//;
+      s/\s+$//;
+      if(/^CONTENT_DIR\s+(\S*)/) {
+              $CONTENT_DIR=$1;
+       }
+      if(/^LODN_ETC\s+(\S*)/){
+        $LODN_ETC=$1;
+        }
+
+   }
+   close(CONFIG);
+       if(!(defined $CONTENT_DIR)) {
+           print header();
+           print "<html><head></head><body>LoDN config incomplete</body></html>";
+           exit;
+       }
+ if(!(defined $LODN_ETC)) {
+      print header();
+      print "<html><head></head><body>LoDN_ETC was not found in LODN.CFG </body></html>";
+      exit;
+   }
+
+}
+else {
+  print header();
+  print "<html><head></head><body>LoDN config file not found</body><html>";
+  exit;
+}
+
+
+$userfile = "$LODN_ETC/userinfo";
+
+
+#if the user has a cookie
+if(defined $user) {
+        eval
+        {
+          $info = retrieve ("$userfile");
+        };
+
+        if($@)
+        {
+             print header();
+             print "Error accessing user info database\n";
+             exit;
+        }
+
+        # alter entered password to match altered password saved in database
+         $password =md5_hex($password,$user);
+
+        # load info into hash
+         %mydata = %{$info};
+
+   if ($password eq $mydata{$user}[3])
+   {
+
+  #check to see if the user is logged on still (in the db)
+  if($mydata{$user}[6] eq "no") {
+
+    #if not, redirect the user to the login page
+     print redirect(-uri=>'../index.html');
+     exit(0);
+  }
+ }
+}
+else {
+  print redirect(-uri=>'../autologout.html');
+  exit;
+}
+
+
+
+
+# CGI parameters
+$subdir=param('subdir');
+$text=param('readmetext');
+
+if(!($subdir =~ /^\/$user\// || $subdir =~ /^\/$user$/)) {
+   print header();
+   print "<html><head><title>Error!</title></head><body>\n";
+   print "You do not have write permission for this directory\n";
+   exit;
+}
+
+
+#chop($text);
+$size = length($text);
+
+if($size eq 0) {
+  unlink "$CONTENT_DIR/$subdir/README";
+} else {
+
+  # Create file
+  open(OUTFILE,">$CONTENT_DIR/$subdir/README");
+  print OUTFILE $text;
+  chmod(0666,"$CONTENT_DIR/$subdir/README");
+  close(OUTFILE);
+}
+
+FALLOFF:
+
+print redirect("listing.cgi?subdir=$subdir");
+
+#           __     __
+#          /  \~~~/  \
+#    ,----(     ..    )
+#   /      \__     __/
+#  /|         (\  |(
+# ^ \   /___\  /\ |   hjw
+#    |__|   |__|-"
+
+
+	

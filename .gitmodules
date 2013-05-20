@@ -1,0 +1,12 @@
+[submodule "xsp"]
+	path = xsp
+	url = git@damsl.cs.indiana.edu:xsp.git
+[submodule "phoebus"]
+	path = phoebus
+	url = git@damsl.cs.indiana.edu:phoebus.git
+[submodule "ibp"]
+	path = ibp
+	url = https://@redmine.accre.vanderbilt.edu/git/ibp.git
+[submodule "unis"]
+	path = unis
+	url = https://github.com/periscope-ps/unis.git

@@ -1,0 +1,129 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use Digest::MD5 qw(md5_hex);
+use Storable qw(store retrieve);
+
+use constant LODN_CFG => @LODN_CFG@;
+
+# Variables
+my $username;
+my $password;
+my $input;
+my $pwHash;
+my $numAttempts;
+my $lodn_userinfo;
+my %userinfo;
+
+# Checks that a username was given
+if(scalar(@ARGV) != 1)
+{
+    print STDERR "Usage: $0 username\n";
+    print STDERR "\nThis program is used to change the password for a lodn user\n";
+    exit 1;
+}
+
+# Gets the username
+$username = $ARGV[0]; 
+
+# Checks fi the lodn configuration file exists.
+if( -f  LODN_CFG)
+{
+    # Opens the lodn cfg file for reading.
+    open(CFG, LODN_CFG) or die "Can't open ".LODN_CFG."\n";
+
+    # Reads in line by line
+    while(<CFG>)
+    {
+        chomp();
+
+        # Removes starting whitespace and comments
+        s/^\s+//g;
+        s/#.*//g;
+
+        # Splits the line into its parts
+        my @fields = split(/\s+/);
+
+        # Skips blank lines and dies on lines that don't have 0 or 2 fields.
+        next if(scalar(@fields) == 0);
+        die "Error on line $. of ".LODN_CFG if(scalar(@fields) != 2);
+
+        # Gets the userinfo file for lodn.
+        if($fields[0] =~ m/^LODN_ETC$/)
+        {
+           $lodn_userinfo = $fields[1] . "/userinfo";
+        }
+    }
+
+    # Closes the file stream.
+    close(CFG);
+
+    # Checks that all of the values are defined in the file.
+    if(!defined($lodn_userinfo))
+    {
+        die "Invalid configuration specified in ".LODN_CFG;
+    }
+
+}else                   
+{
+    die LODN_CFG . " does not exist\n";
+}  
+
+print "Changing password for $username\n";
+
+# Queries the user for the new password until the passwords match
+do
+{
+    if($numAttempts)
+    {
+        print STDERR "Passwords do not agree\n";
+    }
+
+    # Gets the first password entry from the user
+    print "Type Password: ";
+    $input = <STDIN>;
+    chomp($input);
+
+    # Gets the second password entry from the user
+    print "Retype Password: ";
+    $password = <STDIN>;
+    chomp($password);
+
+    $numAttempts++;
+
+}while($input ne $password);
+
+
+# Computes the md5 hash of the password
+$pwHash = md5_hex($password, $username);
+
+
+# Checks that the userinfo file exists
+if(! -f $lodn_userinfo)
+{
+    print STDERR "LoDN Userinfo file does not exist\n";
+    exit 1;
+}
+
+# Gets the userinfo file as a hash.
+%userinfo = %{retrieve($lodn_userinfo)};
+
+# Checks that username exists
+if(!exists $userinfo{$username})
+{
+    print STDERR "No such user $username\n";
+    exit 1;
+}
+
+# Assigns the new md5 hash of the password
+$userinfo{$username}[3] = $pwHash;
+
+# Stores the updated user data with the new password
+store(\%userinfo, $lodn_userinfo);
+
+print "Update Successful\n";
+
+
+
+

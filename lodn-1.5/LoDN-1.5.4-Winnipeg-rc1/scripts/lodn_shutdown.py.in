@@ -1,0 +1,75 @@
+#!@python_exe@
+
+#     Copyright (C) 2010  Christopher Brumgard
+# 
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+# 
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+'''This script is used to shutdown LoDN'''
+
+
+__author__ = 'Chris Brumgard (sellers@cs.utk.edu)'
+
+
+import sys
+import os
+import subprocess
+import glob
+import time
+
+
+
+def getpids():
+    
+    # Attempts to  get the pids of LoDN
+    status, output = subprocess.getstatusoutput('fuser @var@/socket.sock')
+    
+    # Not in path try /sbin
+    if status != 0:
+        status, output = subprocess.getstatusoutput('/sbin/fuser @var@/socket.sock')
+    
+    # Ok, try /usr/sbin
+    if status != 0:
+        status, output = subprocess.getstatusoutput('/usr/sbin/fuser @var@/socket.sock')
+    
+    # If fuser fails then die
+    if status != 0:
+        sys.exit('Failed to detect lodn processes')
+    
+    else:
+        return output.split()[1:]
+    
+    
+    
+
+def killProcesses(pids):
+    
+    # Kills the LoDN processes
+    status, output = subprocess.getstatusoutput('kill -9 '+' '.join(pids))
+
+    time.sleep(2)
+
+    # Removes all of the files
+    for file in glob.glob('@var@/*'):
+        os.unlink(file)
+    
+
+# Main
+if __name__ == '__main__':
+    
+    # Gets the pids of the processes
+    pids = getpids()
+    
+    
+    # Kills the pids
+    killProcesses(pids)
