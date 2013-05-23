@@ -1,0 +1,641 @@
+<html>
+<!-- $Id: protocol.html,v 1.1 2000/04/04 19:37:59 hayes Exp $ -->
+
+<head>
+<title>Network Weather Service Wire Protocol</title>
+</head>
+
+<body>
+This text documents the wire protocol used by the Network Weather Service,
+version 2.0.  The description is compiled from the NWS source files.
+
+
+<h1>Data Formats</h1>
+
+<p>
+NWS hosts transmit data using an architecture-neutral format; the contents of
+NWS messages are translated into host-specific values by the receiver.  All
+integer types are sent as twos-complement binary, most significant byte first.
+Characters occupy one byte, shorts two, and ints four.  Enumeration values are
+transmitted as ints.  Floating-point numbers are transmitted in IEEE 754 format
+(four byte float, eight byte double).  The protocol incorporates both fixed-
+length arrays of characters and variable-length strings.  In each case, the
+strings are terminated by a nul (0) character; the only distinction between the
+two is whether any unused characters may follow the nul.  No padding bytes
+(e.g. for alignment) are transmitted.
+
+
+<p>
+The text below uses pseudo-C to describe the contents of NWS messages.  In
+addition to the standard C types, the descriptions use the following pseudo-C
+types:
+
+<pre>
+  bool     one byte, 0 for false or 1 for true
+  string   variable-length string of characters, nul-terminated
+</pre>
+
+
+<h1>Message Header</h1>
+
+<p>
+Every NWS message begins with a message header consisting of three unsigned
+ints (12 bytes).
+
+<pre>
+const int VERSION = 0x02000000;
+
+typedef struct {
+  unsigned int version;  /* NWS source version */
+  unsigned int message;  /* NWS message number */
+  unsigned int dataSize; /* Number of bytes of accompanying data */
+} MessageHeader;
+</pre>
+
+
+<h1>Host Messages</h1>
+
+<p>
+All NWS hosts -- name servers, forecasters, sensors, and memories -- transmit
+and/or respond to this set of messages.
+
+<pre>
+/*
+ * An NWS host name consists of a DNS name or text IP address, followed by a
+ * colon and the listening port.
+ */
+const int MAX_MACHINE_NAME = 64;  /* Arbitrary limit on name length */
+const int MAX_PORT_IMAGE = 5;     /* strlen("65535") */
+const int MAX_HOST_NAME = MAX_MACHINE_NAME + 1 + MAX_PORT_IMAGE;
+
+/* Host message numbers. */
+typedef enum {
+  HOST_TEST = 200,
+  HOST_TEST_RESULT = 201,
+  HOST_DIAGNOSTICS = 202,
+  HOST_DIAGNOSTICS_ACK = 203,
+  HOST_DIE = 204,
+  HOST_DYING = 205,
+  HOST_REGISTER = 206,
+  HOST_REGISTERED = 207,
+  HOST_REFUSED = 298,
+  HOST_FAILED = 299
+} HostMessages;
+
+
+/*
+ * The HOST_TEST/HOST_TEST_RESULT transaction requests that the host check its
+ * status with the name server.
+ */
+typedef struct {
+  MessageHeader header = {VERSION, HOST_TEST, 0};
+} HostTestMessage;
+
+typedef struct {
+  char registrationName[MAX_HOST_NAME];
+  enum {FORECASTER_HOST = 0,
+        MEMORY_HOST = 1,
+        NAME_SERVER_HOST = 2,
+        SENSOR_HOST = 3} hostType;
+  char nameServer[MAX_HOST_NAME];
+  bool healthy;
+} HostInfo;
+
+typedef struct {
+  MessageHeader header = {VERSION, HOST_TEST_RESULT, sizeof(info)};
+  HostInfo info;
+} HostTestResultMessage;
+
+
+/*
+ * The HOST_DIAGNOSTICS/HOST_DIAGNOSTICS_ACK transaction requests that the host
+ * toggle production of certain diagnostic messages.
+ */
+typedef struct {
+  MessageHeader header = {VERSION, HOST_DIAGNOSTICS, sizeof(which)};
+  enum {ALL_ERRORS = -1, ALL_LOGS = -2, ALL_DIAGNOSTICS = -3} which;
+} HostDiagnosticsMessage;
+
+typedef struct {
+  MessageHeader header = {VERSION, HOST_DIAGNOSTICS_ACK, 0};
+} HostDiagnosticsAckMessage;
+
+
+/*
+ * The HOST_DIE/HOST_DYING transaction requests that the host terminate.  The
+ * password field is required only if the host was started with a password.
+ */
+typedef struct {
+  MessageHeader header =
+    {VERSION, HOST_DIE, password ? (strlen(password) + 1) : 0};
+  [string password;]
+} HostDieMessage;
+
+typedef struct {
+  MessageHeader header = {VERSION, HOST_DYING, 0};
+} HostDyingMessage;
+
+
+/* HOST_REGISTER/HOST_REGISTERED transaction. */
+typedef struct {
+  MessageHeader header = {VERSION, HOST_REGISTER, strlen(nameServer) + 1};
+  string nameServer;
+} HostRegisterMessage;
+
+typedef struct {
+  MessageHeader header = {VERSION, HOST_REGISTERED, 0};
+} HostRegisteredMessage;
+
+
+/* HOST_REFUSED is returned from a HOST_DIE message with an invalid password. */
+typedef struct {
+  MessageHeader header = {VERSION, HOST_REFUSED, 0};
+} HostRegisteredMessage;
+
+/* HOST_FAILED is returned on any failure. */
+typedef struct {
+  MessageHeader header = {VERSION, HOST_FAILED, 0};
+} HostRegisteredMessage;
+</pre>
+
+
+<h1>Name Server Messages</h1>
+
+<p>
+NWS name servers transmit and respond to this set of messages.  The strings
+transmitted to and from name servers have a particular format.  Registrations
+are tab-delimited sets of attribute name/value pairs, where each name is
+separated from its value by a colon.  (For this reason, attribute names may
+contain any character other than nul, colon, or tab, and attribute values may
+contain any character other than nul and tab.  Asterisks in attribute values
+may cause odd search results.)  The last attribute name/value pair in the
+registration is follwed by two adjacent tabs.  The registration set returned
+with the NS_SEARCHED message is simply a set of registrations where the double
+tab at the end of each registration serves as a delimiter.
+
+<p>
+NWS search filters are pattered after those of LDAP.  A term in a search filter
+has the format (<i>name op value</i>), where <i>name</i> is one of the
+attribute names registered with objects.  The <i>op</i> &lt;= is supported; it
+matches any registered value that is lexically less than or equal to the value
+specified.  Similarly, &gt;= matches any registered value that is lexically
+greater or equal.  If the <i>op</i> is =, any registered value that is
+identical to the specified value will match; in addition, the specified value
+can contain wildcard characters (asterisks) that will match any sequence of
+zero or more characters in the registered value.  Terms in the search filter
+may be combined using prefix AND and OR operators, which have the format
+(&amp; <i>term</i> ...) and (| <i>term</i> ...), respectively.
+
+<pre>
+/* Name server message numbers. */
+typedef enum {
+  NS_REGISTER = 700,
+  NS_REGISTERED = 701,
+  NS_SEARCH = 702,
+  NS_SEARCHED = 703,
+  NS_UNREGISTER = 704,
+  NS_UNREGISTER = 705,
+  NS_FAILED = 799
+} NameServerHostMessages;
+
+typedef string searchFilter;
+typedef string registration;
+typedef string registrationSet;
+
+
+/*
+ * The NS_REGISTER/NS_REGISTERED transaction requests that that the name server
+ * register an object for a fixed amount of time (in seconds).  A registration
+ * time of 0 marks a registration that will never expire.
+ */
+typedef struct {
+  MessageHeader header =
+    {VERSION, NS_REGISTER, strlen(object) + 1 + sizeof(timeOut)};
+  registration object;
+  unsigned long timeOut;
+} NameServerRegisterMessage;
+
+typedef struct {
+  MessageHeader header = {VERSION, NS_REGISTERED, 0};
+} NameServerRegisteredMessage;
+
+
+/*
+ * The NS_SEARCH/NS_SEARCHED transaction requests that the name server search
+ * registered and return those that match a filter.
+ */
+typedef struct {
+  MessageHeader header = {VERSION, NS_SEARCH, strlen(filter) + 1};
+  searchFilter filter;
+} NameServerSearchMessage;
+
+typedef struct {
+  MessageHeader header = {VERSION, NS_SEARCHED, strlen(registrations) + 1};
+  objectSet registrations;
+} NameServerSearchedMessage;
+
+
+/*
+ * The NS_UNREGISTER/NS_UNREGISTERED transaction requests that the name server
+ * remove all registrations that match a filter.
+ */
+typedef struct {
+  MessageHeader header = {VERSION, NS_UNREGISTER, strlen(filter) + 1};
+  searchFilter filter;
+} NameServerUnregisterMessage;
+
+typedef struct {
+  MessageHeader header = {VERSION, NS_UNREGISTERED, 0};
+} NameServerUnregisteredMessage;
+
+
+/* NS_FAILED is returned on any failure. */
+typdef struct {
+  MessageHeader header = {VERSION, NS_FAILED, 0};
+} NameServerFailedMessage;
+
+</pre>
+
+
+<h1>Memory Messages</h1>
+
+<p>
+NWS memories transmit and respond to this set of messages.  Memories store
+fixed-length, time-stamped records in files with an upper bound on the record
+count (configured when the memory is started).  Once this bound is reached,
+storing additional records causes old records to be discarded.
+
+<pre>
+/* Memory message numbers. */
+typedef enum {
+  STORE_STATE = 100,
+  STATE_STORED = 101,
+  FETCH_STATE = 102,
+  STATE_FETCHED = 103,
+  AUTOFETCH_BEGIN = 104,
+  AUTOFETCH_ACK = 105,
+  MEMORY_CLEAN = 106,
+  MEMORY_CLEANED = 107,
+  MEMORY_FAILED = 199
+} MemoryHostMessages;
+
+const int STATE_NAME_SIZE = 128;
+
+/*
+ * A description of a memory state (i.e. file).  The name, the fixed record
+ * size, the number of records enclosed (<u>not</u> the total records in the
+ * file), the earliest (requests) or latest (responses) enclosed time stamp,
+ * and a time-out field (ignored).
+ */
+typedef struct {
+  char id[STATE_NAME_SIZE];
+  int rec_size;
+  int rec_count;
+  double seq_no;
+  double time_out;
+} State;
+
+
+/*
+ * The STORE_STATE/STATE_STORED transaction requests that the memory store a
+ * set of records.
+ */
+typedef struct {
+  MessageHeader header =
+    {VERSION, STORE_STATE, sizeof(state) + strlen(contents) + 1};
+  State state;
+  string contents;
+} MemoryStoreStateMessage;
+
+typedef struct {
+  MessageHeader header = {VERSION, STATE_STORED, 0};
+} MemoryStateStoredMessage;
+
+
+/*
+ * The FETCH_STATE/STATE_FETCHED transaction requests that the memory return
+ * existing records.
+ */
+typedef struct {
+  MessageHeader header = {VERSION, FETCH_STATE, sizeof(state)};
+  State state;
+} MemoryFetchStateMessage;
+
+typedef struct {
+  MessageHeader header =
+    {VERSION, STATE_FETCHED, sizeof(state) + strlen(contents) + 1};
+  State state;
+  string contents;
+} MemoryStateFetchedMessage;
+
+
+/*
+ * The AUTOFETCH_BEGIN/AUTOFETCH_ACK transaction requests that the memory begin
+ * transmitting new records as they are stored.  The enclosed stateNames is a
+ * tab-delimited set of state names.  Each time the memory stores a new set of
+ * records for any one of these states, it sends a STATE_FETCHED message to the
+ * client along with the newly-stored records.
+ */
+typedef struct {
+  MessageHeader header = {VERSION, AUTOFETCH_BEGIN, strlen(stateNames) + 1};
+  string stateNames;
+} MemoryAutofetchBeginMessage;
+
+typedef struct {
+  MessageHeader header = {VERSION, AUTOFETCH_ACK, 0};
+} MemoryAutofetchAckMessage;
+
+
+/*
+ * The MEMORY_CLEAN/MEMORY_CLEANED transaction requests that the memory delete
+ * any state files that have not been accessed for a given number of seconds.
+ */
+typedef struct {
+  MessageHeader header = {VERSION, MEMORY_CLEANED, sizeof(seconds)};
+  unsigned int seconds;
+} MemoryCleanMessage;
+
+typedef struct {
+  MessageHeader header = {VERSION, MEMORY_CLEANED, 0};
+} MemoryCleanedMessage;
+
+
+/* MEMORY_FAILED is returned on any failure. */
+typedef struct {
+  MessageHeader header = {VERSION, MEMORY_FAILED, 0};
+} MemoryFailedMessage;
+</pre>
+
+
+<h1>Sensor Messages</h1>
+
+<p>
+NWS sensors transmit and respond to this set of messages.  Sensors are
+modularized, and each module defines its own message set.
+
+<pre>
+/* Sensor message numbers. */
+typedef enum {
+  ACTIVITY_START = 600,
+  ACTIVITY_STARTED = 601,
+  ACTIVITY_STOP = 602,
+  ACTIVITY_STOPPED = 603,
+  SENSOR_FAILED = 699
+} SensorHostMessages;
+
+typedef enum {
+  CLIQUE_ACTIVATE = 400,
+  CLIQUE_DIE = 401,
+  CLIQUE_TOKEN_ACK = 402,
+  CLIQUE_TOKEN_FWD = 403,
+  CLIQUE_SERIES = 404
+} SensorCliqueMessages;
+
+typedef enum {
+  PERIODIC_SERIES = 300
+} SensorPeriodicMessages;
+
+typedef enum {
+  TCP_BW_REQ = 800,
+  TCP_HANDSHAKE = 411
+} SensorSkillsMessages;
+
+/*
+ * The ACTIVITY_START/ACTIVITY_STARTED transaction requests that the sensor
+ * initiate a new activity.  The registration name, control and skill names,
+ * and a tab-delimited set of configuration options are enclosed.
+ */
+typedef struct {
+  MessageHeader header =
+    {VERSION, ACTIVITY_START, strlen(name) + 1 +
+                              strlen(control) + 1 +
+                              strlen(skill) + 1 +
+                              strlen(options) + 1};
+  string name;
+  string control;
+  string skill;
+  string options;
+} SensorActivityStartMessage;
+
+typedef struct {
+  MessageHeader header = {VERSION, ACTIVITY_STARTED, 0};
+} SensorActivityStartedMessage;
+
+
+/*
+ * The ACTIVITY_STOP/ACTIVITY_STOPPED transaction requests that the sensor halt
+ * a given activity.
+ */
+typedef struct {
+  MessageHeader header = {VERSION, ACTIVITY_STOP, strlen(name) + 1};
+  string name;
+} SensorActivityStopMessage;
+
+typedef struct {
+  MessageHeader header = {VERSION, ACTIVITY_STOPPED, 0};
+} SensorActivityStoppedMessage;
+
+
+/* SENSOR_FAILED is returned on any failure. */
+typedef struct {
+  MessageHeader header = {VERSION, SENSOR_FAILED, 0};
+} SensorFailedMessage;
+
+
+const int MAX_CLIQUE_NAME_SIZE = 32;
+const int MAX_MEMBERS = 100;
+const int MAX_OPTIONS_SIZE = 64;
+const int MAX_SKILL_SIZE = 32;
+
+typedef struct {
+  unsigned int IPAddress;
+  unsigned int port;
+}
+
+/*
+ * A clique description, passed as a token between clique members.  The name of
+ * the clique; the time() when the token was generated; a sequential (starting
+ * with zero) token instance number, incremented when a clique times out and a
+ * new copy of the token is spawned; the skill to be invoked; skill-specific
+ * options; the frequency of clique experiments; the time out for the clique;
+ * the clique membership; a count of clique members; and the designated clique
+ * leader, who handles registration and timeOut calculations.
+ */
+typedef struct {
+  char name[MAX_CLIQUE_NAME_SIZE];
+  double whenGenerated;
+  double instance;
+  char skill[MAX_SKILL_SIZE];
+  char options[MAX_OPTIONS_SIZE];
+  double period;
+  double timeOut;
+  CliqueMember members[MAX_MEMBERS];
+  unsigned int count;
+  unsigned int leader;
+} Clique;
+
+
+/* CLIQUE_ACTIVATE is an internal-use message of the clique control. */
+typedef struct {
+  MessageHeader header = {VERSION, CLIQUE_ACTIVATE, sizeof(clique)};
+  Clique clique;
+} SensorCliqueActivateMessage;
+
+
+/*
+ * The CLIQUE_TOKEN_FWD/CLIQUE_TOKEN_ACK transaction passes a clique token from
+ * one member to the next.
+ */
+typedef struct {
+  MessageHeader header = {VERSION, CLIQUE_TOKEN_FWD, sizeof(clique)};
+  Clique clique;
+} SensorCliqueTokenFowardMessage;
+
+typedef struct {
+  MessageHeader header = {VERSION, CLIQUE_TOKEN_ACK, sizeof(clique)};
+  Clique clique;
+} SensorCliqueTokenAckMessage;
+
+
+/* CLIQUE_SERIES is an internal-use message of the clique control. */
+typedef struct {
+  MessageHeader header =
+    {VERSION, CLIQUE_SERIES, strlen(name) + 1 + strlen(series) + 1};
+  string name;
+  registration series;
+} SensorCliqueSeriesMessage;
+
+
+/* PERIODIC_SERIES is an internal-use message of the periodic control. */
+typedef struct {
+  MessageHeader header =
+    {VERSION, PERIODIC_SERIES, strlen(name) + 1 + strlen(series) + 1};
+  string name;
+  registration series;
+} SensorPeriodicSeriesMessage;
+
+
+/*
+ * The TCP_BW_REQ/TCP_HANDSHAKE transaction requests that the sensor accept a
+ * TCP bandwith/latency experiment configured with the enclosed parameters.
+ * The sensor responds with a port to contact (ipAddress is presently unused)
+ * for the experiment.
+ */
+typedef struct {
+  MessageHeader header =
+    {VERSION, TCP_BW_REQ, sizeof(experimentSize) +
+                          sizeof(bufferSize) +
+                          sizeof(messageSize)};
+  unsigned int experimentSize;
+  unsigned int bufferSize;
+  unsigned int messageSize;
+} SensorSkillBandwidthRequest;
+
+typedef struct {
+  MessageHeader header =
+    {VERSION, TCP_HANDSHAKE, sizeof(ipAddress) + sizeof(port)};
+  unsigned int ipAddress;
+  unsigned short port;
+} SensorSkillBandwidthHandshake;
+</pre>
+
+
+<h1>Forecaster Messages</h1>
+
+<p>
+NWS forecasters transmit and respond to this set of messages.  Because the
+forecasting methods are now available to programs in a separate library, the
+usefulness of forecaster hosts is debatable.
+
+<pre>
+/* Forecaster message numbers. */
+typedef enum {
+  FORE_DATA = 500,
+  FORE_FORECAST = 501,
+  FORE_SERIES = 502,
+  METHODS_ASK = 503,
+  METHODS_TELL = 504,
+  FORE_FAIL = 599
+} ForecasterMessages;
+
+const int FORECAST_NAME_SIZE = STATE_NAME_SIZE;
+
+typedef struct {
+  double timeStamp;
+  double measurement;
+} Measurement;
+
+typedef struct {
+  bool moreToCome;
+  unsigned int atMost;
+  char forecastName[FORECAST_NAME_SIZE];
+  unsigned int measurementCount;
+} ForeDataHeader;
+
+typedef struct {
+  bool moreToCome;
+  unsigned int atMost;
+  char forecastName[FORECAST_NAME_SIZE];
+  char memoryName[MAX_HOST_NAME];
+  char seriesName[STATE_NAME_SIZE];
+} ForeSeriesHeader;
+
+typedef struct {
+  MessageHeader header = {VERSION, FORE_SERIES, sizeof(count) + sizeof(series)};
+  unsigned int count;
+  ForeSeriesHeader series[count];
+} ForecasterForeSeriesMessage;
+
+typedef struct {
+  Measurement measurement;
+  struct {
+    double forecast;
+    double error;
+    unsigned int methodUsed;
+  } bestForecast[2]; /* Best MAE, best MSE */
+} ForecastCollection;
+
+typedef struct {
+  char forecastName[FORECAST_NAME_SIZE];
+  unsigned int forecastCount;
+  ForecastCollection collections[forecastCount];
+} Forecasts;
+
+
+/*
+ * The FORE_DATA/FORE_FORECAST and FORE_SERIES/FORE_FORECAST transactions
+ * request that the forecaster generate and return a set of forecasts for the
+ * enclosed measurements (FORE_DATA) or list of NWS series (FORE_SERIES).
+ */
+typedef struct {
+  MessageHeader header = {VERSION,
+                          FORE_DATA,
+                          sizeof(dataHeader) + sizeof(measurements)};
+  ForeDataHeader dataHeader;
+  Measurement measurements[dataHeader.measurementCount];
+} ForecasterForeDataMessage;
+
+typedef struct {
+  MessageHeader header = {VERSION, FORE_FORECAST, sizeof(forecasts)};
+  Forecasts forecasts[];
+} ForecasterForeForecastMessage;
+
+
+/*
+ * The METHODS_ASK/METHODS_TELL transaction requests that the forecaster relate
+ * the names of the forecasting methods it uses.
+ */
+typedef struct {
+  MessageHeader header = {VERSION, METHODS_ASK, 0};
+} ForecasterMethodsAskMessage;
+
+typedef struct {
+  MessageHeader header = {VERSION, METHODS_ASK, strlen(methods) + 1};
+  string methods;
+} ForecasterMethodsTellMessage;
+</pre>
+
+
+</body>
+
+</html>

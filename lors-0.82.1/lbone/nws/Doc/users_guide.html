@@ -1,0 +1,1535 @@
+<html>
+<!-- $Id: users_guide.html,v 1.17 2001/03/26 15:11:55 swany Exp $ -->
+
+<head>
+<title>Network Weather Service User's Guide</title>
+</head>
+
+<body>
+
+
+<h1>Running the NWS</h1>
+
+<p>
+Four programs located in your installation bin subdirectory start NWS daemon
+processes, called "hosts", that provide
+<a href="#nws_nameserver">directory services</a>,
+<a href="#nws_memory">persistent storage</a>,
+<a href="#nws_sensor">resource monitoring</a>, and
+<a href="#nws_forecaster">forecasting</a>.  Each of these hosts
+listens for service requests on a particular port.  You specify an NWS host by
+giving the machine it's running on and the port it's listening to in the form
+<i>machine</i>[:<i>port</i>] (the DNS name or IP address followed optionally by
+a colon and port number).  For example, the NWS host specified as
+vermillion.ufo.edu:8090 is a process located on the machine
+vermillion.ufo.edu that listens on port 8090.
+
+<p>
+The other programs located in the bin subdirectory are utility programs
+designed to
+<ul>
+  <li><a href="#add_forecast">derive forecasts from a series of measurements</a>
+  <li><a href="#ctrl_host">determine NWS host status</a>
+  <li><a href="#halt_activity">stop monitoring resource availability</a>
+  <li><a href="#host">convert between DNS names and IP addresses</a>
+  <li><a href="#html-hosts">produce HTML tables of inter-host bandwidth and
+      latency measurements</a>
+  <li><a href="#nws-hostadmin">ease administration of NWS hosts</a>
+  <li><a href="#nws_extract">extract measurements and forecasts from the NWS</a>
+  <li><a href="#nws_insert">store new measurements in the NWS</a>
+  <li><a href="#nws_ping">test the connection to an NWS sensor</a>
+  <li><a href="#nws_search">query the configuration of the NWS system</a>
+  <li><a href="#start_activity">start monitoring resource availability</a>
+  <li><a href="#whattime">convert NWS time stamps to a date and time</a>
+</ul>
+Each of these programs contacts one or more NWS hosts through their listening
+ports in order to fulfill your requests.
+
+
+<p><hr>
+
+
+<h1>The NWS Environment</h1>
+
+<p>
+Most of the NWS programs require you to enter host names, port numbers, and
+other initialization information.  You can specify default values for much of
+this information, either by setting environment variables before running the
+programs or by storing the defaults in the nws initialization file ~/.nwsrc.
+The NWS programs recognize each of the names listed below.  During execution
+the programs look first for an environment variable with this name; if none has
+been set, they then search the initialization file for a line consisting of
+that name followed by an equals sign and a value.  Lines in the initialization
+file that begin with "#" are ignored, so you can include comments in your file.
+Any values you specify via the command line override the environment values.
+
+<p>
+<table>
+  <tr>
+    <td><b>EXTRACT_FIELDS</b>
+    <td>The fields printed by nws_extract.  If this variable is not set, the
+        program prints, in order, time, measurement, MAE forecast, MAE error,
+        MSE forecast, MSE error, source, destination, and resource for each
+        forecast.
+  <tr>
+    <td><b>FORECASTER_PORT</b>
+    <td>The port forecasters should listen to for incoming messages.
+        Forecasters use port 8070 if this variable is not set.
+  <tr>
+    <td><b>JOURNAL_SIZE</b>
+    <td>Then number of records memories store in their journals, which record
+        all measurements stored by memories.  Memories store 2000 records if
+        this variable is not set.  Memory journals are intended for future NWS
+        development, so you should have no need to set this variable.
+  <tr>
+    <td><b>MEMORY_DIR</b>
+    <td>The directory where memories should store measurements.  Memories use
+        the current working directory if this variable is not set.
+  <tr>
+    <td><b>MEMORY_PORT</b>
+    <td>The port memories should listen to for incoming messages.  Memories use
+        port 8050 if this variable is not set.
+  <tr>
+    <td><b>MEMORY_SIZE</b>
+    <td>The number of measurements memories should retain for each resource.
+        Memories store 2000 measurements if this variable is not set.
+  <tr>
+    <td><b>NAME_SERVER</b>
+    <td>The host specification of the name server other hosts should contact
+        for directory information.  The default name server is "noname", so you
+        must always specify a name server through environment variables, the
+        initialization file, or the command line.
+  <tr>
+    <td><b>NAME_SERVER_PORT</b>
+    <td>The port name servers should listen to for incoming messages.  Name
+        servers use port 8090 if this variable is not set.
+  <tr>
+    <td><b>SENSOR_MEMORY</b>
+    <td>The host specification of the memory that sensors should contact in
+        order to store their resource measurements.  Sensors contact the memory
+        running on the same machine, listening to the default memory port, if
+        this variable is not set.
+  <tr>
+    <td><b>SENSOR_PORT</b>
+    <td>The port sensors should listen to for incoming messages.  Sensors use
+        port 8060 if this variable is not set.
+</table>
+
+<p>
+A typical ~/.nwsrc file might look like this:
+
+<pre>
+NAME_SERVER = vermillion.ufo.edu:8888
+NAME_SERVER_PORT = 8095
+MEMORY_DIR = /tmp/nwsinfo
+</pre>
+
+<p>
+This would indicate that hosts should contact vermillion.ufo.edu:8888 for
+registration information, but that any new name servers should use the port
+8095.  The third line indicates that memories should place measurements into
+files in the directory /tmp/nwsinfo.
+
+
+<p><a name="nws_nameserver"><hr></a>
+<h1>Starting a Name Server</h1>
+
+<p>
+You'll probably want to start by setting up an NWS name server.  This is an NWS
+host that provides all other hosts with information about the location and
+abilities of other NWS hosts.  You can use the
+<a href="#nws_search">nws_search</a> program to view registrations stored with
+a name server.  Run the program as a background process.
+
+<p>
+<b>nws_nameserver</b> [<b>-c</b> <i>seconds</i>]
+                      [<b>-e</b> <i>file</i>]
+                      [<b>-f</b> <i>file</i>]
+                      [<b>-l</b> <i>file</i>]
+                      [<b>-p</b> <i>port</i>] <b>&amp;</b>
+
+<p>
+<table>
+  <tr>
+    <td><b>-c</b>
+    <td>Specifies how frequently the name server should delete expired
+        registrations from the registration file.  The default is 3600 (once an
+        hour).
+  <tr>
+    <td><b>-e</b>
+    <td>Specifies a file where the name server should record error messages.
+        By default, error messages are sent to standard error.
+  <tr>
+    <td><b>-f</b>
+    <td>Specifies a file where the name server should store registrations.  The
+        default is the file <b>registrations</b> in the current working
+        directory.
+  <tr>
+    <td><b>-l</b>
+    <td>Specifies a file where the name server should record log messages.  By
+        default, log messages are sent to standard output.
+  <tr>
+    <td><b>-p</b>
+    <td>Specifies the port that the name server should listen to for messages.
+        This overrides any default value from the environment or ~/.nwsrc.
+</table>
+
+<p>
+This command, executed on orange.ufo.edu, starts an NWS name server that uses
+the default port and stores registrations and message output in the directory
+$HOME/NWSdir:
+
+<pre>
+  nws_nameserver -e $HOME/NWSdir/nameserver.err \
+                 -f $HOME/NWSdir/registrations \
+                 -l $HOME/NWSdir/nameserver.log &amp;
+</pre>
+
+<a name="registrations">
+<p>
+</a>
+<h2>NWS Registrations</h2>
+
+<p>
+NWS registrations follow the LDAP model.  Each registered object consists of a
+set of attributes, each of which has a name and a value.  Every object has a
+<b>name</b> attribute, which (usually uniquely) identifies the object, and an
+<b>objectclass</b> attribute, which specifies what sort of item the object
+represents.  Other attributes are specific to particular <b>objectclass</b>
+values.
+
+<p>
+NWS host registrations have an <b>objectclass</b> value of <b>nwsHost</b>.
+The other attributes associated with NWS host registrations are:
+
+<table>
+  <tr>
+    <td><b>hostType</b>
+    <td>One of <b>forecaster</b>, <b>memory</b>, or <b>sensor</b>.  No
+        registration record is presently entered for the name server itself.
+  <tr>
+    <td><b>ipAddress</b>
+    <td>The IP address used to contact the host.  This attribute may have
+        multiple values if the host can be contacted through multiple addresses.
+  <tr>
+    <td><b>owner</b>
+    <td>The login of the person who started the host.
+  <tr>
+    <td><b>port</b>
+    <td>The port on which the host receives messages.
+  <tr>
+    <td><b>started</b>
+    <td>The date and time when the host was started.
+  <tr>
+    <td><b>version</b>
+    <td>The version of the NWS sources used to create the host.
+</table>
+
+<p>
+NWS sensors register objects with an <b>objectclass</b> value of
+<b>nwsSkill</b>.  These objects represent services that the sensor can
+perform, and different sensors may register different skills.  These skills are
+used with the <a href="#start_activity">start_activity</a> program to configure
+NWS resource monitoring.  In addition to <b>name</b> and <b>objectclass</b>
+attributes, each registered skill has a <b>host</b> attribute, which is the
+registration name of the sensor that registered the skill, and a
+<b>skillName</b> attribute that identifies the type of service that the skill
+represents.  In addition, each skill has a set of option attributes which
+indicate ways in which the skill can be configured.  The values of these
+configuration options indicate the number and type of configuration values that
+you can specify for these options when requesting the service.  For example, a
+value of <b>0_to_10_int</b> for the <b>cpuMonitor</b> skill's <b>nice</b>
+option indicates that you can specify up to 10 integer values for the
+<b>nice</b> option when requesting that an NWS sensor begin monitoring CPU
+availability.  The currently supported skills and their associated options are:
+
+<table>
+  <tr>
+    <td><b>cpuMonitor</b>
+    <td>This skill monitors the fraction of CPU available to both newly-started
+        and existing processes.  It has the option attribute
+        <b>nice:0_to_10_int</b>, which indicates that you can monitor the CPU
+        available for processes running at up to 10 different nice values.  If
+        you do not specify any nice values, the NWS monitors CPU availability
+        only for nice 0 processes.
+  <tr>
+    <td><b>diskMonitor</b>
+    <td>This skill monitors the amount of space available on a disk.  It has
+        the option attribute <b>path:1_to_10_string</b>, which indicates that
+        you must specify between 1 and 10 file paths.  The sensor monitors the
+        amount of space available on the disks that hold the directories or
+        files specified by these paths.
+  <tr>
+    <td><b>memoryMonitor</b>
+    <td>This skill monitors the amount of free memory available on the machine.
+        It has no option attributes and is available only on Linux systems.
+  <tr>
+    <td><b>tcpConnectMonitor</b>
+    <td>This skill monitors the time required to establish a TCP connection
+        between each pair of a set of machines.  It has the option attribute
+        <b>target:1_to_100_sensor</b>, which indicates that you must specify
+        between 1 and 100 NWS sensors to contact.  (This only applies when you
+        use this skill under the <b>periodic</b> control (see below).  When run
+        under the <b>clique</b> control, the <b>tcpConnectMonitor</b> target
+        sensors are taken from the clique membership.)
+  <tr>
+    <td><b>tcpMessageMonitor</b>
+    <td>This skill monitors the TCP bandwidth and latency between each pair of
+        a set of machines.  It has the attributes <b>size:0_to_1_int</b>,
+        <b>message:0_to_1_int</b>, and <b>buffer:0_to_1_int</b>.  These allow
+        you to specify, in kilobytes, the total data size, individual
+        <i>send</i>() message size, and socket buffer size used for bandwidth
+        tests.  If you do not specify these values, the NWS sends 64kB of data
+        in four 16kB messages, using a socket buffer size of 32kB.  Like the
+        <b>tcpConnectMonitor</b> skill, <b>tcpMessageMonitor</b> also has the
+        option attribute <b>target:1_to_100_sensor</b> which must be specified
+        when using the skill under the <b>periodic</b> control.
+</table>
+
+<p>
+Skills operate under the control of sensor <b>control</b> objects, which
+determine the frequency and timing of experiments.  These objects have an
+<b>objectclass</b> value of <b>nwsControl</b>.  In addition to <b>name</b>
+and <b>objectclass</b> attributes, each registered control has a <b>host</b>
+attribute, which is the registration name of the sensor that registered the
+control, and a <b>controlName</b> attribute that identifies the type of
+control.  Different controls support different skills, and each control has a
+set of configuration options that you can use to guide its operation.  The
+currently supported controls and their associated skills and options are:
+
+<table>
+  <tr>
+    <td><b>clique</b>
+    <td>This control coordinates experiments between a set of NWS sensors,
+        called the <i>members</i> of the clique.  These members take turns
+        conducting experiments, and only one member will conduct experiments
+        at any time.  This is useful for avoiding contention when conducting
+        network experiments between machines.  The clique control can be used
+        with either the <b>tcpConnectMonitor</b> or <b>tcpMessageMonitor</b>
+        skill.  It has the option attributes <b>member:2_to_100_sensor</b>,
+        indicating that you must specify between 2 and 100 NWS sensors as
+        participating members of the clique, and <b>period:0_to_1_int</b>,
+        which indicates that you may specify the number of seconds between
+        connection attempts between any pair of hosts.  If you do not specify a
+        period, the NWS will compute one.
+  <tr>
+    <td><b>periodic</b>
+    <td>This control can be used with any of the skills listed above to conduct
+        experiments at fixed intervals.  It has the option attribute
+        <b>period:0_to_1_int</b> that allows you to specify how often
+        experiments should be conducted.
+</table>
+
+<p>
+When an NWS sensor receives a service request, it registers an
+<b>nwsActivity</b> object.  The attributes of an activity object are the union
+of those of the control and skill objects used to start the activity, but the
+option attributes in the activity object indicate the values used for
+configuration.  For example, a <b>cpuMonitor</b> activity might have a
+<b>nice:0,19</b> attribute, indicating that the sensor is monitoring CPU
+availability for both nice 0 and nice 19 processes.  Each activity also has
+a <b>resource</b> attribute that lists the resources it is measuring.  The
+resources that the NWS presently measures are:
+
+<table>
+  <tr>
+    <td><b>availableCpu</b>
+    <td>The fraction of CPU available to a newly-started process.  This
+        resource is measured by the <b>cpuMonitor</b> skill.
+  <tr>
+    <td><b>bandwidthTcp</b>
+    <td>The speed with which data can be sent to a target sensor, in megabits
+        per second.  This resource is measured by the <b>tcpMessageMonitor</b>
+        skill.
+  <tr>
+    <td><b>connectTimeTcp</b>
+    <td>The amount of time, in milliseconds, required to establish a TCP
+        connection to a target sensor.  This resource is measured by the
+        <b>tcpConnectMonitor</b> skill.
+  <tr>
+    <td><b>currentCpu</b>
+    <td>The fraction of CPU available to a process that is already running.
+        This resource is measured by the <b>cpuMonitor</b> skill.
+  <tr>
+    <td><b>freeDisk</b>
+    <td>The amount of space, in megabytes, unused on a disk.  This resource is
+        measured by the <b>diskMonitor</b> skill.
+  <tr>
+    <td><b>freeMemory</b>
+    <td>The amount of space, in Megabytes, unused in memory.  This resource is
+        measured by the <b>memoryMonitor</b> skill.
+  <tr>
+    <td><b>latencyTcp</b>
+    <td>The amount of time, in milliseconds, required to transmit a TCP message
+        to a target sensor.  This resource is measured by the
+        <b>tcpMessageMonitor</b> skill.
+</table>
+
+<p>
+An activity generates one or more series of measurements, each of which is
+registered as an <b>nwsSeries</b> object.  The
+<a href="#nws_extract">nws_extract</a> program uses these registrations to
+retrieve measurements for display and forecasting.
+Along with <b>name</b> and <b>objectclass</b> attributes, <b>nws_series</b>
+registrations include the following attributes:
+
+<table>
+  <tr>
+    <td><b>host</b>
+    <td>This is the registration name of the NWS sensor that is generating the
+        series measurements.
+  <tr>
+    <td><b>memory</b>
+    <td>This is the registration name of the NWS memory that is storing the
+        series measurements.
+  <tr>
+    <td><b>resource</b>
+    <td>This indicates what resource the series measures.
+  <tr>
+    <td><b>target</b>
+    <td>For series that measure resource availability of an inter-machine
+        resource (e.g. bandwidth), this attribute is the specification of the
+        NWS sensor that is the target of the measurements.  Single-machine
+        series (e.g. CPU availability) do not have this attribute.
+  <tr>
+    <td><b>unitLabel</b>
+    <td>This is a string that indicates what units the measurement values in
+        the series represent.  For example, the <b>unitLabel</b> attribute
+        value for bandwidth series is <b>Megabits/second</b>, while the value
+        for CPU series is <b>CPU Fraction</b>.
+</table>
+
+
+<p><a name="nws_memory"><hr></a>
+<h1>Starting a Memory Host</h1>
+
+<p>
+After setting up your name server, you'll need to start an NWS memory.  This is
+an NWS host that stores and retrieves measurements for other hosts.  Run the
+program as a background process.
+
+<p>
+<b>nws_memory</b> [<b>-C</b> <i>cache entries</i>]
+                  [<b>-d</b> <i>directory</i>]
+                  [<b>-e</b> <i>file</i>]
+                  [<b>-l</b> <i>file</i>]
+                  [<b>-N</b> <i>host</i>]
+                  [<b>-p</b> <i>port</i>]
+                  [<b>-s</b> <i>size</i>] <b>&amp;</b>
+
+<p>
+<table>
+  <tr>
+  <td><b>-C</b>
+  <td>Specifies the number of cache entries to use internally.  
+  <b>nws_memory</b> maintains an internal write-thru LRU cache of time-series 
+  data to speed fetch times.  Each entry is <b>fileSize * 50</b> bytes in size,
+  where <b>fileSize</b> is the size set by the <b>-s</b> described below.
+  The default is 256 entries and a <b>fileSize</b> of 2000 records implying
+  a default memory footprint of approximately 25 megabytes.  Increasing
+  this value will aid fetch performance at the expense of in-core memory
+  footprint.
+  <tr>
+    <td><b>-d</b>
+    <td>Specifies the directory where the memory should store its measurements.
+        This overrides any default value from the environment or ~/.nwsrc.  The
+        amount of required storage space depends on how many resources you
+        monitor, but 10-15 MB is typical.
+  <tr>
+    <td><b>-e</b>
+    <td>Specifies a file where the memory should record error messages.  By
+        default, error messages are sent to standard error.
+  <tr>
+    <td><b>-l</b>
+    <td>Specifies a file where the memory should record log messages.  By
+        default, log messages are sent to standard output.
+  <tr>
+    <td><b>-N</b>
+    <td>Specifies the NWS name server that this memory should contact.  This
+        overrides any default value from the environment or ~/.nwsrc.
+  <tr>
+    <td><b>-p</b>
+    <td>Specifies the port that the memory should listen to for messages.  This
+        overrides any default value from the environment or ~/.nwsrc.
+  <tr>
+    <td><b>-s</b>
+    <td>Specifies how many measurements should be retained for each resource.
+        This overrides any default value from the environment or ~/.nwsrc and
+        has a default value of 2000 records.
+</table>
+
+<p>
+This command, executed on orange.ufo.edu, starts an NWS memory that uses port
+8055, registers itself with the name server previously started on orange, and
+stores measurements and message output in the directory $HOME/NWSdir:
+
+<pre>
+  nws_memory -d $HOME/NWSdir \
+             -e $HOME/NWSdir/memory.err \
+             -l $HOME/NWSdir/memory.log \
+             -N orange.ufo.edu \
+             -p 8055 &amp;
+</pre>
+
+<p>
+This command, executed on red.ufo.edu, starts an NWS memory that uses the
+default port, stores measurements in the subdirectory RedNWS, and registers
+itself with the name server previously started on orange:
+
+<pre>
+  nws_memory -d RedNWS/ \
+             -N orange.ufo.edu &amp;
+</pre>
+
+
+<p><a name="nws_sensor"><hr></a>
+<h1>Starting a Sensor Host</h1>
+
+<p>
+After starting a memory host, you can set up an NWS sensor host on one or more
+machines to monitor resource availability.  After starting a sensor host, you
+can use the <a href="#start_activity">start_activity</a> program to specify
+which resources it should monitor.  Run the program in the background.
+
+<p>
+<b>nws_sensor</b> [<b>-c</b> <b>yes</b>/<b>no</b>]
+                      [<b>-e</b> <i>file</i>]
+                      [<b>-l</b> <i>file</i>]
+                      [<b>-M</b> <i>host</i>]
+                      [<b>-N</b> <i>host</i>]
+                      [<b>-p</b> <i>port</i>] <b>&amp;</b>
+
+<p>
+<table>
+  <tr>
+    <td><b>-c</b>
+    <td>Specifies whether or not the sensor should immediately begin monitoring
+        CPU availability for nice 0 processes (the <b>cpuMonitor</b> skill).
+        The default is <b>yes</b>.
+  <tr>
+    <td><b>-e</b>
+    <td>Specifies a file where the sensor should record error messages.  By
+        default, error messages are sent to standard error.
+  <tr>
+    <td><b>-l</b>
+    <td>Specifies a file where the sensor should record log messages.  By
+        default, log messages are sent to standard output.
+  <tr>
+    <td><b>-M</b>
+    <td>Specifies the NWS memory that the sensor should use to store its
+        measurements.  This overrides any default value from the environment
+        or ~/.nwsrc.
+  <tr>
+    <td><b>-N</b>
+    <td>Specifies the NWS name server that this sensor should contact.  This
+        overrides any default value from the environment or ~/.nwsrc.
+  <tr>
+    <td><b>-p</b>
+    <td>Specifies the port that the sensor should listen to for messages.  This
+        overrides any default value from the environment or ~/.nwsrc.
+</table>
+
+<p>
+This command, executed on orange.ufo.edu, starts an NWS sensor that uses the
+memory started above on red.ufo.edu to store its measurements:
+
+<pre>
+  nws_sensor -M red.ufo.edu -N orange.ufo.edu &amp;
+</pre>
+
+<p>
+This command, executed on red.ufo.edu, also uses the memory running on red:
+
+<pre>
+  nws_sensor -N orange.ufo.edu &amp;
+</pre>
+
+
+<p><a name="nws_forecaster"><hr></a>
+<h1>Starting a Forecaster Host</h1>
+
+<p>
+NWS forecaster hosts analyze resource availability measurements collected by
+NWS sensors to forecast how much of the resources will be available in the near
+future.  Since the <a href="#nws_extract">nws_extract</a> program computes its
+forecasts directly, you only need to start a forecaster process if you want to
+write programs that use remote forecasting services.  Run the forecaster
+program in the background.
+
+<p>
+<b>nws_forecast</b> [<b>-e</b> <i>file</i>]
+                    [<b>-l</b> <i>file</i>]
+                    [<b>-N</b> <i>host</i>]
+                    [<b>-p</b> <i>port</i>] <b>&amp;</b>
+
+<table>
+  <tr>
+    <td><b>-e</b>
+    <td>Specifies a file where the forecaster should record error messages.  By
+        default, error messages are sent to standard error.
+  <tr>
+    <td><b>-l</b>
+    <td>Specifies a file where the forecaster should record log messages.  By
+        default, log messages are sent to standard output.
+  <tr>
+    <td><b>-N</b>
+    <td>Specifies the NWS name server that this forecaster should contact.
+        This overrides any default value from the environment or ~/.nwsrc.
+  <tr>
+    <td><b>-p</b>
+    <td>Specifies the port that the forecaster should listen to for messages.
+        This overrides any default value from the environment or ~/.nwsrc.
+</table>
+
+<p>
+This command, executed on green.ufo.edu, starts an NWS forecaster:
+
+<pre>
+  nws_forecast -e GreenNWS/fore.err \
+               -l GreenNWS/fore.log \
+               -N orange.ufo.edu &amp;
+</pre>
+
+
+<p><a name="add_forecast"><hr></a>
+<h1>Generating Forecasts</h1>
+
+<p>
+The add_forecasts program is a filter that derives forecasts from a series of
+measurements.  It takes from standard input a series of lines that contain
+time-stamp/measurement pairs and prints these lines to standard output along
+with forecast and forecast error values.  Any text that follows the time-stamp
+and measurement is taken to be a series name, and forecasts can be added to
+multiple series.
+
+<p>
+For example, given the input
+
+<p>
+<pre>
+953834769 1.007150 blue.ufo.edu numbers
+953834779 1.012400
+953834789 1.020350
+953834799 1.025690
+953834809 1.031060
+953834819 1.033760
+953834829 0.996740
+953834839 0.966310
+953834849 0.941820
+953834859 0.929860
+953834857 0.689050 green.ufo.edu numbers
+953834867 0.734150
+953834877 0.797280
+953834888 0.793330
+953834898 0.812850
+953834908 0.829850
+953834918 0.851220
+953834928 0.889380
+953834938 0.909760
+953834948 0.771710
+</pre>
+
+<p>
+add_forecast produces the output
+
+<p>
+<pre>
+953834769 1.007150 1.007150 0.000000 blue.ufo.edu numbers
+953834779 1.012400 1.012400 0.005250 
+953834789 1.020350 1.020350 0.006600 
+953834799 1.025690 1.025690 0.006180 
+953834809 1.031060 1.031060 0.005978 
+953834819 1.033760 1.033760 0.005322 
+953834829 0.996740 1.010508 0.006850 
+953834839 0.966310 0.966310 0.010219 
+953834849 0.941820 0.941820 0.012003 
+953834859 0.929860 0.929860 0.011998 
+953834857 0.689050 0.689050 0.000000 green.ufo.edu numbers
+953834867 0.734150 0.734150 0.045100 
+953834877 0.797280 0.797280 0.054115 
+953834888 0.793330 0.793330 0.037393 
+953834898 0.812850 0.812850 0.032925 
+953834908 0.829850 0.829850 0.029740 
+953834918 0.851220 0.851220 0.028345 
+953834928 0.889380 0.889380 0.029747 
+953834938 0.909760 0.909760 0.028576 
+953834948 0.771710 0.774437 0.025738 
+</pre>
+
+<p>
+The third column of output lists the forecast derived from previous
+measurements for the series; the fourth column the observed error in the
+forecasts to that point.
+
+
+<p><a name="ctrl_host"><hr></a>
+<h1>Controlling Running Hosts</h1>
+
+<p>
+You can use the ctrl_host program to send one of a selection of commands to a
+running NWS host.  These commands control and test the operation of the
+target hosts.
+
+<p>
+<b>ctrl_host</b> [<b>-t</b> <i>seconds</i>]
+                 [<b>-z</b>]
+                 <i>command</i>
+                 <i>host</i> [<i>host</i> ...]
+
+<p>
+<table>
+  <tr>
+    <td><b>-t</b>
+    <td>Specifies a time out value for attempts to contact the target hosts.
+        The default is 10 seconds, which may be insufficient for contacting
+        hosts over a very slow network.
+  <tr>
+    <td><b>-z</b>
+    <td>Suppresses the production of error messages.  This can be useful for
+        scripts that automate host testing.
+</table>
+
+<p>
+<i>command</i> must be one of the following.  Abbreviations are allowed.
+
+<p>
+<table>
+  <tr>
+    <td><b>error</b>
+    <td>Directs the host to suppress or resume error message output.
+  <tr>
+    <td><b>halt</b>
+    <td>Directs the host to exit.
+  <tr>
+    <td><b>log</b>
+    <td>Directs the host to suppress or resume log message output.
+  <tr>
+    <td><b>test</b>
+    <td>Directs the host to check its registration with the NWS name server and
+        report the results.
+</table>
+
+
+<p><a name="halt_activity"><hr></a>
+<h1>Stopping NWS Activities</h1>
+
+<p>
+The halt_activity program allows you to tell the NWS to stop monitoring a
+resource or set of resources.
+
+<p>
+<b>halt_activity</b> [<b>-N</b> <i>host</i>]
+                     [<b>-S</b> <i>host</i>]
+                     <i>name</i>
+
+<p>
+<table>
+  <tr>
+    <td><b>-N</b>
+    <td>Specifies the NWS name server that contains directory information for
+        the activity.  This overrides any default value from the environment or
+        ~/.nwsrc.
+  <tr>
+    <td><b>-S</b>
+    <td>Specifies a sensor to contact to stop the activity.  The program
+        normally determines this information by contacting the name server.
+        Specifying the sensor yourself can sometimes be useful if your
+        connection to the name server is slow, or if you want to use a specific
+        clique member to halt a clique.
+</table>
+
+The <b>halt_activity</b> program contacts the name server to retrieve
+information about the specified activity, then contacts the sensor in charge of
+the activity to terminate it.  See the
+<a href="#start_activity">start_activity</a> program for information on
+how to resume monitoring resources after a halt.
+
+
+<p><a name="host"><hr></a>
+<h1>Accessing DNS Information</h1>
+
+<p>
+The host program prints IP addresses and DNS names for each address or name you
+give on the command line.  This is similar to the standard tool of the same
+name that is available on many Unix systems.
+
+<p>
+<b>host</b> <i>name</i> [...]
+
+<p>
+A pair of examples:
+
+<pre>
+host www.whitehouse.gov yahoo.com
+www.whitehouse.gov 198.137.240.92 198.137.240.91
+yahoo.com 204.71.200.243 204.71.200.245
+
+host 198.137.240.91
+www1.whitehouse.gov 198.137.240.91
+</pre>
+
+
+<p><a name="html-hosts"><hr></a>
+<h1>Producing Tables of NWS Measurements</h1>
+
+<p>
+The html-hosts script uses the <a href="#nws_extract">nws_extract</a> program
+to produce an HTML table of inter-machine bandwidth and latency measurements
+and forecasts.
+
+<p>
+<b>html-hosts</b> <i>host</i> <i>host</i> [...]
+
+<p>
+For example, assuming that the NWS activities were conducting tcpMessageMonitor
+activities between the machines blue.ufo.edu, green.ufo.edu, orange.ufo.edu
+and red.ufo.edu, the following command would produce a 4-by-4 table that could
+be incorporated into a web page:
+
+<p>
+<pre>
+html-hosts blue.ufo.edu green.ufo.edu orange.ufo.edu red.ufo.edu
+
+
+<p><a name="nws-hostadmin"><hr></a>
+<h1>Administering NWS Hosts</h1>
+
+<p>
+The nws-hostadmin script can assist you in the task of tracking NWS hosts.  It
+is especially useful for keeping track of NWS hosts running on remote machines.
+
+<p>
+<b>nws-hostadmin</b> <i>command</i>
+                     [ [<b>-b</b> <i>path</i>]
+                       [<b>-B</b> <i>path</i>]
+                       [<b>-f</b> <i>path</i>]
+                       [<b>-m</b> <i>path</i>]
+                       [<b>-M</b> <i>path</i>]
+                       [-l <i>login</i>]
+                       [-L <i>login</i>]
+                       [-s <i>switches</i>]
+                       [-S <i>switches</i>]
+                       <i>hosts</i> ... ]
+
+<p>
+<table>
+  <tr>
+    <td><b>-b<br>-B</b>
+    <td>Use the specified path to find the NWS binaries for the next host set
+        (<b>-b</b>) or for all subsequent host sets (<b>-B</b>).  By default,
+        the script expects to find the NWS binaries in the directory
+        $HOME/nws/bin.
+  <tr>
+    <td><b>-f</b>
+    <td>Use the specified path to find the NWS hosts data base (see below).  By
+        default, the script uses $HOME/.nwshosts.
+  <tr>
+    <td><b>-l<br>-L</b>
+    <td>Use the specified login as the remote user id for the next host set
+        (<b>-l</b>) or for all subsequent host sets (<b>-L</b>).  By default,
+        the script uses $USER.
+  <tr>
+    <td><b>-m<br>-M</b>
+    <td>Use the specified path as the remote shell program for the next host
+        set (<b>-m</b>) or for all subsequent host sets (<b>-M</b>).  By
+        default, the script uses ssh.
+  <tr>
+    <td><b>-s<br>-S</b>
+    <td>Pass the specified switches when starting the next host set (<b>-s</b>)
+        or when starting all remaining host sets (<b>-S</b>).  By default, the
+        script passes -e and -l switches that direct the host to place its
+        error and log output into the directory $HOME/nws/<i>machine</i>.
+        Memories are also passed a -d switch that directs them to store data
+        files in the same directory.
+</table>
+
+<p>
+<i>command</i> must be one of the following.  Abbreviations are allowed.
+
+<table>
+  <tr>
+    <td><b>add</b>
+    <td>Adds the host to the NWS hosts data base (see below), without affecting
+        the host itself.
+  <tr>
+    <td><b>cycle</b>
+    <td>Equivalent to <b>halt</b> followed by <b>start</b>.
+  <tr>
+    <td><b>forget</b>
+    <td>Removes the host from the NWS hosts data base (see below), without
+        affecting the host itself.
+  <tr>
+    <td><b>halt</b>
+    <td>Sends a message indicating that the host should exit.
+  <tr>
+    <td><b>kill</b>
+    <td>A stronger form of <b>halt</b>.  It sends a SIGKILL signal to the
+        host process(es).
+  <tr>
+    <td><b>purge</b>
+    <td>Equivalent to <b>halt</b> followed by <b>forget</b>.
+  <tr>
+    <td><b>revive</b>
+    <td>Equivalent to <b>test</b>, followed by <b>start</b> if the host is dead.
+  <tr>
+    <td><b>start</b>
+    <td>Begins execution of the host.
+  <tr>
+    <td><b>test</b>
+    <td>Displays the status of the host.
+</table>
+
+<p>
+<i>hosts</i> has the format
+<i>machine</i>[:<i>type</i>[:<i>port</i>][,<i>type</i>[:<i>port</i>]...]].
+The <i>type</i> is one of <b>forecaster</b>, <b>memory</b>, <b>nameserver</b>,
+or <b>sensor</b>, indicating the NWS host of interest.  Abbreviations can be
+used.  You only need to specify a <i>port</i> if more than one host of a
+particular type is running on the same machine, or if you're starting a host
+and wish to use a port other than the default.  If only the machine is
+specified, the script applies the command to all hosts running on the machine.
+
+<p>
+If <i>hosts</i> is omitted altogether, the script applies the command to all
+hosts listed in the NWS hosts data base.  The script stores in this data base a
+list of NWS hosts that have been specified as part of either an <b>add</b> or a
+<b>start</b> command.  Each record lists the machine name, host type, port, NWS
+binary path, and switches for a particular NWS host.  When the script is asked
+to manage NWS hosts, it queries this data base to determine what hosts are
+running and how they can be contacted.  The script uses the ctrl_host program
+to contact NWS hosts, so this program must be available in some directory
+listed in your PATH environment variable.
+
+<p>
+As one example, this command would use rsh to start a memory, sensor, and
+forecaster on orange.ufo.edu and ssh (the default) to start the same three
+hosts on yellow.ufo.edu:
+
+<pre>
+  nws-hostadmin start -m rsh orange.ufo.edu -b /usr/local/nws yellow.ufo.edu
+</pre>
+
+<p>
+("-M rsh" would indicate that rsh should be used for both orange and yellow.)
+The nws binaries on orange.ufo.edu are located in $HOME/nws/bin, while those
+on yellow.ufo.edu are found in /usr/local/nws.  Assuming that the NWS hosts
+data base did not previously exist, it would now contain six records, one for
+each started host:
+
+<pre>
+  orange.ufo.edu memory:8050 nws/bin
+  orange.ufo.edu sensor:8060 nws/bin
+  orange.ufo.edu forecaster:8070 nws/bin
+  yellow.ufo.edu memory:8050 /usr/local/nws
+  yellow.ufo.edu sensor:8060 /usr/local/nws
+  yellow.ufo.edu forecaster:8070 /usr/local/nws
+</pre>
+
+<p>
+The subsequent command
+
+<pre>
+  nws-hostadmin test
+</pre>
+
+<p>
+would display the current status of each of these six hosts.  If only the
+sensor and memory running on orange were of interest, then the command
+
+<pre>
+  nws-hostadmin test orange.ufo.edu:sen,mem
+</pre>
+
+<p>
+would display the desired information.  The sequence of commands
+
+<pre>
+  nws-hostadmin halt yellow.ufo.edu:forecaster
+  nws-hostadmin revive yellow.ufo.edu
+</pre>
+
+<p>
+would have the effect of restarting the yellow forecaster.  The first command
+terminates the running forecaster, while the second tests the status of all
+three yellow hosts, restarting the forecaster when it determines that the host
+is no longer running.  A simpler way to do this would be the single command
+
+<pre>
+  nws-hostadmin cycle yellow.ufo.edu:forecaster
+</pre>
+
+<p>
+As it operates, the script displays a status for each NWS host of interest:
+
+<p>
+<table>
+  <tr>
+    <td><b>confused</b>
+    <td>The host is running but responds strangely to test messages.
+  <tr>
+    <td><b>cycled</b>
+    <td>The host has been halted and started again.
+  <tr>
+    <td><b>dead</b>
+    <td>The host is not running.
+  <tr>
+    <td><b>forgotten</b>
+    <td>The host has been removed from the NWS hosts data base.
+  <tr>
+    <td><b>halted</b>
+    <td>The host has been halted.
+  <tr>
+    <td><b>healthy</b>
+    <td>The host is responding properly to test messages.
+  <tr>
+    <td><b>killed</b>
+    <td>The host has been killed.
+  <tr>
+    <td><b>purged</b>
+    <td>The host has been halted and forgotten.
+  <tr>
+    <td><b>revived</b>
+    <td>The host was dead and has been started again.
+  <tr>
+    <td><b>sick</b>
+    <td>The host is running, but it may have lost contact with the name server.
+  <tr>
+    <td><b>started</b>
+    <td>The host has been started.
+  <tr>
+    <td><b>uncycled</b>
+    <td>An attempt to restart a host after halting it has failed.
+  <tr>
+    <td><b>unhaltable</b>
+    <td>An attempt to halt the host has failed.
+  <tr>
+    <td><b>unkillable</b>
+    <td>An attempt to send a kill signal to the host has failed.
+  <tr>
+    <td><b>unresponsive</b>
+    <td>The host is running, but it is not responding to test messages.  A
+        slow network connection may be the only problem.
+  <tr>
+    <td><b>unrevivable</b>
+    <td>An attempt to restart a dead host has failed.
+  <tr>
+    <td><b>unstarted</b>
+    <td>An attempt to start the host has failed.
+</table>
+
+
+<p><a name="nws_extract"><hr></a>
+<h1>Accessing NWS Measurements</h1>
+
+<p>
+The nws_extract program provides easy access to NWS measurements and forecasts.
+
+<p>
+<b>nws_extract</b> [<b>-a</b>]
+                   [<b>-f</b> <i>fieldList</i>]
+                   [<b>-h</b> <i>n</i>]
+                   [<b>-M</b> <i>host</i>]
+                   [<b>-n</b> <i>n</i>]
+                   [<b>-N</b> <i>host</i>]
+                   [<b>-t</b> <i>n</i>]
+                   [<b>-w</b>]
+                   <i>resource</i>
+                   [<i>filter</i>]
+                   <i>host</i> [<i>host</i> ...]
+
+<p>
+<table>
+  <tr>
+    <td><b>-a</b>
+    <td>Treat all listed machines as experiment sources.  By default, the
+         program treats the first machine as the experiment source and the
+         others as experiment destinations.  Use this switch to get information
+         about all pairs of machines.
+  <tr>
+    <td><b>-f</b>
+    <td>Specifies which information you would like displayed.  <i>fieldList</i>
+        is a comma-delimited list of forecast field names that you would like
+        to see.  The recognized names are <b>destination</b>, the destination
+        host specification, <b>mae_error</b>, the computed error in the Mean
+        Absolute Error forecast, <b>mae_forecast</b>, the Mean Absolute Error
+        forecast itself, <b>mae_method</b>, the forecasting method used to
+        compute the Mean Absolute Error forecast, <b>measurement</b>, the
+        measured resource availability, <b>mse_error</b>, the computed error in
+        the Mean Square Error forecast, <b>mse_forecast</b>, the Mean Square
+        Error forecast itself, <b>mse_method</b>, the forecasting method used
+        to compute the Mean Square Error forecast, <b>resource</b>, the
+        name of the resource measured, <b>source</b>, the source host
+        specification, and <b>time</b>, the time the measurement was taken.
+        These field names may all be abbreviated, so you can, for example, use
+        "me" instead of "measurement" and "t" instead of "time."  This
+        overrides any default value from the environment or ~/.nwsrc.
+  <tr>
+    <td><b>-h</b>
+    <td>Include a column header in the display after every <i>n</i>
+        measurements.  A value of 0 suppresses the column header.  The default
+        value is 20.
+  <tr>
+    <td><b>-M</b>
+    <td>Specifies the memory to contact to retrieve measurements.  nws_extract
+        normally determines this information by contacting the name server.
+        Specifying this switch may improve response if all the resource
+        measurements you are retrieving are stored by a single memory.
+  <tr>
+    <td><b>-n</b>
+    <td>Specifies the number of forecasts or measurements to display initially
+        for each series.  The program prints 20 by default.
+  <tr>
+    <td><b>-N</b>
+    <td>Specifies the NWS name server that contains directory information for
+        the NWS hosts of interest.  This overrides any default value from the
+        environment or ~/.nwsrc.  You only need to specify a name server if the
+        memories that are storing the resource measurements of interest are
+        registered with a name server other than the default and you have not
+        specified a -M switch.
+  <tr>
+    <td><b>-t</b>
+    <td>Specifies how far in the past to display measurements.  By default, the
+        program displays an hour's worth of information.
+  <tr>
+    <td><b>-w</b>
+    <td>Specifies that the program, after displaying the initial measurements
+        and forecasts, should continue to display additional information as new
+        measurements are taken.  The program will continue to update its
+        display until you abort it with ^C.
+</table>
+
+<p>
+<i>resource</i> specifies the resource of interest.  See the discussion of
+<a href="#registrations">registrations</a> above for the list of resources
+measured by the NWS.  You can use abbreviations of any of these standard
+resource names.  Alternately, you can specify a resource name that specifies
+measurements stored in the NWS using the <a href="#nws_insert">nws_insert</a>
+program.
+
+<p>
+<i>filter</i> has the same format as the filter used with the
+<a href="#nws_search">nws_search</a> program.  It can be used to differentiate
+between multiple measurement series being collected for the same resource.  If
+you do not specify a filter, nws_extract displays all measurement series being
+collected for the resources you list.
+
+<p>
+Using the colors clique example described above, you could get a running report
+of red -> orange bandwidth measurements and forecasts by the command:
+
+<pre>
+  nws_extract -w band red.ufo.edu orange.ufo.edu
+</pre>
+
+<p>
+Dropping the "-w" from this command would give you a single list of
+measurements and forecasts for the past hour instead of a running report, while
+adding "-a" would give you both red -> orange and orange -> red values.
+Similarly,
+
+<pre>
+  nws_extract -f time,measurement -t 900 avail purple.ufo.edu
+</pre>
+
+<p>
+would give you a snapshot report of available CPU fraction over the past 15
+minutes.
+
+<p>
+Supposing that the NWS was collecting green.ufo.edu available cpu measurements
+for both nice 0 and nice 19 processes, then the commands
+
+<pre>
+  nws_extract avail -f time,measurement "(nice=0)" green.ufo.edu
+  nws_extract avail -f time,measurement "(nice=19)" green.ufo.edu
+  nws_extract avail -f time,measurement green.ufo.edu
+</pre>
+
+would display, respectively, only the nice 0 measurements, only the nice 19
+measurements, and both sets of measurements.
+
+
+<p><a name="nws_search"><hr></a>
+<h1>Accessing NWS Registrations</h1>
+
+<p>
+The nws_search displays objects registered with the NWS name server.
+
+<p>
+<b>nws_search</b> [<b>-a</b>]
+                  [<b>-f</b> <b>yes</b>/<b>no</b>]
+                  [<b>-N</b> <i>host</i>]
+                  [<b>-v</b>]
+                  <i>filter</i>
+                  [<i>attribute</i> ...]
+
+<p>
+<table>
+  <tr>
+    <td><b>-a</b>
+    <td>Indicates that only attribute names should be displayed, not values.
+  <tr>
+    <td><b>-f</b>
+    <td>Indicates whether to format the program output, listing one attribute
+        per line and padding the names.  The default is <b>yes</b>.
+  <tr>
+    <td><b>-N</b>
+    <td>Specifies the NWS name server of interest.  This overrides any default
+        value from the environment or ~/.nwsrc.
+  <tr>
+    <td><b>-v</b>
+    <td>Indicates that only values should be displayed, not attribute names.
+</table>
+
+<p>
+The search filter has a format patterned after LDAP filters and determines
+which objects should be retrieved.  Each term in a search filter specifies, in
+parentheses, an attribute name and a value or value range which the
+retrieved objects must have.  See the discussion of
+<a href="#registrations">NWS registrations</a> above for the set of attributes
+supported by the NWS.  nws_search supports the relational operators =, &lt;=,
+and &gt;=, and wild cards (*) may be included in the value for the = operator.
+(nws_search recognizes the LDAP "sounds like" operator, ~=, but treats it
+identically to =.)  Logical and, or, and not operations (&amp;, |, !) may be
+used as prefix operators to combine filter terms into more complex filters.  In
+addition, the shorthand filters <b>activities</b>, <b>cliques</b>,
+<b>forecasters</b>, <b>hosts</b>, <b>memories</b>, <b>sensors</b>,
+<b>series</b> and <b>skills</b> (or an abbreviation of these) can be used
+instead of the longer objectclass specifications.  Some examples:
+
+<pre>
+  <i>Retrieve all activity registrations:</i>
+  nws_search "(objectclass=nwsActivity)" <i>or</i>
+  nws_search <b>activities</b>
+
+  <i>Retrieve all clique registrations:</i>
+  nws_search "(&amp;(objectclass=nwsActivity)(control=clique))" <i>or</i>
+  nws_search <b>cliques</b>
+
+  <i>Retrieve all forecaster host, memory host, or sensor host registrations:</i>
+  nws_search "(hostType=forecaster)" <i>or</i>
+  nws_search <b>forecasters</b>
+  nws_search "(hostType=memory)" <i>or</i>
+  nws_search <b>memories</b>
+  nws_search "(hostType=sensor)" <i>or</i>
+  nws_search <b>sensors</b>
+
+  <i>Retrieve all control registrations:</i>
+  nws_search "(objectclass=nwsControl)" <i>or</i>
+  nws_search <b>controls</b>
+
+  <i>Retrieve all host registrations:</i>
+  nws_search "(hostType=*)"
+  nws_search <b>hosts</b>
+
+  <i>Retrieve all series registrations:</i>
+  nws_search "(objectclass=nwsSeries)" <i>or</i>
+  nws_search <b>series</b>
+
+  <i>Retrieve all skill registrations:</i>
+  nws_search "(objectclass=nwsSkill)" <i>or</i>
+  nws_search <b>skills</b>
+
+  <i>Retrieve all hosts running on 111.222.333.444:</i>
+  nws_search "(ip=111.222.333.444)"
+
+  <i>Retrieve all cliques of which green.ufo.edu is not a member:</i>
+  nws_search "(&amp;(objectclass=nwsActivity)(control=clique)(!(member=*green.ufo.edu:*)))"
+
+</pre>
+
+<p><a name="nws_insert"><hr></a>
+<h1>Storing Measurements in the NWS</h1>
+
+<p>
+The nws_insert program provides a way to store measurements from other programs
+in an NWS memory.  After storing measurements in the NWS, you can use the
+<a href="#nws_extract">nws_extract</a> program to generate forecasts based on
+these measurements.
+
+<p>
+<b>nws_insert</b> [<b>-f</b> <i>file</i>]
+                  [<b>-M</b> <i>host</i>]
+                  <i>resource</i>
+                  <i>machine</i> [<i>machine</i>]
+
+<p>
+<table>
+  <tr>
+    <td><b>-f</b>
+    <td>Specifies a file name from which the measurements should be read.  The
+        program reads from standard input by default.
+  <tr>
+    <td><b>-M</b>
+    <td>Specifies a memory in which to store the measurements.  By default, the
+        program attempts to select the best available memory.
+</table>
+
+<p>
+nws_insert recognizes the standard NWS resource names (see the discussion of
+<a href="#registrations">NWS registrations</a> above), so you can, for
+example, store your own bandwidth measurements.  However, a more likely use of
+this program is to store measurements for a resource that the NWS does not
+currently track, such as disk access time.  Any resource name of up to 30
+characters can be used for this purpose.  The NWS remembers the name you use,
+and you can later use the same name with <a href="#nws_extract">nws_extract</a>
+in order to retrieve measurements or generate forecasts.  The two machines can
+be given as either DNS names or IP addresses.  The first specifies the
+measurement source; the second specifies the measurement destination for
+inter-machine resources.
+
+<p>
+Each line of input to nws_insert consists of a pair of numbers.  The first
+indicates the time that the measurement was taken and is represented by a
+number of seconds since midnight, 1/1/1970 GMT (the value returned by the Unix
+<i>time</i>() system call).  The second is a floating point number that
+represents the value of the measurement.  Blank lines and lines beginning with
+'#' are ignored; these can be used to format and comment your data files.  For
+example, an input file named "speedo.dat" for nws_insert might contain these
+lines:
+
+<pre>
+  # These are latency measurements taken periodically by the speedo utility.
+  # They measure latency between orange.ufo.edu and green.ufo.edu.
+
+  911826158 1.045000
+  911828415 0.445000
+  911829922 1.030000
+  911831030 1.182000
+  911831947 1.042000
+  911832926 1.003000
+  911834240 1.040000
+  911835179 0.999000
+  911836339 1.047000
+  911837431 1.098000
+  911838593 1.057000
+  911839682 1.056000
+  911841052 1.043000
+  911842529 1.022000
+  911844053 1.026000
+  911844935 1.057000
+  911846314 0.917000
+  911847821 1.045000
+  911849317 1.023000
+  911850663 1.031000
+</pre>
+
+<p>
+You could store these measurements in the NWS using the command
+
+<pre>
+  nws_insert -f speedo.dat speedo_latency orange green
+</pre>
+
+<p>
+Afterward, you could generate a forecast for these measurements:
+
+<pre>
+  nws_extract -h 0 speedo_latency orange green
+
+  911826158 1.045000  1.045000  0.225317    Median  orange green speedo_latency
+  911828415 0.445000  1.045000  0.225854    Median
+  911829922 1.030000  1.045000  0.224959    Median
+  911831030 1.182000  1.045000  0.224144    Median
+  911831947 1.042000  1.042000  0.223261    Median
+  911832926 1.003000  1.042000  0.222392    Median
+  911834240 1.040000  1.042000  0.221523    Median
+  911835179 0.999000  1.042000  0.220668    Median
+  911836339 1.047000  1.045000  0.219813    Median
+  911837431 1.098000  1.050353  0.218975 Trimmed_Median
+  911838593 1.057000  1.059176  0.218133 Trimmed_Median
+  911839682 1.056000  1.057771  0.217297 Adjusted_Mean
+  911841052 1.043000  1.041021  0.216469 Adjusted_Mean
+  911842529 1.022000  1.040234  0.215647 Adjusted_Mean
+  911844053 1.026000  1.039937  0.214831 Adjusted_Mean
+  911844935 1.057000  1.043271  0.214021 Adjusted_Mean
+  911846314 0.917000  1.039064  0.213277 Adjusted_Mean
+  911847821 1.045000  1.042239  0.212478 Adjusted_Mean
+  911849317 1.023000  1.041830  0.211687 Adjusted_Mean
+  911850663 1.031000  1.039059  0.210900 Trimmed_Median
+</pre>
+
+
+<p><a name="nws_ping"><hr></a>
+<h1>Testing connections to NWS sensors</h1>
+
+<p>
+The nws_ping program contacts NWS sensors on remote machines and reports the
+observed latency and bandwidth.
+
+
+<p>
+<b>nws_ping</b> [<b>-repeat</b> <i>seconds</i>]
+                [<b>-size</b> <i>experiment,buffer,message</i>]
+                [<b>-timeout</b> <i>seconds</i>]
+                <i>host</i> [ ... ]
+
+<p>
+<table>
+  <tr>
+    <td><b>-repeat</b>
+    <td>Indicates the program should continuously re-establish connections and
+        conduct experiments with the sensors every <i>seconds</i> seconds.  If
+        this switch is not present, the program exits after one test.
+  <tr>
+    <td><b>-size</b>
+    <td>Allows configuration of the data sizes used in communicating to the
+        sensors.  The <i>experiment</i> value specifies the total number of
+        kilobytes to transmit, the <i>message</i> value the number of kilobytes
+        per message, and the <i>buffer</i> value the TCP buffer size.  If this
+        switch is not present, the program sends 64 kilobytes in four
+        16-kilobyte messages, using a buffer size of 32 kilobytes.
+  <tr>
+    <td><b>-timeout</b>
+    <td>Indicates the number of seconds that should be allowed to lapse before
+        a connection is considered to have failed.  The default is 10.
+</table>
+
+<p>
+This command measures the bandwidth and latency to blue.ufo.edu and
+green.ufo.edu:
+
+<pre>
+  nws_ping blue.ufo.edu green.ufo.edu
+
+  (64k,32k,16k) to blue.ufo.edu:8060: bandwidthTcp: 0.963341 Megabits/second latencyTcp: 98.685000 Milliseconds
+  (64k,32k,16k) to green.ufo.edu:8060: bandwidthTcp: 0.387839 Megabits/second latencyTcp: 156.394000 Milliseconds
+</pre>
+
+<p><a name="start_activity"><hr></a>
+<h1>Starting NWS Activities</h1>
+
+<p>
+You can use the start_activity program to control which resources NWS sensors
+monitor.
+
+<p>
+<b>start_activity</b> [<b>-F</b>] [<b>-f</b> <i>file</i>]
+                      <i>host</i>
+                      [<i>optionAttribute</i> ...]
+
+<p>
+<table>
+  <tr>
+  <td><b>-F</b>
+  <td>Force the sensor to start this activity even a record of it
+      still exists in the nws_nameserver.
+  </tr>
+  <tr>
+    <td><b>-f</b>
+    <td>Specifies a file from which option attribute values should be read.
+        Blank lines in this file are ignored, as is any text following a "#".
+        Additional option attribute values may be listed on the command line.
+   </tr>
+</table>
+
+<p>
+<i>host</i> specifies the sensor to contact.  Each <i>optionAttribute</i> is a
+<i>name</i>:<i>value</i> pair that specifies one configuration parameter.
+The <b>name</b>, <b>controlName</b>, and <b>skillName</b> option attributes are
+valid for all activities.  <b>name</b> specifies the name with which the
+activity is registered with the NWS name server.  If you do not specify a
+<b>name</b> attribute, the program will generate one for you.  <b>skillName</b>
+and <b>controlName</b> determine which resources the activity monitors and how
+frequently measurements are made.  Which other option attribute names are
+recognized depends on the skill and control.  If you do not specify a
+<b>controlName</b> or a <b>skillName</b> attribute, start_activity will try to
+determine the values from the other options you list.  See the discussion on
+<a href="#registrations">NWS registrations</a> above for a list of supported
+skills and controls and their associated option attributes.
+
+<p>
+For example, here are the contents of a options attributes file that configures
+a tcpMessageMonitor activity between four machines:
+
+<pre>
+  name:colors
+  controlName:clique
+  skillName:tcpMessageMonitor
+  member:orange.ufo.edu
+  member:yellow.ufo.edu
+  member:red.ufo.edu
+  member:green.ufo.edu
+  size:32
+  period:120
+</pre>
+
+<p>
+The ordering of the lines and the number of option attributes specified on each
+line are unimportant.  A file with these contents would specify the same
+option attributes as the one above:
+
+<pre>
+  member:yellow.ufo.edu size:32 skillName:tcpMessageMonitor period:120
+  member:orange.ufo.edu name:colors member:red.ufo.edu controlName:clique
+</pre>
+
+<p>
+Assuming that this file was named "myclique", a command to start this activity
+running would be:
+
+<pre>
+  start_activity -f myclique red.ufo.edu
+</pre>
+
+<p>
+Specifying any of the other participating sensors -- orange, yellow, or
+green -- instead of red as the host to contact would work equally well.  If you
+later wanted to replace green with purple, you would edit the option attributes
+file to read:
+
+<pre>
+  name:colors
+  controlName:clique
+  skillName:tcpMessageMonitor
+  member: orange.ufo.edu
+  member: yellow.ufo.edu
+  member: red.ufo.edu
+  # member: green.ufo.edu
+  member: purple.ufo.edu
+  period: 120
+</pre>
+
+<p>
+(you could delete the line containing green rather than commenting it), use the
+<a href="#halt_activity">halt_activity</a> program to stop colors, then
+invoke start_activity again:
+
+<pre>
+  start_activity -f myclique yellow.ufo.edu
+</pre>
+
+<p>
+This command would direct the sensor on orange.ufo.edu to begin measuring
+CPU availability for both nice 0 and nice 19 processes:
+
+<pre>
+  start_activity start orange.ufo.edu nice:0 nice:19
+</pre>
+
+
+<p><a name="whattime"><hr></a>
+<h1>Convert Time-Stamps to Dates and Times</h1>
+
+<p>
+NWS measurements are stored using a time-stamp, expressed as a number of
+seconds since 1/1/1970 GMT (the value returned by the Unix <i>time</i>() system
+call).  The whattime program takes a list of these numbers and displays them
+in readable form.
+
+<p>
+<b>whattime</b> <i>time-stamp</i> [...]
+
+<p>
+For example:
+
+<pre>
+whattime 953834769 911837431 
+953834769 == Thu Mar 23 10:06:09 2000
+911837431 == Mon Nov 23 08:10:31 1998
+
+
+</body>
+
+
+</html>

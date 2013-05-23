@@ -1,0 +1,4 @@
+- still need to create a stable Makefile - some users reported, the
+  current makefile doesnt work on freebsd.
+  if someone knows well about plattform independed makefiles, feel free
+  to fix mine!

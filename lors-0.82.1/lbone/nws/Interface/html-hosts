@@ -1,0 +1,106 @@
+#!/bin/sh
+
+# This script produces an HTML table of all-to-all bandwidth and latency
+# measurements, forecasts and errors for a set of NWS hosts.  Numbers can be
+# retrieved either from Globus MDS entries (-m switch), in which case the
+# program globus-mds-search must be present in some directory in $PATH, or
+# directly from the NWS (-n switch: the default) in which case nws_extract must
+# be available.  To produce a table for a clique, execute the command
+#   html-hosts `nws_search -v name=XXX member | sed 's/,/ /g'`
+# substituting the clique name for XXX.
+
+dataSource=nws_extract
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+  -m) dataSource=globus-mds-search;;
+  -n) dataSource=nws_extract;;
+  *) break;;
+  esac
+  shift
+done
+
+if [ $# -lt 2 ]; then
+  echo 'usage: html_hosts [-mn] host host ...'
+  exit 1
+fi
+
+bandwidthFile=".hosts.bandwidth.$$"
+latencyFile=".hosts.latency.$$"
+
+# Grab numbers from the appropriate source.  nws_extract produces a single
+# line of output per experiment consisting of the time, measurement*,
+# forecast*, error*, method, source*, dest*, and resource name.  We only care
+# about the starred items.  globus-mds-search puts each attribute/value pair on
+# a separate line.  We filter output from each program to arrange the fields we
+# want on a single line.
+if [ "$dataSource" = "globus-mds-search" ]; then
+  searchCommand='globus-mds-search -F" " -h mds.globus.org -b "project=NWS, ou=PCL, o=University of California San Diego, o=Globus, c=US" "(objectclass=GlobusNetworkPerformance)"'
+  eval $searchCommand throughput throughput_prediction throughput_mse \
+                      source destination | grep -v "^hostpair" | \
+    awk ' {if(NF>1) {printf "%s ", $2; if($1=="destination") print ""}}' > $bandwidthFile
+  eval $searchCommand latency latency_prediction latency_mse \
+                      source destination | grep -v "^hostpair" | \
+    awk ' {if(NF>1) {printf "%s ", $2; if($1=="destination") print ""}}' > $latencyFile
+else
+  nws_extract -n 1 -h -a -f sq bandwidth $* | awk ' {print $2 " " $3 " " $4 " " $6 " " $7}' > $bandwidthFile
+  nws_extract -n 1 -h -a -f sq latency $* | awk ' {print $2 " " $3 " " $4 " " $6 " " $7}' > $latencyFile
+fi
+
+# Produce the table header and the first row that lists all destinations.
+columnCount=$#
+rowCount=`expr $# + $#`  ;# One row for machine names, one for measurements.
+
+cat << END_HEADER
+<table border>
+<tr>
+  <td colspan=2 rowspan=2></td>
+  <th colspan=$columnCount align=center>Destination Machine</th>
+</tr>
+END_HEADER
+
+echo "<tr>"
+for destination in $*; do
+  echo "  <th>$destination"
+done
+
+for source in $*; do
+
+  # Put the name of the source machine in one row and the labels in the next.
+  echo "<tr>"
+  if [ "$source" = "$1" ]; then
+    echo "  <th rowspan=$rowCount>Source Machine"
+  fi
+  echo "  <th align=left>$source"
+  echo "<tr align=center>"
+  echo "  <th align=right>"
+  echo "    <small>bw<br>forecast<br>sd<br><hr>lt<br>forecast<br>sd<br></small>"
+
+  for destination in $*; do
+
+    # Grab bandwidth and latency, providing placeholders for missing data.
+    nwsAttributes="`grep \"$source.*$destination\" $bandwidthFile`"
+    bandwidth=`echo "$nwsAttributes" | awk ' {if(NF<1) print "-"; else print $1}'`
+    bandwidthForecast=`echo "$nwsAttributes" | awk ' {if(NF<2) print "-"; else print $2}'`
+    bandwidthSD=`echo "$nwsAttributes" | awk ' {if(NF<3) print "-"; else print sqrt($3)}'`
+    nwsAttributes="`grep \"$source.*$destination\" $latencyFile`"
+    latency=`echo "$nwsAttributes" | awk ' {if(NF<1) print "-"; else print $1}'`
+    latencyForecast=`echo "$nwsAttributes" | awk ' {if(NF<2) print "-"; else print $2}'`
+    latencySD=`echo "$nwsAttributes" | awk ' {if(NF<3) print "-"; else print sqrt($3)}'`
+
+    # Put the data into the table.
+    echo "  <td>"
+    for item in $bandwidth $bandwidthForecast $bandwidthSD "<hr>" $latency $latencyForecast $latencySD; do
+      echo "    $item<br>"
+    done
+
+  done
+
+done
+
+# Finish off the table with a caption.
+echo "<caption>Bandwidth values are measured in Megabits/second; latency in milliseconds</caption>"
+echo "</table>"
+
+rm -f $bandwidthFile $latencyFile
+exit 0

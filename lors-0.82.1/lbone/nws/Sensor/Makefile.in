@@ -1,0 +1,102 @@
+# System-dependent values determined by the configuration script.
+AR          = @AR@
+C_FLAGS     = @C_FLAGS@
+CC          = @CC@
+JAVA_VERSION= @JAVA_VERSION@
+LD_FLAGS    = @LD_FLAGS@
+OBJECT_DIR  = @OBJECT_DIR@
+PROFILE     = @PROFILE@
+PURIFY      = @PURIFY@
+RANLIB      = @RANLIB@
+ROOT_DIR    = @ROOT_DIR@
+VERSION     = @VERSION@
+
+DIST_NAME = NWS-$(VERSION)
+DIST_ROOT = $(ROOT_DIR)/$(DIST_NAME)
+LIBRARY   = $(ROOT_DIR)/libnws.a
+
+prefix 		= @prefix@
+exec_prefix	= @exec_prefix@
+bindir		= @bindir@
+libdir		= @libdir@
+includedir	= @includedir@
+
+# Compilation rules for C.
+.c.o:
+	@ if test -z "$(<D)" -o "$(<D)" = "." -o "$(<D)" = "./"; then \
+	    echo $(CC) -c $(C_FLAGS) -I$(ROOT_DIR)/Include $(X_INCLUDE) -o $@ $<; \
+	    $(CC) -c $(C_FLAGS) -I$(ROOT_DIR)/Include $(X_INCLUDE) -o $@ $<; \
+	  else \
+	    cd $(@D); $(MAKE) $(@F); \
+	  fi
+
+# Link procedure.
+LD = $(CC)
+
+EXP_OBJECTS = ExpCPU/activeCpu.o ExpCPU/hybridCpu.o ExpCPU/passiveCpu.o \
+              ExpCPU/profiler.o ExpCPU/spinner.o \
+              ExpConnect/connect_exp.o \
+              ExpMemory/disk.o \
+              ExpMemory/memory.o \
+              ExpMemory/active_memory.o \
+              ExpMemory/passive_memory.o \
+              ExpTcpBw/tcp_bw_exp.o
+OBJECTS   = clique_protocol.o exp_protocol.o periodic.o skills.o
+PROGRAMS  = nws_sensor nws_ping
+SUBDIRS   = ExpCPU ExpConnect ExpMemory ExpTcpBw
+X_INCLUDE = -IExpCPU -IExpConnect -IExpMemory -IExpTcpBw
+
+nws_sensor_DEPENDENCIES = $(OBJECTS) $(EXP_OBJECTS) \
+                          ../Nameserver/register.o \
+                          ../Protocol/host_protocol.o \
+                          ../Protocol/messages.o \
+                          ../Protocol/protocol.o \
+                          ../Utility/diagnostic.o \
+                          ../Utility/dnsutil.o \
+                          ../Utility/formatutil.o \
+                          ../Utility/osutil.o \
+                          ../Utility/strutil.o
+nws_ping_DEPENDENCIES = exp_protocol.o skills.o $(EXP_OBJECTS) \
+                        ../Nameserver/register.o \
+                        ../Protocol/host_protocol.o \
+                        ../Protocol/messages.o \
+                        ../Protocol/protocol.o \
+                        ../Utility/diagnostic.o \
+                        ../Utility/dnsutil.o \
+                        ../Utility/formatutil.o \
+                        ../Utility/osutil.o \
+                        ../Utility/strutil.o
+
+all: $(OBJECTS) $(PROGRAMS)
+
+clean:
+	rm -f *.o $(PROGRAMS) 
+	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) $@) ; done
+
+distclean: clean
+	rm -f *.o $(PROGRAMS) Makefile
+	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) $@) ; done
+
+dist:
+	mkdir $(DIST_ROOT)/Sensor
+	cp Makefile.in *.c $(DIST_ROOT)/Sensor
+	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) $@) ; done
+
+install: $(PROGRAMS)
+	if test ! -d $(bindir); then mkdir $(bindir); fi
+	cp $(PROGRAMS) $(bindir)
+	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) $@) ; done
+
+lib: $(OBJECTS)
+	$(AR) cr $(LIBRARY) $(OBJECTS)
+	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) $@) ; done
+
+pure:
+	$(MAKE) LD="$(PURIFY) $(LD)"
+
+nws_ping: nws_ping.o $(nws_ping_DEPENDENCIES)
+	$(LD) -o nws_ping nws_ping.o $(nws_ping_DEPENDENCIES) $(LD_FLAGS)
+
+nws_sensor: nws_sensor.o $(nws_sensor_DEPENDENCIES)
+	$(LD) -o nws_sensor nws_sensor.o $(nws_sensor_DEPENDENCIES) $(LD_FLAGS)
+

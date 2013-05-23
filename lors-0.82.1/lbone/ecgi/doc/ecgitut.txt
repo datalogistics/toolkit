@@ -1,0 +1,1341 @@
+eCgiLib 0.6 
+Documentation & Manual
+Index
+
+1 Introduction	4
+1.1 What is eCgiLib ?	4
+1.2 History	4
+1.3 Maintainer/Contact	5
+1.4 Licence	5
+1.5 Remarks	5
+1.6 Todo	6
+2 CGI Basics	7
+2.1 Basic CGI Communication	7
+2.1.1 Data Input	7
+2.1.1.1 CGI independent environment Vars	7
+2.1.1.2 CGI dependent Input	7
+2.1.1.2.1 the GET Method	7
+2.1.1.2.2 the simple POST Method	8
+2.1.1.2.3 the multipart/form-data POST Method	8
+2.1.2 Data output	9
+2.1.2.1 The Header	9
+2.1.2.2 The Data	9
+2.2 Advanced CGI Programming	9
+2.2.1 Cookies	9
+2.2.2 Hidden Input Fields	9
+2.2.3 Actions	10
+2.2.4 Session Keys	10
+2.2.5 Databases	10
+2.2.6 HTML Templates	10
+3 eCgiLib Usage	11
+3.1 basics	11
+3.1.1 cgiInit()	11
+3.1.2 cgiDone()	11
+3.1.3 cgiParam() - the main function	11
+3.1.4 cgiStrError()	12
+3.1.5 Compatibility to version <= 0.5	12
+3.2 File Uploads	13
+3.2.1 basic concept	13
+3.2.2 The filename and the Content-Type	13
+3.2.3 3 Kinds of Elements	13
+3.2.3.1 cgiKindValue	13
+3.2.3.2 cgiKindEmptyFile	13
+3.2.3.3 cgiKindFileToBig	14
+3.2.3.4 cgiKindFile	14
+3.2.4 Accessing the Files	14
+3.2.4.1 cgiGetMFile()	14
+3.2.4.2 cgiMFileToFile()	14
+3.2.5 limits	14
+3.2.5.1 cgiSetMaxFileSize()	14
+3.2.5.2 cgiSetMaxSize()	14
+3.3 Accessing Elements without the knowing the name	15
+3.3.1 Why?	15
+3.3.2 Access to Elements using cgiGetFirstName() / cgiGetNextName()	15
+3.3.3 Access to Elements using cgiPosNext()	15
+3.3.4 cgiNameByValue()	16
+3.4 Memory Files	16
+3.4.1 Basic concept	16
+3.4.2 "usual" c file functions and memory files	17
+3.4.3 additional memory file functions	17
+3.4.3.1 mfMFileToFile()	17
+3.4.3.2 mfFileToMFile()/mfFileToMFileN()	17
+3.4.3.3 mfGetData()	17
+3.4.3.4 mfGetDataAt()	18
+3.4.3.5 mfSetLength()	18
+3.4.3.6 mfGetLength()	18
+3.5 Saving/Loading the environment for simple debugging	18
+3.5.1 cgiSaveDebugData()	18
+3.5.2 cgiLoadDebugData()	18
+3.6 eCgi Toolkit	18
+3.6.1 ctkRedirect()	18
+3.6.2 ctkGetSessionID()	19
+3.6.3 ctkTimeToHDate()	19
+3.6.4 ctkHDateToTime()	19
+3.7 HTML Preprozessor	19
+3.7.1 Basic concept	19
+3.7.2 Example	20
+3.7.3 Section Tag	23
+3.7.4 Param Tag	24
+3.7.4 Slink Tag	24
+3.7.4 Comments	24
+4 eCgiLib Function Library	25
+4.1 ecgi.h	25
+4.2 memfile.h	26
+4.3 ecgi-internal.h - not for the user!	27
+Appendix A - Demo Programms	30
+A1 Simple-Demo	30
+Demo1.html	30
+Demo1.c	30
+A2 Multi Form Demo / All Data access Demo / Template Demo:	30
+html/enter.h	30
+html/pageTwo.h	31
+html/pageThree.h	31
+demo2.c	31
+
+
+1 Introduction
+
+1.1 What is eCgiLib ?
+
+eCgiLib (= easy CGI Libary) is a simple to use c cgi libary based on cgic. It transparently supports the CGI Method GET and POST and also multipart/form-data file uploads. The user interface is designed as easy as possible and maintains full compatibility to cgic 0.5, from which it is derived
+It also contains a libary independend introduction to CGI programming with C, a .html to .h HTML template preprozessor and fast block allocating "memory files"
+
+It was written after needing file upload, searching the web, and finding NO usable c cgi libary, which support all mentioned things AND a easy interface. Course i used cgic 0.5 before, and knew Todor Prokopov <koprok@newmail.net> stopped developing it further, i used his work - and his multipart tests, which he send me. Thanks man!
+
+1.2 History
+
+*****************
+* NOW TESTED ON *
+*****************
+
+- linux glibc 2.1 gcc 2.95.2
+- solaris7 gcc 2.95.2
+
+***********************
+* SOURCE CODE CHANGES *
+***********************
+
+0.6.2
+-----
+- added comments headers to files - juhuu!
+- copied gpl to doc/COPYING
+- fixed bug in html2h - input files where also parsed in comments
+13.02.2001
+- there was only ONE untouched function from cgic 0.5 left in my ecgi lib,
+  and this bastard function had an segfault in it (which occured only
+  VERY rarely) - thanks to "Bao C. Ha" <bao@hacom.net> for showing me.
+  (who also maintains a ecgi debian package now ...)
+- fixed a bug in memfile.h, where i used a "va_list *ap" instead of a
+  "va_list ap" - how silly ...
+  thanks to Ramon Poca <ramon@tau.uab.es> for telling me
+- ecgitk uses time.h - added an "#include <time.h>", so you dont have to
+  include it in your programm
+
+0.6.1
+------
+08.12.2000
+- compiled now on solaris - fixed some segfaulting typecasts.
+- added: html2h preprozessor now finds HTML input tags and adds them to
+  the .h header - so you allways know, what names to ask for with cgiParam(),
+  when getting input from a template
+- "ANSI-CLEANED" the sources by changing some things after invoking gcc
+  with -ansi and -pedantic - changed all // to /* .. */ - ANSI-PROVED now :)
+- cleaned up Makefile - ie: if the "gcc --shared" fails now, this happens
+  as the last thing - should not make any real problems, since libecgi.a
+  should be generated then
+- replaced setenv() with putenv() in loadDebugData(), because setenv is not
+  supported on solaris (why ever)
+- read basics about "autoconf" and decided NOT to do this myself, since my
+  focus is c-programming!
+
+0.6 Initial Release 
+-------------------
+December 2000
+- rewrote complete source from Todor Prokopov - only 1 untouched function 
+  in the sources - added new functions for file handling, for accessing all 
+  objects without the name and saving/loading the whole environment for 
+  debugging.
+06.12.2000
+- added mfFileToMFileN()
+- cgiLoadDebugData() and cgiSaveDebugData() functions work now
+- mfprintf()  added to memory files
+- added "make install" to the Makefile (it creates a .a ar 
+  archive and a .so lib now)
+- html2h preprozessor added
+- added first functions to ecgitk - eCgiToolkit 
+
+*************************
+* Documentation Changes *
+*************************
+
+13.02.2000
+- added example to cgiInit() documentation, since i got an email with a
+  segfault while calling the cgi from bash
+
+06.12.2000
+- documented mfFileToMFileN() - see 3.4.3.2
+- updated cgiLoadDebugData() and cgiSaveDebugData() documentation (3.5.1 and 3.5.2)
+- added mfprintf() without further documentation to 3.4.2
+- updated chapter 3.6 ecgi Toolkit
+- added chapter 3.7 html2h HTML preprozessor
+
+December 2000
+- wrote first version
+
+1.3 Maintainer/Contact
+
+Thats me! Sven Dawitz - Sven@Dawitz.de. The web adress for ecgi is http://www.Global-OWL.de/ecgi
+If you want to contact me, feel free to do so!
+
+1.4 Licence
+
+This Software is under GPL. Blah Blah Blah ...
+You have the sources. Just do with it, what you want.
+It would be nice, if you drop me an email, if you use it. Just to see, who finds it useful. Perhaps i will add a "Used by" section later.
+
+1.5 Remarks
+
+Put this documentation to professional english. Copy Dahl promised me to do so, if he is available for it. So currently, remeber that i am no natural english speaking guy and have my problems with putting it really professional - but the information itself should be ok ...
+If someone else, who is naturally speaking english, read this - perhaps you could edit it and fix up my language. 
+
+If you try file uploading, but it fails: check your proxy settings - squid for example only allows upload till 1MB at all - to find out, my program doesnt segfault, but isnt even executed took me about 6 hours of work - upside: i rewrote much code for it and made it (hopefully) segfault secure.
+1.6 Todo
+
+- check all malloc/realloc calls for returning NULL - memory at end
+- really USE maxfilesize and maxsize - currently dont do anything
+- implement the cgiSaveDebugData()/cgiLoadDebugData() - currently they write an error to stdout and exit the program ... not good ...
+- check error defines - some are obsolete / others must be added
+- think about defining max name size due security (a 150mb name would be fun)
+- integrate mad sql libary ...
+- integrate ecgitk lib
+- test if you can use fread/fseek on stdin to speed up reading
+  doesn work with popen files, so i guess, wont work with stdin, too
+  but have to check! Block reads would be really nice!
+
+2 CGI Basics
+
+2.1 Basic CGI Communication
+
+
+2.1.1 Data Input
+The user submits Data via the browser to the web server, who calls the program. There are two main kinds of input to our programm:
+
+2.1.1.1 CGI independent environment Vars
+
+The web server sets environment vars, which contain misc information about the client, like "REMOTE_ADDR" for the remote ip adress, "REMOTE_HOST" for the remote hostname, "SCRIPT" for the script name and others. You can get these environment variables with getenv(). Dump the whole environment variables with a little test programm to see more. These are not part of ecgi. (Or at least, most of them). And they are extremly server and browser dependend.
+
+2.1.1.2 CGI dependent Input
+This describes the ways, the CGI programm can get input from the user - There are three ways for that.
+Ecgilib handles all transparent for you - you dont need to know how that works. This is just info about the things behind ecgilib.
+
+2.1.1.2.1 the GET Method
+The data is send in the URL - you might have seen this before:
+
+http://foo.bar/whatever.cgi?field1=this+is+test+data&field2=any%20other%20data
+
+This is a simple Method - and the only method, you can use with links - for the others, you need a real form, with datafields and at least one submit button. So you will need GET when having many links on your page, which all do something else.
+The web server puts this data (after the ?) to the environment variable "QUERY_STRING" where ecgilib reads and parses it. 
+The GET Method is detected by the environment variable REQUEST_METHOD which is set to "GET".
+As far as i know, this method has a maximum length somewhere - but i am neither sure, nor do i know, where this limit is. If you know, email me.
+
+2.1.1.2.2 the simple POST Method
+
+The data is encrypted the same way than in the GET Method:
+
+field1=this+is+test+data&field2=any%20other%20data
+
+But the Web Server writes it to STDIN instead of writing it to a environment variable. You need a real form with <FORM ACTION="script.cgi" METHOD="POST"> and a submit button for this method.
+The POST Method is detected by the environment variable REQUEST_METHOD set to "POST" and CONTENT_TYPE set to "application/x-www-form-urlencoded".
+With using stdin, this method has no limits i am aware of.
+
+2.1.1.2.3 the multipart/form-data POST Method
+
+This method was created, when realizing, that the usual GET/POST methods were not able to send binary data. So multipart/form-data was born, which uses MIME encryption like:
+
+Content-tpye: mulitpart/form-data; boundary=xyz4711
+--xyz4711
+content-disposition: form-data; name="username"
+
+Joe Blow
+--xyz4711
+content-disposition: form-data; name="file-upload"; filename="c:\command.com"
+Content-Type: unknown/unknown
+
+Binary data here ff 00 xx yy ...
+--xyz4711
+content-disposition: form-data; name="multiline-field"
+
+This is
+The multiline
+Field test
+--xyz4711--
+
+For Input, STDIN is used again. if we have a <FORM ACTION="script.cgi" METHOD="POST"  ENCTYPE="multipart/form-data"> we can use a <INPUT TYPE="FILE" NAME="file"> inside this form to upload any files (text files AND binary files)
+The method is detected by the environment variable REQUEST_METHOD set to "POST" and CONTENT_TYPE starting with "multipart/form-data".
+
+2.1.2 Data output
+
+The result from the program is simply sent to stdout - in two parts, which are seperated by an empty line
+
+2.1.2.1 The Header
+
+Without an Header, the webserver will produce an internal server error. The Header has to be at least "Content-Type: text/html" followed by two returns.
+In the header, you can set some more items, like telling the browser/proxies not to cache the site, redirecting the browser to another url by a "Location: http://new.url.com", setting cookies and other stuff. 
+The data submitted in the header is not shown to the user.
+Read the HTTP documentation for more info on this.
+
+2.1.2.2 The Data
+
+This is simply the HTML Page itself, which is rendered by the browser and displayed to the user. Use simple HTML syntax here.
+
+2.2 Advanced CGI Programming
+
+This Chapter shortly gives tips for creating larger cgi programs. It is only a short list of items which can be used. It mainly focuses on the fact, that when having two (or more) pages (ie first page like login with username and password, second page enter some data), the programm is called once for any pages submitted - so you have to exchange data between these two pages. If you dont use any technics here, your programm wont know about the username on the second page.
+Make sure to read the demo programms which are in the appendix.
+2.2.1 Cookies
+
+This is an "old" method - mainly used by javascript programms, which run on the client. 
+You can use cookies to save data on the client. This is protected by the second domain name, so "www.domain.com" and "shop.domain.com" can access the same cookie, which is marked as "domain.com". They can not access cookies from "other-domain.com".
+The data saved is limited to 40k (as far as i remeber).
+Since many security problems with cookies were found, the new browsers can be set to ask you for any cookie before accepting it. Some firewalls completly disallow cookies.
+So dont use this method if you are not absolutly sure what you are doing.
+Remark: Cookies are not yet supported by ecgi. Perhaps a later version will support it in the toolkit.
+2.2.2 Hidden Input Fields
+
+A commonly used technic to save data from one form to the next is using hidden input fields like with <input type="hidden" name="username" value="john doe"> or <input type="hidden" name="password" value="secret">. So the data entered on one form will be printed on the other form. You will need hidden input fields for the following methods. There is not disadvantage of using this. Only remeber that a "bad user" might create his own form, which he sends to your server. So check all input.
+2.2.3 Actions
+
+If you have one programm, which generates various pages, you must verify, which action is called now. Take a hidden input field like <input type="hidden" name="action" value"3"> for it. If you are in the main function, you can read the action variable, if it is empty, display the enter page, if not, call the function associated with this value. Read the demo in appendix for an simple example.
+2.2.4 Session Keys
+
+This is one of the best technics i know of. When the user enters, you assign a unique session id to him. To make it unique, take the time, the remote address and the remote port - this combination must be unique according to tcp/ip.
+Format it as characters, so it is a little crypted.
+From now on, ALLWAYS keep the session key as a hidden field. So you can fill shoppers, save any other data of this session without cookies. You can also add an expire data, when the session times out - and an expire idle date, when the session times out when the user not longer accesses you (you must update a last access field for this of course - use databases!)
+If you use frames/layers generated by your cgi programm, you should redirect him, if he enters. Else, if he hits reload, you could loose his session id.
+2.2.5 Databases
+
+Not much to say about it, just: use them! You can use databases extremly well for all kind of cgi. Else, you have to write to tmp files on your own.
+
+2.2.6 HTML Templates
+
+I usually use html templates to write resulting pages. So you dont have html in your sources, where it probably shouldnt be, but only in external html includes. If you wanna change the layout, you dont have to change the sources. Read the demo for an example.
+Caution: if you use tables with lists of data, you have to split the html include in something like "head" / "row" / "foot" - or even more. I am currently working on a preprozessor, so you keep your old html files and only add comments for the preprozessor - which generates your .h file from the .html file. This way, you can allways edit your html file with a html editor and dont have to care about the output.
+Advanced tip: For big programs, think about putting the templates in a database, too. So you can change the layout without recompiling the source. You can even add an option to let the user change layout while using the program (if you have more than one layout in your database)
+
+
+3 eCgiLib Usage
+3.1 basics
+
+Here i will put the basic command to ecgi. If you dont use File Upload, this is probably all you need - only 3 functions: cgiInit()/cgiDone() at start/end of programm and cgiParam() for accessing the data. Cgic <=0.5 ONLY had these functions. Thats why it was intended by Todor to call it EASY cgi.
+3.1.1 cgiInit()
+
+int cgiInit();
+
+Call this function before accessing anything else. It will parse the input from the server to the program and create an internal list of elements. Only call this function once.
+The only functions which may be called before cgiInit are cgiSetMaxFileSize() and cgiSetMaxSize() to set the maximum limit of memory used by ecgiLib (see below)
+If the init fails for any reson, the function returns false and sets cgi_errno. You can call cgiStrError() then to get the error.
+
+Call it this way. Else, you might get segfaults, when calling the program from the shell directly!
+
+If(cgiInit()!=ECGI_SUCCESS){
+	printf("ERROR: %s\n", cgiStrError(cgi_errno));
+	exit(cgi_errno);
+}
+3.1.2 cgiDone()
+
+void cgiDone();
+
+Call this function before exiting the programm. Will free all memory occupied by cgiInit().
+Note: since most unix systems free all used memory of a program, when this program exits, you must not call cgiDone. Depending on the specific unix system, which you use, it might be faster just to exit and let the system free the memory.
+3.1.3 cgiParam() - the main function
+
+const char *cgiParam(const char *name);
+
+This will probably be your most called function. I take the explation of Todor Prokopov here, which is very good:
+Use the `cgiParam' function to grab the HTML form entry value, with a
+given name, for example:
+
+    char *color;
+    ...
+    color = cgiParam("color");
+
+This function returns NULL, if there isn't an entry with the given name,
+passed to the program, so after calling it, you should check that:
+
+    if (color == NULL)
+    {
+      /* There isn't an entry called "color", passed to us. */
+      ...
+    }
+
+In instances of multiple values, associated with the same entry name, repeated
+use of `cgiParam' with the same entry name cycles through all it's values,
+associated with the given name. The return of a null pointer indicates the end
+of the cycle. If you need to retrieve the first value instance again, you need
+to reset the function. Do this by passing a null pointer, as a parameter to it.
+For example, let's assume we have the following entries:
+
+    fruit=apple
+    fruit=pear
+
+ The first call `cgiParam("fruit")' returns "apple", the second returns
+"pear", the third, fourth and so on returns NULL. If you wish to retrieve the
+first value ("apple") again, first reset the function by calling
+`cgiParam(NULL)', and then the call `cgiParam("fruit")' returns "apple"
+again.
+The `cgiParam()' function is reset also by invoking it with another entry
+name, not the same as that, you have asked the last time. For example if you
+have the following entries, passed:
+
+    fruit=apple
+    fruit=pear
+    vegetables=potato
+
+ Invoking `cgiParam("fruit")' for the first time gives "apple", the second
+call `cgiParam("vegetables")' returns "potato" and if you call it again like
+this `cgiParam("fruit")', you get "apple" again, not "pear"! If you call
+`cgiParam("fruit")' one more time, then you get "pear".
+
+NOTE: You should not modify the string returned by `cgiParam'. If you have
+to modify it, first copy it to another piece of memory, using `strdup' or
+something similar.
+3.1.4 cgiStrError()
+
+const char*	cgiStrError(int errnum);
+
+call this, if cgiInit() returns false, which indicates an error:
+
+	if(cgiInit()==false){
+		printf("An Error occured: %s", cgiStrError(cgi_errno));
+		exit(cgi_errno);
+	}
+3.1.5 Compatibility to version <= 0.5
+
+You might have noticed, that the function names changed. For example, cgi_init() now is called cgiInit(). This naming system is used for all functions now. To stay compatible with the old names, there are some precompiler macros. So the old sources still run with the new lib.
+Its just, i personally prefer the case separtion for names than the underscore stuff.
+3.2 File Uploads
+3.2.1 basic concept
+
+The basic concept for fileuploads it NOT to write the files to any temporary directory, but to the memory. This is done, because writing to a directory will probably bring up security problems. Overwriting existing files, files readable for everyone etc. Reading in memory is a problem, too (you could send REAL big files for DOS attacks). Thats, why i implemented a limit (by default unlimited)
+Remember once again: If you do a file upload, the memory is free'd as soon as the result is sent to the user again and NOT during the whole session. So memory usage should be no problem. Its in the hands of the programmer (YES, thats you!). eCgi only provides the tools.
+Perhaps i will add an option to write them directly to a directory - even i dont see any need for this now.
+3.2.2 The filename and the Content-Type
+
+const char *cgiGetCTyp(const char *name);
+
+the filename can be obtained by a simple cgiParam() call - it is treated like a usual value. The content type can be obtained by a cgiGetCType() call.
+Note that both - the file name and the content type - are extremly browser dependend. For example an upload of "/etc/passwd" with netscape for linux will result in filename "passwd" content type "text/plain". The upload of "C:\autoexec.bat" with Microsoft Internet Explorer for Windows will result in filename "C:\autoexec.bat" with content-type "dont-remeber-gotta-test:)"
+3.2.3 3 Kinds of Elements
+
+With the cgiGetKind() function, you can get the kind of a cgi element by the name. There are four kinds.
+3.2.3.1 cgiKindValue
+
+#define CgiKindValue	 1
+
+Usual Name/Value Pair send with normal HTML datafields. Just use cgiParam for those.
+3.2.3.2 cgiKindEmptyFile
+
+#define CgiKindFileEmpty 3
+
+An Empty file has been sent.
+
+This can have two reasons:
+- No File selected by the user.
+- The selected file was only 0bytes long
+
+You can probably check this, when checking if a filename is set. If filename is NOT set, there was no file selected. if it is set, the file was 0byte.
+Note: this is browser depended - some browsers perhaps wont send a filename in some cases - so you can NOT check, if it is empty or not selected anymore
+3.2.3.3 cgiKindFileToBig
+
+#define CgiKindFileToBig 4
+
+the file uploaded has exceeded one of the limits set with the limit functions (see below).
+3.2.3.4 cgiKindFile
+
+#define CgiKindFile 2
+
+Here we finally have a real file.
+You can get the Memory File with cgiGetMFile() (see below), or you can directly dump the file to a real file with cgiMFileToFile()
+3.2.4 Accessing the Files
+3.2.4.1 cgiGetMFile()
+
+MFILE* cgiGetMFile(const char *name);
+
+Calling this function with the name as attribute (see cgiParam()) returns a Pointer to the Memory File MFILE* (see below for handling of memoryfiles)
+3.2.4.2 cgiMFileToFile()
+
+int cgiMFileToFile(const char *name, const char *fname, const char *fopenmode);
+
+This function writes the file from memory to your local hard disk. Call it  with the fname to write to, and the open mode (see "man fopen" for details of openmode)
+Note: memory is NOT free'd by this. You must call mfclose to do so.
+3.2.5 limits
+
+As mentioned above, you can set limits to the memory used for file uploads to prevent DOS attacks.
+Once one of the Limits is overrun, the kind is set to cgiKindFileToBig. The other cgi elements are processed as usual.
+3.2.5.1 cgiSetMaxFileSize()
+
+void cgiSetMaxFileSize(int size);
+
+This functions sets the maximum amount of memory used for a single file.
+3.2.5.2 cgiSetMaxSize()
+
+void cgiSetMaxSize(int size);
+
+Since a form can have more than one file upload fields, this functions sets the maximum amount of memory which can be used for all file uploads.
+3.3 Accessing Elements without the knowing the name
+3.3.1 Why?
+
+Some might say: "You allways know the name, course you are the programmer" - right, but there are some cases, you do NOT know them.
+Imagine a tool for sending mails (like formmail.pl does) - you can set a hidden filed "needed" which has the names of the fields which may not be empty. If all fields are filled, you send an email to the adress in "mailto". If you can access all elements, you could easily write such a variable tool. Thats only ONE point where i needed these functions in the past.
+There are two general ways of accessing the internal list of elements.
+3.3.2 Access to Elements using cgiGetFirstName() / cgiGetNextName()
+
+const char* cgiGetFirstName();
+const char*	cgiGetNextName();
+
+cgiGetFirstName returns the name of the first element - or NULL if no element  found - and sets an internal pointer to the last returned name.
+CgiGetNextName returns the next - or NULL if there is no next name.
+
+Since you can access all cgi functions by the name, this is one way of getting all elements. 
+
+Example:
+
+	const char *val;
+	printf("%s\n", cgiGetFirstName());
+	while((val=cgiGetNextName())!=NULL)
+		printf("%s\n", val);
+3.3.3 Access to Elements using cgiPosNext()
+
+typedef	void CgiPos;
+CgiPos*		cgiPosNext(CgiPos *lastpos);
+const char*	cgiPosParam(CgiPos *where);
+const char*	cgiPosName(CgiPos *where);
+int			cgiPosGetKind(CgiPos *where);
+const char*	cgiPosGetCTyp(CgiPos *where);
+MFILE*		cgiPosGetMFile(CgiPos *where);
+int			cgiPosMFileToFile(CgiPos *where, const char *fname, const char *fopenmode);
+
+The function cgiPosNext() returns a pointer to the first element if called with parameter NULL, or to the next if you give the last return value.
+With the CgiPos *, you can access all the cgi functions like accessing them by name. (In fact, the name functions internally use these functions. So using the CgiPos* pointer might be slightly faster)
+
+An example should show the usage:
+
+	CgiPos *p=NULL;
+	while((p=cgiPosNext(p))!=NULL){
+		printf("%s : ", cgiPosName(p));
+		while((val=cgiPosParam(p))!=NULL)
+			printf("%s ", val);
+		if(cgiPosGetKind(p)==cgiKindFile)
+			printf("This is an file!");
+		printf("\n");
+	}
+3.3.4 cgiNameByValue()
+
+const char*	cgiNameByValue(char *value);
+
+This function returns the name of an element by give the value. Might be usefull in some cases. If called multiple, it acts like cgiParam() and returns all names containing this value, returning NULL when not finding any more.
+
+Example:
+
+	while((name=cgiNameByValue("test"))!=NULL)
+		printf("%s\n", name);
+3.4 Memory Files
+3.4.1 Basic concept
+
+The memoryfiles are not only the representative of the uploaded files, but heavily used internal for dynamic allocation. Since they dont call realloc every added byte, but allocate blocks of bytes (is defined in memfile.h - default=4k Blocks), they are the fast way to dynamic memory.
+You can use this files for everything, which requires much allocation like:
+
+	char *buf=NULL;
+	FILE *f=fopen("whatever", "r");
+	int c, size=0;
+
+	While((c=fgetc(f))!=EOF){
+		buf=realloc(buf, size+1);
+		buf[size++]=c;
+	}
+
+In such a case, you should use the memfiles - and their feature of block allocation. This should be faster, since malloc/realloc is commonly slow.
+
+	FILE *f=fopen("whatever", "r");
+	MFILE *mf=mfopen();
+	int c;
+
+	while((c=fgetc(f))!=EOF)
+		mfputc(c, mf);
+
+Now you can access the data with all the mf-functions.
+3.4.2 "usual" c file functions and memory files
+
+MFILE*		mfopen();
+void		mfclose(MFILE *mf);
+int			mfseek(MFILE *mf, int offset, int whence);
+int 		mftell(MFILE *mf);
+int 		mfeof(MFILE *mf);
+int 		mfread(void *data, int times, int length, MFILE *mf);
+int 		mfwrite(void *data, int times, int length, MFILE *mf);
+int 		mfgetc(MFILE *mf);
+int 		mfputc(unsigned char c, MFILE *mf);
+int			mfprintf(MFILE *mf, const char *format, ...);
+
+If you are a c-programmer (hope you are, why else you read this ???), you know these functions. They are exactly what the functions without the leading m are - like mfopen() is the pedant to fopen(), mfseek() is the pedant to fseek(). If you dont know them, just read the c documentation (like "man fseek")
+Differences: 
+mfopen() doesnt get any filename, openmode - i think, its obvious why :)
+mfclose() free's all memory used by the file - dont access this pointer after mfclose()
+3.4.3 additional memory file functions
+
+Since this are not REAL Files, we have some more (usefull?) functions.
+3.4.3.1 mfMFileToFile()
+
+int 		mfMFileToFile(MFILE *mf, FILE *f);
+
+Appends a MFile to a given File Handle.
+Use cgiMFileToFile() for simple dumping.
+Note: it APPENDS it to the current position of the cursor in the file. (see "man fopen", "man fseek")
+3.4.3.2 mfFileToMFile()/mfFileToMFileN()
+
+int 		mfFileToMFile(FILE *f, MFILE *mf);
+int			mfFileToMFileN(FILE *f, MFILE *mf, int count);
+
+Appends a File to a given MFile.
+Use the mfFileToMFileN(), if you dont want the whole file to be appended.
+Note: it APPENDS it to the current position of the cursor in the MFile (see mfseek)
+3.4.3.3 mfGetData()
+
+const char*	mfGetData(MFILE *mf);
+
+Returns the data of the file. The data is terminated by 0 at the end of the file, so you can use 
+
+	printf("%s", mfGetData(myfile));
+
+to dump the data. Remeber: if it is a binary file, it might look very ugly.
+3.4.3.4 mfGetDataAt()
+
+const char*	mfGetDataAt(MFILE *mf, int start);
+
+same as mfGetData(), but only returns data from start byte. String also NULL Terminated.
+3.4.3.5 mfSetLength()
+
+int		mfSetLength(MFILE *mf, int length);
+
+For resetting a file to 0 bytes, or any other length. This does not free the used memory, if you set it to 0 bytes. Use mfclose()/mfopen() to free memory. If you set the length bigger than old filesize, data is reallocated.
+3.4.3.6 mfGetLength()
+
+int 		mfGetLength(MFILE *mf);
+
+returns the length of the file - so you dont have to get it with
+
+	mfseek(mf, 0, SEEK_SET);
+	size=mftell(mf);
+3.5 Saving/Loading the environment for simple debugging
+3.5.1 cgiSaveDebugData()
+
+int cgiSaveDebugData(char *fname, char *fopenmode);
+
+Call cgiSaveDebugData() after cgiInit(). This will dump the whole internal list of data plus all the environment variables to a file, which can be later loaded.
+3.5.2 cgiLoadDebugData()
+
+int cgiLoadDebugData(char *fname);
+
+Call cgiLoadDebugData() instead of cgiInit() - after calling this, all environment variables and all cgi elements are restored to the state, they have been with cgiInit() when saving the data.
+You can now debug your program from the console instead of using a webbrowser.
+3.6 eCgi Toolkit
+
+I will add a cgi Toolkit in "ecgitk.h" which is independend from ecgi.h, but includes commonly used functions which you need when programming cgi programms - like creating a unique session key or reading/saving cookies. I will put here functions, which I personally need, or things users request.
+3.6.1 ctkRedirect()
+
+int ctkRedirect(const char *format, ...);
+
+This functions redirects the browser to another url. To make this work, you may NOT have printed anything to stdout yet, because this is done with the header.
+If you redirect does not start with "http:", the server name is added to the redirect target to make sure the browser propperly shows the new url, since some browsers have problems with this when getting a relativ url.
+
+Example:
+
+ctkRedirekt("%s?action=%d&sessionid=%s", getenv("SCRIPT_NAME"), ActShowList, cgiParam("sessionid"));
+3.6.2 ctkGetSessionID()
+
+const char *ctkGetSessionID();
+
+Returns a unique session id build from the time, the remote ip adress and the remote port. Data put to characters to crypt data a little.
+Returned value must be free'd with free()
+ 
+3.6.3 ctkTimeToHDate()
+
+const char *ctkTimeToHDate(time_t time);
+
+Constructs a asci date from the given time. Currently only in DD.MM.YYYY format.
+Returned value must be free'd with free()
+3.6.4 ctkHDateToTime()
+
+time_t ctkHDateToTime(const char *hdate);
+vice versa of ctkTimeToHDate() - returns a time_t record constructed from a input in format DD.MM.YYYY
+Retruns 0, if the given date was in wrong format.
+3.7 HTML Preprozessor
+
+3.7.1 Basic concept
+
+In the html2h/ subdir, you will find a binary called html2h, which is the first quick version of a html preprozessor. This is my first way of transparently use the html files as .h templates in a c programm AND still having the old .html file, which can be edited in a program like dreamweaver. The problem was, you have to split the html file in various substrings, delete some rows, you need for the layout, but not for the template and adding quick links to the script. Make sure, you read and understand my concept of html templates (2.2.6) and read the example at Appendix A2, which shows the usage of templates.
+html2h parses the tags for it - starting with <!--# -, replaces " with \" and replaces % with %%. You need this as input for printf().
+
+3.7.2 Example
+
+Since it is complicate, to explain what html2h does, without seeing it, here an simple example (which is also included in the html2h/ directory)
+
+Input: demo-simple.html
+
+<!--#Section htmlSimpleHead 'Header of Simple demo file'-->
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<form name="form1" method="post" action="<!--#param s script 'Script Name'-->">
+  <p>Hello <!--#param s name 'Name of logged in User'-->! </p>
+  <p>Your Phonenumber: 
+    <input type="text" name="phone" value="<!--#param s phone 'Phone Number'-->>
+    <br>
+    Select Area: 
+    <select name="areaselect">
+<!--#Section htmlSimpleSelectRow 'The select box items - one row for every possible'-->
+      <option <!--#Param s selected 'Write SELECTED here, if selected'-->><!--#Param 30s katname 'Area Name - bound to right'--></option>
+<!--#/*-->
+      <option>hong kong</option>
+      <option>japan</option>
+      <option>home</option>
+<!--#*/-->
+<!--#Section htmlSimpleSelectBody-->
+    </select>
+  </p>
+  <p>Current Numbers:</p>
+  <table width="400" border="0" cellpadding="4">
+    <tr> 
+      <td>Number</td>
+      <td>Area</td>
+      <td> 
+        <div align="center">Delete</div>
+      </td>
+      <td> 
+        <div align="center">Edit</div>
+      </td>
+    </tr>
+<!--#Section htmlSimplePhoneRow 'This lists all existing entries'-->
+    <tr> 
+      <td><!--#param s number 'Phone Number as string'--></td>
+      <td><!--#param s area 'Area of number'--></td>
+      <td> 
+        <div align="center"><a href="<!--#SLink 'Link to Delete Entry' s skey 'Session ID' d eid 'ID of the specific entry'-->">-&gt;X&lt;-</a></div>
+      </td>
+      <td> 
+        <div align="center"><a href="<!--#SLink 'Link to Edit this Entry' s skey 'Session ID' d eid-->-&gt;X&lt;-</a></div>
+      </td>
+    </tr>
+<!--#Section htmlSimpleFoot-->
+<!--#/*-->
+    <tr> 
+      <td>234233</td>
+      <td>Home</td>
+      <td> 
+        <div align="center"><a href="x">-&gt;X&lt;-</a></div>
+      </td>
+      <td> 
+        <div align="center"><a href="x">-&gt;X&lt;-</a></div>
+      </td>
+    </tr>
+    <tr> 
+      <td>342523</td>
+      <td>japan</td>
+      <td> 
+        <div align="center"><a href="x">-&gt;X&lt;-</a></div>
+      </td>
+      <td> 
+        <div align="center"><a href="x">-&gt;X&lt;-</a></div>
+      </td>
+    </tr>
+<!--#*/-->
+  </table>
+  <p> 
+    <input type="submit" name="Submit" value="Submit">
+    <input type="reset" name="Submit2" value="Reset">
+  </p>
+</form>
+</body>
+</html>
+
+Output: demo-simple.h
+
+/****************************************************
+ *       Header file generated with html2h 0.1      *
+ *            (c) 2000 by Sven@Dawitz.de            *
+ ****************************************************
+
+
+----------------------------------------
+htmlSimpleHead                   "Header of Simple demo file"
+----------------------------------------
+FORMAT     NAME                 COMMENT
+----------------------------------------
+s          script               "Script Name"
+s          name                 "Name of logged in User"
+s          phone                "Phone Number"
+
+
+----------------------------------------
+htmlSimpleSelectRow              "The select box items - one row for every possible"
+----------------------------------------
+FORMAT     NAME                 COMMENT
+----------------------------------------
+s          selected             "Write SELECTED here, if selected"
+30s        katname              "Area Name - bound to right"
+
+
+----------------------------------------
+htmlSimpleSelectBody            
+----------------------------------------
+FORMAT     NAME                 COMMENT
+----------------------------------------
+
+
+----------------------------------------
+htmlSimplePhoneRow               "This lists all existing entries"
+----------------------------------------
+FORMAT     NAME                 COMMENT
+----------------------------------------
+s          number               "Phone Number as string"
+s          area                 "Area of number"
+           ***SCRIPT LINK***    "Link to Delete Entry"
+s               script               "Script Name"
+s               skey                 "Session ID"
+d               eid                  "ID of the specific entry"
+           ***SCRIPT LINK***    "Link to Edit this Entry"
+s               script               "Script Name"
+s               skey                 "Session ID"
+d               eid                 
+
+
+----------------------------------------
+htmlSimpleFoot                  
+----------------------------------------
+FORMAT     NAME                 COMMENT
+----------------------------------------
+
+ ****************************************************/
+
+
+const char htmlSimpleHead[]="
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">
+</head>
+
+<body bgcolor=\"#FFFFFF\" text=\"#000000\">
+<form name=\"form1\" method=\"post\" action=\"%s\">
+  <p>Hello %s! </p>
+  <p>Your Phonenumber: 
+    <input type=\"text\" name=\"phone\" value=\"%s>
+    <br>
+    Select Area: 
+    <select name=\"areaselect\">
+
+";
+
+const char htmlSimpleSelectRow[]="
+      <option %s>%30s</option>
+
+
+";
+
+const char htmlSimpleSelectBody[]="
+    </select>
+  </p>
+  <p>Current Numbers:</p>
+  <table width=\"400\" border=\"0\" cellpadding=\"4\">
+    <tr> 
+      <td>Number</td>
+      <td>Area</td>
+      <td> 
+        <div align=\"center\">Delete</div>
+      </td>
+      <td> 
+        <div align=\"center\">Edit</div>
+      </td>
+    </tr>
+
+";
+
+const char htmlSimplePhoneRow[]="
+    <tr> 
+      <td>%s</td>
+      <td>%s</td>
+      <td> 
+        <div align=\"center\"><a href=\"%s?skey=%s&eid=%d\">-&gt;X&lt;-</a></div>
+      </td>
+      <td> 
+        <div align=\"center\"><a href=\"%s?skey=%s&eid=%d-&gt;X&lt;-</a></div>
+      </td>
+    </tr>
+
+";
+
+const char htmlSimpleFoot[]="
+
+  </table>
+  <p> 
+    <input type=\"submit\" name=\"Submit\" value=\"Submit\">
+    <input type=\"reset\" name=\"Submit2\" value=\"Reset\">
+  </p>
+</form>
+</body>
+</html>
+";
+3.7.3 Section Tag
+
+<!--#section name ['comment']-->
+
+The section tag will create a const char name[] entry for every section generated. You need a section before any html data. The comment is optional.
+
+<!--#section htmlHead 'this is just a demo'-->
+html stuff here 
+<!--#section htmlRow 'this is the next row'-->
+
+would result in
+
+const char htmlHead[]="
+html stuff here
+";
+
+const char htmlRow[]="...
+3.7.4 Param Tag
+
+<!--#param format name ['comment']-->
+
+format is a printf format. 
+
+<!--#param 10.3f floatvar--> 
+
+would result in 
+
+%10.3f
+
+3.7.4 Slink Tag
+
+<!--#slink format name1 ['comment'] format name2 ['comment'] ... format name3 ['comment'] -->
+
+Use this, if you link to the script with varous parameters.
+
+<!--#slink s skey 'session ID' d action 'ActShowStats' s user--> 
+
+would result in
+
+%s?skey=%s&action=%d&user=%s
+
+3.7.4 Comments
+
+<!--#/*--> not printed in .h file <!--#*/-->
+
+These are the comment tags - link in c. html2h supports multi nested comments.
+
+4 eCgiLib Function Library
+
+Here are the header files of ecgi lib. The Usage should be obvious after reading chapter 3.
+
+4.1 ecgi.h
+The only file you need to include from your programm. Auto includes memfile.h, course you need it, too.
+
+#define CgiKindValue	 1
+#define CgiKindFile	 2
+#define CgiKindFileEmpty 3
+
+typedef	void CgiPos;
+
+/****************************************
+ * OLD FUNCTION NAMES FOR COMPATIBILITY *
+ ****************************************/
+#define	cgi_init()	cgiInit()
+#define cgi_param(name) cgiParam(name)
+#define cgi_done()	cgiDone()
+#define cgi_strerror(no) cgiStrError(no)
+
+/*****************************************
+ * TRADITIONAL FUNCTIONS OF OLD CGIC 0.5 *
+ *****************************************/
+int 		cgiInit();
+const char*	cgiParam(const char *name);
+void		cgiDone();
+const char*	cgiStrError(int errnum);
+
+/*******************************
+ * NEW FILE DEPENDED FUNCTIONS *
+ *******************************/
+void		cgiSetMaxFileSize(int size);
+void 		cgiSetMaxSize(int size);
+int			cgiGetKind(const char *name);
+const char*	cgiGetCTyp(const char *name);
+MFILE*		cgiGetMFile(const char *name);
+int			cgiMFileToFile(const char *name, const char *fname, const char *fopenmode);
+
+/****************************
+ * MISC OTHER NEW FUNCTIONS *
+ ****************************/
+const char*	cgiNameByValue(char *value);
+
+/**********************************************************
+ * FUNCTION FOR GETTING ALL DATA WITHOUT KNOWING THE NAME *
+ **********************************************************/
+const char*	cgiGetFirstName();
+const char*	cgiGetNextName();
+CgiPos*		cgiPosNext(CgiPos *lastpos);
+const char*	cgiPosParam(CgiPos *where);
+const char*	cgiPosName(CgiPos *where);
+int			cgiPosGetKind(CgiPos *where);
+const char*	cgiPosGetCTyp(CgiPos *where);
+MFILE*		cgiPosGetMFile(CgiPos *where);
+int			cgiPosMFileToFile(CgiPos *where, const char *fname, const char *fopenmode);
+
+/*****************************************************************
+ * FUNCTIONS FOR SAVING/LOADING ENVIRONMENT - GOOD FOR DEBUGGING *
+ *****************************************************************/
+int		cgiSaveDebugData(char *fname, char *fopenmode);
+int		cgiLoadDebugData(char *fname);
+
+/* the error number */
+extern int cgi_errno;
+
+4.2 memfile.h
+This is the interface for the memory files. Again: should be compatible with the usual f-functions.
+
+#define MFILE_BLOCK 4096	// in what block should mem be increased
+
+#ifndef true
+	#define true	(1==1)
+	#define false	(0==1)
+#endif
+
+typedef struct S_MFILE{
+	void *data;
+
+	int blocks;
+	int eof;
+	int used;
+	int pos;
+}MFILE;
+
+/**************************************************************
+ * FUNCTIONS 100% COMPATIBLE WITH USUAL F* FUNCTIONS - I HOPE *
+ **************************************************************/
+MFILE*		mfopen();
+void		mfclose(MFILE *mf);
+int			mfseek(MFILE *mf, int offset, int whence);
+int 		mftell(MFILE *mf);
+int 		mfeof(MFILE *mf);
+int 		mfread(void *data, int times, int length, MFILE *mf);
+int 		mfwrite(void *data, int times, int length, MFILE *mf);
+int 		mfgetc(MFILE *mf);
+int 		mfputc(unsigned char c, MFILE *mf);
+
+/************************
+ * ADDITIONAL FUNCTIONS *
+ ************************/
+int 		mfMFileToFile(MFILE *mf, FILE *f);
+int 		mfFileToMFile(FILE *f, MFILE *mf);
+const char*	mfGetData(MFILE *mf);
+const char*	mfGetDataAt(MFILE *mf, int start);
+int			mfSetLength(MFILE *mf, int length);
+int 		mfGetLength(MFILE *mf);
+
+4.3 ecgi-internal.h - not for the user!
+you should not use this file - this is the part which is used internal, but "hidden" to the user - if you have any reason to include this file, i might have forgotten something.
+Note: this file and the internal list of cgi elements might be changed later. The user interface of ecgi.h will not be changed. So you are compatible to following versions with ecgi.h - with ecgi-internal.h you might be not!
+
+/***********************************************
+ * THE STRUCTS/LIST WE STORE THE WHOLE SHIT IN *
+ ***********************************************/
+
+typedef struct _CgiValue{
+	char *value;
+	struct _CgiValue *next;
+}CgiValue;
+
+typedef struct _CgiElement {
+	int type;
+	char *name;
+	char *ctyp;
+	CgiValue *values;
+	MFILE *mf;
+	struct _CgiElement *next;
+}CgiElement;
+
+typedef struct _CGI{
+	CgiElement *list;
+	CgiElement *lastasked;
+	CgiValue *lastret;
+	CgiElement *lastvalasked;
+	CgiElement *lastnameasked;
+}Cgi;
+
+/********************************
+ * INTERNAL FUNCTION PROTOTYPES *
+ ********************************/
+
+// List Stuff
+int listAddData(int type, const char *name, const char *value, const char *ctyp, MFILE *mf);
+CgiElement *listGetByName(const char *name);
+CgiElement *listAppendElement(int type, const char *name, const char *ctyp, MFILE *mf);
+CgiValue *listAppendValue(CgiElement *where, const char *value);
+int listHasValue(CgiElement *check, char *value);
+void listFreeAll();
+void listDump();	// for test usage only ... dumps all vals to stdout ...
+
+// Init/Parse Stuff
+int initGet();
+int initPost();
+int initMultiPart(const char *cont_type);
+int parseMultiPart(char *boundary);
+int parseMultiHead(char **name, char **fname, char **ctyp);
+int parseQueryString(const char *str, int length); // str==NULL - read from stdin
+
+// Misc Help Functions
+int miscStringDecode(char *s);
+int miscFReadLn(FILE *f, MFILE *mf);
+int miscStringToUInt(const char *str, unsigned int *res);
+char *miscStringDelCrLf(char *str);
+
+/**********************
+ * OTHER USELESS SHIT *
+ **********************/
+
+/* external vars - here for real */
+int cgi_errno=0;
+/* global vars */
+Cgi *c=NULL;
+int maxfilesize=-1;
+int maxsize=-1;
+int init_called=false;
+int init_complete=false;
+
+#define NUMERRS 25
+static const char *errmsgs[NUMERRS] = {
+  "Success",
+  "Unknown request method",
+  "Repeated initialization attempt",
+  "Null query string",
+  "Unknown content type",
+  "Invalid content length",
+  "Unexpected end of input stream",
+  "Input stream read error",
+  "Maximum entry name length exceeded",
+  "Maximum entry value length exceeded",
+  "Invalid URL-encoded data",
+  "Maximum number of entries exceeded",
+  "Memory allocation error",
+  "Maximum memory limit exceeded",
+  "Invalid boundary string",
+  "Null file upload directory",
+  "Pathname length limit exceeded",
+  "Extremely long line encountered",
+  "Missing boundary string",
+  "Error opening file for writing",
+  "Error writing to file",
+  "Error closing file",
+  "Error changing file permissions",
+  "Missing initial boundary string",
+  "Error parsing content disposition"
+};
+
+#define CGIERR_UREQM      1  /* Unknown request method */
+#define CGIERR_REINIT     2  /* Repeated initialization attempt */
+#define CGIERR_NULQSTR    3  /* Null query string */
+#define CGIERR_UCONTT     4  /* Unknown content type */
+#define CGIERR_ICONTLEN   5  /* Invalid content length */
+#define CGIERR_UEOINP     6  /* Unexpected end of input stream */
+#define CGIERR_INPREAD    7  /* Input stream read error */
+#define CGIERR_MAXNAMEE   8  /* Maximum entry name length exceeded */
+#define CGIERR_MAXVALE    9  /* Maximum entry value length exceeded */
+#define CGIERR_IURLENC   10  /* Invalid URL-encoded data */
+#define CGIERR_MAXENTRSE 11  /* Maximum number of entries exceeded */
+#define CGIERR_MALLOC    12  /* Memory allocation error */
+#define CGIERR_MAXMEME   13  /* Maximum memory limit exceeded */
+#define CGIERR_IBSTR     14  /* Invalid boundary string */
+#define CGIERR_NULUPLD   15  /* Null file upload directory */
+#define CGIERR_PATHMAXE  16  /* Pathname length limit exceeded */
+#define CGIERR_LONGLN    17  /* Extremely long line encountered */
+#define CGIERR_MBSTR     18  /* Missing boundary string */
+#define CGIERR_FOPEN     19  /* Error opening file for writing */
+#define CGIERR_FWRITE    20  /* Error writing to file */
+#define CGIERR_FCLOSE    21  /* Error closing file */
+#define CGIERR_CHMOD     22  /* Error changing file permissions */
+#define CGIERR_MBBSTR    23  /* Missing initial boundary string */
+#define CGIERR_DISPPARS  24  /* Error parsing content disposition */
+
+
+
+Appendix A - Demo Programms
+
+These are two very simple, but working programms which should show the basic use of ecgilib.
+
+A1 Simple-Demo
+
+Demo1.html
+	<html>
+	<body><pre>
+	<form action="demos.cgi" method="post">
+	Name: <input type=text name="name">
+	Password: <input type=password name="passwd">
+	<input type=submit>
+	</form>
+	</html>
+
+Demo1.c
+#include <stdio.h>
+#include <ecgi.h>
+
+int main()
+{
+	cgiInit();
+
+	printf("Content-Type: text/html\n\n");
+
+	printf("Your name: %s\n", cgiParam("name"));
+	printf("Your password: %s\n", cgiParam("passwd"));
+	
+	cgiDone();
+	
+	return(0);
+}
+
+Thats it!
+
+A2 Multi Form Demo / All Data access Demo / Template Demo:
+
+html/enter.h
+
+const char htmlEnter[]="
+<html><body><pre>
+<form script=\"%s\">
+<input type=hidden name=action value=%d>
+Your Name: <input type=text name=name>
+Your Password: <input type=text name=passwd>
+<input type=submit>
+</form>
+</body></html>
+";
+
+html/pageTwo.h
+
+const char htmlPageTwo[]="
+<html><body><pre>
+<form script=\"%s\">
+<input type=hidden name=action value=%d>
+<input type=hidden name=\"name\" value=\"%s\">
+<input type=hidden name=\"passwd\" value=\"%s\">
+Hello %s!
+Please Select persons, you wanna kill: <select name=\"to kill\" multiple>
+<option>Wife / Girlfriend</option>
+<option>Mum and Dad</option>
+<option>KILL ALL HUMANS</option>
+</select>
+Please Enter the amount of Bullets for each person: <input type=text name=bulcount>
+<input type=submit value=\"kill em\">
+</form>
+</body></html>
+";
+
+html/pageThree.h
+
+const char htmlPageThreeHead[]="
+<html><head><title>Result of your inputs</title></head>
+<body>
+This is the data send from you:<p>
+";
+
+const char htmlPageThreeRowHead[]="
+Name: %s <br> Values: <br>
+";
+
+const char htmlPageThreeRow[]="
+%s <br>
+";
+
+const char htmlPageThreeRowFoot[]="
+<hr width=90%%>
+";
+
+const char htmlPageThreeFoot[]="
+<br>Your commands will be executed now!</body></html>";
+
+demo2.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <ecgi.h>
+#include "html/enter.h"
+#include "html/pageTwo.h"
+#include "html/pageThree.h"
+
+#define ActEnter	0
+#define ActPageTwo	1
+#define ActPageThree	2
+
+void mainEnter();
+void mainPageTwo();
+void mainPageThree();
+
+const char *script;
+
+int main()
+{
+	int action=0;
+	const char *saction;
+	
+	cgi_init();
+	script=getenv("SCRIPT_NAME");
+	saction=cgiParam("action");
+	if(saction!=NULL) action=atoi(saction);
+
+	printf("Content-Type: text/html\n\n");
+	
+	switch(action){
+		case ActPageTwo:	mainPageTwo(); break;
+		case ActPageThree:	mainPageThree(); break;
+		default:		mainEnter(); break;
+	}
+	
+	cgiDone();
+	
+	return(0);
+}
+
+void mainEnter()
+{
+	printf(htmlEnter, script, ActPageTwo);
+}
+
+void mainPageTwo()
+{
+	printf(htmlPageTwo, script, ActPageThree, cgiParam("name"), cgiParam("passwd"), cgiParam("name"));
+}
+
+void mainPageThree()
+{
+	CgiPos *p=NULL;
+	const char *val;
+	cgiParam(NULL);
+
+	// notice, no need to know any of the names of the fields from above
+
+	printf(htmlPageThreeHead);
+	
+	while((p=cgiPosNext(p))!=NULL){
+		printf(htmlPageThreeRowHead, cgiPosName(p));
+		while((val=cgiPosParam(p))!=NULL)
+			printf(htmlPageThreeRow, val);
+		printf(htmlPageThreeRowFoot);
+	}
+	
+	printf(htmlPageThreeFoot);
+}
+eCgiLib 0.6 Tutor
+
+Print 02.12.2000 18:10		Seite 5
+
+

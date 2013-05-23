@@ -1,0 +1,112 @@
+/** 
+@defgroup lors_api_examples_set The LoRS Set API Examples.
+@ingroup lors_api_set
+
+    Welcome to the Logistical Runtime System (LoRS) API example page.
+
+    @note This program will create an exnode and serialize it to disk.  The
+    input and output filename is passed from the command line.<br><br><br>
+    @code
+    int main (int argc, char **argv)
+    {
+        LorsSet             *se;
+        LorsDepotPool       *dp;
+        LorsExnode          *ex;
+        int                  ret;
+        char                *buffer;
+        int                 fd;
+        longlong            size;
+        struct stat         mstat;
+
+        ret = stat(argv[1], &mstat);
+        if ( ret == -1 ) { perror("error1"); exit(EXIT_FAILURE); }
+        fd = open(argv[1], O_RDONLY);
+        if ( fd == -1 ) { perror("error2"); exit(EXIT_FAILURE);  }
+
+        size = mstat.st_size;
+        buffer = malloc(sizeof(char)*size);
+        if ( buffer == NULL ) { perror("error3"); exit(EXIT_FAILURE); }
+
+        ret = lorsGetDepotPool(&dp, "galapagos.cs.utk.edu", 6767, NULL,
+                               6, 
+                               "st= ca", 
+                               (ulong_t)(size/(1024*1024)+1), 
+                               IBP_SOFT, 
+                               60*60, 10, 20, LORS_CHECKDEPOTS);
+        if ( ret != LORS_SUCCESS ) {  perror("error4"); exit(EXIT_FAILURE);  }
+
+        ret = lorsSetInit(&se, size/3, 2, 0);
+        if ( ret != LORS_SUCCESS ) {  perror("error5"); exit(EXIT_FAILURE);  }
+
+        ret = read(fd, buffer, size);
+        if ( ret != size) {  perror("error6"); exit(EXIT_FAILURE);  }
+
+        ret = lorsSetStore(se, dp, buffer, se->max_length, size, NULL, 6, 20, 0);
+        if ( ret != LORS_SUCCESS ) {  perror("error7"); exit(EXIT_FAILURE);  }
+
+        ret = lorsExnodeCreate(&ex);
+        if ( ret != LORS_SUCCESS ) {  perror("error8"); exit(EXIT_FAILURE);  }
+
+        ret = lorsAppendSet(ex, se);
+        if ( ret != LORS_SUCCESS ) {  perror("error9"); exit(EXIT_FAILURE);  }
+
+        ret = lorsFileSerialize(ex, argv[2], 0, 0);
+        if ( ret != LORS_SUCCESS ) {  perror("error10"); exit(EXIT_FAILURE);  }
+
+        return 0;
+    }
+    @endcode
+
+    @note This program will deserialize an exnode download it and write the
+    data to disk.  The input and output filename is passed from the command line.
+    <br><br><br>
+    @code
+    int main (int argc, char **argv)
+    {
+
+        LorsSet       *se;
+        LorsSet       *sel, *sel2;
+        LorsDepotPool       *dp;
+        LorsExnode          *ex;
+        int                  ret;
+        int                 written = 0;
+        char                *buffer;
+        int                 fd;
+        longlong            size;
+        struct stat         mstat;
+
+        ret = lorsFileDeserialize(&ex, argv[1], NULL);
+        if ( ret != LORS_SUCCESS ) { exit(EXIT_FAILURE); }
+        fd = open(argv[2], O_WRONLY|O_CREAT|O_TRUNC, 0644);
+        if ( fd == -1 ) { perror("error1"); exit(EXIT_FAILURE);  }
+
+        size = ex->logical_length;
+        buffer = malloc(sizeof(char)*size);
+        if ( buffer == NULL ) { perror("error2"); exit(EXIT_FAILURE); }
+
+        ret = lorsUpdateDepotPool(ex, &dp, NULL, 0, NULL, 1, 60, 0);
+
+        ret = lorsQuery(ex, &se, 0, ex->logical_length, 0);
+        written = 0;
+        while ( written < size )
+        {
+
+            fprintf(stderr, "offset: %d len: %ld\n",
+                            written, (long)(size-written));
+            ret = lorsSetLoad(se, buffer, 
+                              (longlong)written, (long)(size-written), 
+                              512*1024,
+                              NULL, 10, 
+                              100, 0);
+
+            fprintf(stderr, "returned: %d\n", ret);
+            if ( ret != (size-written) ) { printf("less than requested\n"); 
+                exit(EXIT_FAILURE); }
+            written += ret;
+            ret = write(fd, buffer, ret);
+
+        }
+        close(fd);
+    }
+    @endcode
+*/

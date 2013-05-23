@@ -1,0 +1,17 @@
+The documentation is in the ecgitut.* files.
+
+Since i made the main doku in word .doc format, i have
+- aemm - some problems to convert it. The html, which
+is converted by word, is a pain in the ****. And i didnt
+find any way to export it to clean html with an external tool.
+I cleaned up the wordhtml with dreamweaver, but the result
+was not satisfactory.
+
+So, you currently have a .doc word file, a .txt text file,
+a .htm - pain in the **** - html file and a .rtf rich text
+format file (rtf without index). choose whatevery you like.
+
+If you have any ideas, how to get better html output, please 
+email me.
+
+I will add a pdf later, but no time for this now.

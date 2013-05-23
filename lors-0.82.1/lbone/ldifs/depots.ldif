@@ -1,0 +1,35 @@
+dn: depotname=i2-dsi.ibt.tamus.edu,ou=depots,o=lbone
+objectClass: depot
+depotname: i2-dsi.ibt.tamus.edu
+hostname: i2-dsi.ibt.tamus.edu
+port: 6714
+c: US
+st: TX
+l: COLLEGE STATION
+email: millar@cs.utk.edu
+lat: 30.604480
+lon: -96.312270
+zip: 77842
+StableStorage: 80000
+AvailableStableStorage: 80000
+VolatileStorage: 80000
+AvailableVolatileStorage: 80000
+Duration: 1209600
+
+dn: depotname=dsi.cs.utk.edu,ou=depots,o=lbone
+objectClass: depot
+depotname: dsi.cs.utk.edu
+hostname: dsi.cs.utk.edu
+port: 6714
+c: US
+st: TN
+l: KNOXVILLE
+email: millar@cs.utk.edu
+lat: 36.559830
+lon: -84.434030
+zip: 37901
+StableStorage: 1000
+AvailableStableStorage: 971
+VolatileStorage: 0
+AvailableVolatileStorage: 0
+Duration: 259200

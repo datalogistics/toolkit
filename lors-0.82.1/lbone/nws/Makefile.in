@@ -1,0 +1,75 @@
+# System-dependent values determined by the configuration script.
+AR          = @AR@
+C_FLAGS     = @C_FLAGS@
+CC          = @CC@
+JAVA_VERSION= @JAVA_VERSION@
+LD_FLAGS    = @LD_FLAGS@
+OBJECT_DIR  = @OBJECT_DIR@
+PROFILE     = @PROFILE@
+PURIFY      = @PURIFY@
+RANLIB      = @RANLIB@
+ROOT_DIR    = @ROOT_DIR@
+VERSION     = @VERSION@
+
+DIST_NAME = NWS-$(VERSION)
+DIST_ROOT = $(ROOT_DIR)/$(DIST_NAME)
+LIBRARY   = $(ROOT_DIR)/libnws.a
+
+prefix 		= @prefix@
+exec_prefix	= @exec_prefix@
+bindir		= @bindir@
+libdir		= @libdir@
+includedir	= @includedir@
+
+# Compilation rules for C.
+.c.o:
+	@ if test -z "$(<D)" -o "$(<D)" = "." -o "$(<D)" = "./"; then \
+	    echo $(CC) -c $(C_FLAGS) -I$(ROOT_DIR)/Include $(X_INCLUDE) -o $@ $<; \
+	    $(CC) -c $(C_FLAGS) -I$(ROOT_DIR)/Include $(X_INCLUDE) -o $@ $<; \
+	  else \
+	    cd $(@D); $(MAKE) $(@F); \
+	  fi
+
+# Link procedure.
+LD = $(CC)
+
+SUBDIRS = Doc Forecaster Include Interface JavaProtocol Memory Nameserver \
+          Protocol Sensor Utility
+
+all pure:
+	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) $@) ; done
+
+clean:
+	rm -f *.gz *.tar *.a 
+	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) $@) ; done
+
+distclean: clean
+	rm -f Include/config.h config.cache config.log config.status Makefile
+	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) $@) ; done
+
+dist:
+	rm -fr $(DIST_ROOT)
+	mkdir $(DIST_ROOT)
+	cp configure config.sub config.guess globus-nws.conf globus-nws.in install-sh Makefile.in VERSION $(DIST_ROOT)/
+	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) $@) ; done
+	tar cvf $(DIST_ROOT).tar $(DIST_NAME)
+	gzip $(DIST_ROOT).tar
+	rm -fr $(DIST_ROOT)
+
+install: lib
+	if test ! -d $(prefix); then mkdir $(prefix); fi
+	if test ! -d $(libdir); then mkdir $(libdir); fi
+	mv $(LIBRARY) $(libdir)
+	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) $@) ; done
+
+lib:
+	rm -f $(LIBRARY)
+	for subdir in $(SUBDIRS); do (cd $$subdir && $(MAKE) $@) ; done
+	$(RANLIB) $(LIBRARY)
+
+uninstall:
+	rm -fr $(prefix)
+
+etags:
+	etags */*.[ch] */*/*.[ch] */*/*/*.[ch]
+

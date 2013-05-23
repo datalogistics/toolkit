@@ -1,0 +1,79 @@
+<!--#Section htmlSimpleHead 'Header of Simple demo file'-->
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<form name="form1" method="post" action="<!--#param s script 'Script Name'-->">
+  <p>Hello <!--#param s name 'Name of logged in User'-->! </p>
+  <p>Your Phonenumber: 
+    <input type="text" name="phone" value="<!--#param s phone 'Phone Number'-->>
+    <br>
+    Select Area: 
+    <select name="areaselect">
+<!--#Section htmlSimpleSelectRow 'The select box items - one row for every possible'-->
+      <option <!--#Param s selected 'Write SELECTED here, if selected'-->><!--#Param 30s katname 'Area Name - bound to right'--></option>
+<!--#/*-->
+      <option>hong kong</option>
+      <option>japan</option>
+      <option>home</option>
+<!--#*/-->
+<!--#Section htmlSimpleSelectBody-->
+    </select>
+  </p>
+  <p>Current Numbers:</p>
+  <table width="400" border="0" cellpadding="4">
+    <tr> 
+      <td>Number</td>
+      <td>Area</td>
+      <td> 
+        <div align="center">Delete</div>
+      </td>
+      <td> 
+        <div align="center">Edit</div>
+      </td>
+    </tr>
+<!--#Section htmlSimplePhoneRow 'This lists all existing entries'-->
+    <tr> 
+      <td><!--#param s number 'Phone Number as string'--></td>
+      <td><!--#param s area 'Area of number'--></td>
+      <td> 
+        <div align="center"><a href="<!--#SLink 'Link to Delete Entry' s skey 'Session ID' d eid 'ID of the specific entry'-->">-&gt;X&lt;-</a></div>
+      </td>
+      <td> 
+        <div align="center"><a href="<!--#SLink 'Link to Edit this Entry' s skey 'Session ID' d eid-->-&gt;X&lt;-</a></div>
+      </td>
+    </tr>
+<!--#Section htmlSimpleFoot-->
+<!--#/*-->
+    <tr> 
+      <td>234233</td>
+      <td>Home</td>
+      <td> 
+        <div align="center"><a href="x">-&gt;X&lt;-</a></div>
+      </td>
+      <td> 
+        <div align="center"><a href="x">-&gt;X&lt;-</a></div>
+      </td>
+    </tr>
+    <tr> 
+      <td>342523</td>
+      <td>japan</td>
+      <td> 
+        <div align="center"><a href="x">-&gt;X&lt;-</a></div>
+      </td>
+      <td> 
+        <div align="center"><a href="x">-&gt;X&lt;-</a></div>
+      </td>
+    </tr>
+<!--#*/-->
+  </table>
+  <p> 
+    <input type="submit" name="Submit" value="Submit">
+    <input type="reset" name="Submit2" value="Reset">
+  </p>
+</form>
+</body>
+</html>

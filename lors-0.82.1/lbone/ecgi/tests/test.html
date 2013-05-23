@@ -1,0 +1,76 @@
+<HTML>
+<HEAD>
+<TITLE>Multipart message test</TITLE>
+</HEAD>
+<BODY>
+
+<HR>
+<FORM ACTION="test.cgi" METHOD="POST" ENCTYPE="multipart/form-data">
+
+file:<BR>
+<INPUT TYPE="FILE" NAME="file"><BR>
+<HR>
+
+second file:<BR>
+<INPUT TYPE="FILE" NAME="second file"><BR>
+<HR>
+
+
+text:<BR>
+<INPUT TYPE="TEXT" NAME="text"><BR>
+<HR>
+
+another text:<BR>
+<INPUT TYPE="TEXT" NAME="text2"><BR>
+<HR>
+
+another text:<BR>
+<INPUT TYPE="TEXT" NAME="text3"><BR>
+<HR>
+
+checkbox:<BR>
+<INPUT TYPE="CHECKBOX" NAME="checkbox" VALUE="yes"> yes<BR>
+<HR>
+
+radio group:<BR>
+<INPUT TYPE="RADIO" NAME="radio group" VALUE="red"> red<BR>
+<INPUT TYPE="RADIO" NAME="radio group" VALUE="green"> green<BR>
+<INPUT TYPE="RADIO" NAME="radio group" VALUE="test" CHECKED> test<BR>
+<HR>
+
+select:<BR>
+<SELECT NAME="select">
+<OPTION SELECTED>first selection</OPTION>
+<OPTION>second selection</OPTION>
+<OPTION>third selection</OPTION>
+<OPTION>last selection</OPTION>
+</SELECT><BR>
+<HR>
+
+multiple select:<BR>
+<SELECT NAME="multiple select" MULTIPLE>
+<OPTION>Linux</OPTION>
+<OPTION>FreeBSD</OPTION>
+<OPTION>Windows</OPTION>
+<OPTION>MacOS</OPTION>
+<OPTION>OS/2</OPTION>
+<OPTION>test</OPTION>
+</SELECT><BR>
+<HR>
+
+textarea:<BR>
+<TEXTAREA NAME="textarea" ROWS="5" COLS="30"></TEXTAREA>
+<HR>
+
+last file:<BR>
+<INPUT TYPE="FILE" NAME="last file"><BR>
+<HR>
+
+<INPUT TYPE="SUBMIT" VALUE="Submit">
+<INPUT TYPE="RESET" VALUE="Reset">
+
+</FORM>
+<HR>
+
+</BODY>
+</HTML>

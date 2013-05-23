@@ -1,0 +1,27 @@
+Subject: L-Bone Failed Depot Notification
+From: lbone@cs.utk.edu
+To: %s
+
+IBP Depot maintainer,
+
+Your IBP Depot registered at http://loci.cs.utk.edu/lbone/cgi-bin/lbone_list_view.cgi 
+has not responded to interval polling during the last %s %s.
+
+You will receive this message every %s %s until the Depot responds or your
+preferences have been changed.  Feel free to change the frequency of these 
+notifications or stop them all together at the L-Bone administration page.
+
+Your administration page:
+http://loci.cs.utk.edu/lbone/cgi-bin/lbone_depot_view.cgi?depotname=%s&update=no
+
+Please remember that if you require any assistance in Compiling, Running or 
+Maintaining the most current IBP Depot at your site, we stand ready to 
+assist you.  Contact us at mailto:ibp@cs.utk.edu with your questions.
+
+We would like to thank you for your commitment to the stability and
+reliability of this distributed storage infrastructure.  We recognize 
+that without your participation the L-Bone would not be able to continue its
+growth in scope and magnitude.
+
+Thank you, 
+L-Bone Development Team.

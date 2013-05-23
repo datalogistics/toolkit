@@ -1,0 +1,439 @@
+/*To go back to original chance background-color of boxcontent and boxitem to E6F2FF */
+
+/* Theme Classes */
+
+body {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px;
+background-color: #a8a69e;
+background-image: url(../images/bgstripe.gif);
+margin-left: 0px;
+margin-top: 30px;
+margin-right: 13px;
+margin-bottom: 50px;
+line-height: 13px;
+}
+
+p {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px;
+margin-top: 0px;
+margin-bottom: 0px;
+line-height: 13px;
+}
+
+li {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px;
+}
+
+p li {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px;
+}
+
+h1 {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-weight: "bold";
+font-size: 13px;
+letter-spacing: 0em;
+text-align: left;
+margin-top: 0px;
+margin-bottom: 0px;
+color: 934600;
+}
+
+h2 {
+font-family: Arial, Helvetica, sans-serif;
+font-weight: "bold";
+font-size: 12px;
+letter-spacing: 0em;
+margin-top: 0px;
+margin-bottom: 0px;
+}
+
+FONT { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 11px; 
+}
+
+INPUT, SELECT, TEXTAREA, FORM { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 11px; 
+}
+
+a { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+color: #336699; 
+text-decoration: none; 
+}
+
+a:active { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+color: #336699; 
+text-decoration: none; 
+}
+a:visited { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+color: #336699; 
+text-decoration: none; 
+}
+
+a:hover { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+color: #FF0000; 
+text-decoration: none; 
+}
+
+a.header { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+color: #FFFFFF; 
+text-decoration: none; 
+}
+
+a.header:active { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+color: #FFFFFF; 
+text-decoration: none; 
+}
+
+a.header:visited { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+color: #FFFFFF; 
+text-decoration: none; 
+}
+
+a.header:hover { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+color: #FF0000; 
+text-decoration: none; 
+}
+
+td.menubox a {
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 11px; 
+color: #4c4f41;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+padding-right: 10px;
+}
+
+td.menubox a:active {
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 11px; 
+color: #4c4f41;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+padding-right: 10px;
+}
+
+td.menubox a:visited {
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 11px; 
+color: #4c4f41;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+padding-right: 10px;
+}
+
+td.menubox a:hover {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px; 
+color: #000000;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+padding-right: 10px;
+}
+
+td.projectmenucell a {
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 11px; 
+color: #ffffff;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+padding-right: 20px;
+}
+
+td.projectmenucell a:active {
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 11px; 
+color: #ffffff;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+padding-right: 25px;
+}
+
+td.projectmenucell a:visited {
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 11px; 
+color: #ffffff;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+padding-right: 25px;
+}
+
+td.projectmenucell a:hover {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: 11px; 
+color: #cccccc;
+text-decoration: none;
+text-transform: normal;
+letter-spacing: 0em;
+padding-right: 25px;
+}
+
+
+
+/* PHP-Nuke Classes */
+
+.title { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+background: none; 
+color: #000000; 
+font-size: 13px; 
+font-weight: bold; 
+text-decoration: none; 
+text-align: left;
+}
+
+.storytitle { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+background-color: #E6F2FF; 
+color: #336699; 
+font-size: 13px; 
+font-weight: bold; 
+}
+
+.content { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+background-color:transparent/*#FFFFFF*/; 
+color: #000000; 
+font-size: 11px; 
+}
+
+.storycat { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+background: none; 
+color: #000000; 
+font-size: 13px; 
+font-weight: bold; 
+text-decoration: none 
+}
+
+.boxtitle { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+background-color: #336699; 
+color: #00ff00; 
+font-size: 12px; 
+font-weight: bold; 
+}
+
+.boxcontent { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-weight: bold; 
+color: #000000; 
+font-size: 11px; 
+}
+
+.menubox { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-weight: normal;
+}
+
+.blockitem { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+background-color:#FFFFFF; 
+color: #00ff00; 
+font-size: 12px; 
+}
+
+.option { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+background: none; 
+text-align: left;
+color: #4b6673; 
+font-size: 13px; 
+font-weight: bold; 
+text-decoration: none 
+}
+
+.tiny { 
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+background: none; 
+color: #000000; 
+font-size: 10px; 
+font-weight: normal; 
+text-decoration: none 
+}
+
+/* Alison's Classes */
+
+.leftcolumn {
+background-color: #ffffff;
+background-image: url(http://loci.cs.utk.edu/locinuke/hunternuke/themes/Alison/images/bggradient.gif);
+background-position: top right;
+background-repeat: repeat-y;
+padding-top: 20px;
+padding-left: 20px;
+padding-right: 20px;
+padding-bottom: 20px;
+}
+
+.rightcolumn {
+background-color: #ffffff;
+background-image: url(http://loci.cs.utk.edu/locinuke/hunternuke/themes/Alison/images/pixel.gif);
+background-position: top left;
+padding-top: 20px;
+padding-left: 20px;
+padding-right: 20px;
+padding-bottom: 20px;
+}
+
+.cellcontent {
+background-color: #ffffff;
+}
+
+.titlecell {
+background-color: #474747;
+}
+
+.projecttitlecell {
+background-color: #303030;
+padding-left: 23px;
+text-align: center;
+}
+
+.projectmenucell {
+background-color: #474747;
+text-align: center;
+padding-left: 25px;
+padding-top: 1px;
+padding-bottom: 2px;
+vertical-align: center;
+}
+
+.welcome {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-weight: "bold";
+font-size: 13px;
+letter-spacing: 0em;
+text-align: left;
+margin-top: 0px;
+margin-bottom: 0px;
+color: 4b6673;
+}
+
+.nsexnodecell {
+background-color: #ACC8CC;
+}
+
+.nsexnodecell a:hover {
+background-color: #D1F3F7;
+}
+
+.nslbonecell {
+background-color: #ACC8CC;
+}
+
+.nslbonecell a:hover {
+background-color: #D1F3F7;
+}
+
+.nsdsicell {
+background-color: #ffffff;
+}
+
+.nsdsicell a:hover {
+background-color: #C7C5C5;
+}
+
+.nsibpcell {
+background-color: #ACC8CC;
+}
+
+.nsibpcell a:hover {
+background-color: #D1F3F7;
+}
+
+/* Doxygen Classes */
+dl.el { margin-left: -1cm }
+
+div.fragment { 
+width: 90%; 
+border: none; 
+background-color: #eeeeee 
+}
+div.ah { 
+background-color: black; 
+margin-bottom: 3; 
+margin-top: 3 
+}
+a.qindex {}
+a.qindexRef {}
+a.el { font-size: 12px; text-decoration: none; font-weight: bold }
+a.elRef { font-weight: bold }
+a.code { text-decoration: none; font-weight: normal; color: #4444ee }
+a.codeRef { font-weight: normal; color: #4444ee }
+td.md { background-color: #f2f2ff }
+
+pre {
+font-family: Courier, fixed;
+font-size: 13px;
+}
+
+font.keyword       { 
+font-family: Courier, fixed;
+text-decoration: none;
+font-weight: normal;
+font-size: 13px;
+color: #008000 
+}
+font.keywordtype   { 
+font-family: Courier, fixed;
+text-decoration: none;
+font-weight: normal;
+font-size: 13px;
+color: #604020 
+}
+font.keywordflow   { 
+font-family: Courier, fixed;
+text-decoration: none;
+font-weight: normal;
+font-size: 13px;
+color: #e08000 
+}
+font.comment       { 
+font-family: Courier, fixed;
+text-decoration: none;
+font-weight: normal;
+font-size: 13px;
+color: #800000 
+}
+font.preprocessor  { 
+font-family: Courier, fixed;
+text-decoration: none;
+font-weight: normal;
+font-size: 13px;
+color: #806020 
+}
+font.stringliteral { 
+font-family: Courier, fixed;
+text-decoration: none;
+font-weight: normal;
+font-size: 13px;
+color: #002080 
+}
+font.charliteral   { 
+font-family: Courier, fixed;
+text-decoration: none;
+font-weight: normal;
+font-size: 13px;
+color: #008080 
+}

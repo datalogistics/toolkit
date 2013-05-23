@@ -1,0 +1,7 @@
+dn: cc=US,ou=locations,o=lbone
+objectClass: cc
+cc: US
+lat: 37.00
+lon: -96.00
+
+

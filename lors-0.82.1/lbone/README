@@ -1,0 +1,132 @@
+Requirements:
+
+    Perl          5.6.0 w/ ExtUtils::Embed
+
+  CGI -- 
+    IBPClientLib  http://loci.cs.utk.edu/ibp/downloads v1.1.1 
+    ECGI    --    http://global-owl.de/ecgi/download/   v0.6.2
+    OpenLDAP -    http://openldap.org                   v2.0.18
+
+        compile and install the ecgi package. specify the root of the ecgi
+        installation in makefile.inc
+
+  CLIENT --
+    IBPClientLib  http://loci.cs.utk.edu/ibp/downloads v1.1.1 
+    NWS           http://nws.cs.ucsb.edu                nws-2.0.5   
+
+        Unpack the above distributions in to the lbone root directory.
+        name them, 'ibp', and 'nws' respecitively.  You do not need to 
+        build them.  This will be done automatically.
+
+  SERVER
+    IBPClientLib  http://loci.cs.utk.edu/ibp/downloads v1.1.1 
+    OpenLDAP -    http://openldap.org                   v2.0.18
+        
+        Specify the path of the root of your openldap installation in
+        makefile.inc
+
+
+LBONE SRC:
+  After unpacking ibp and nws, your root directory structure should look like
+  this: 
+    cgi/             make_all.sh*  ibp/      README   
+    client/  ldifs/  makefile.inc  nws/      server/
+
+    'cgi', 'client' and 'server' represent the three parts of the lbone
+    distribution.
+
+  modify cgi/include/lbone_cgi_base.h to contain the proper address of your
+    openldap server and port. This is important.
+
+  modify makefile.inc to specify the root locations of the necessary
+  directories. (ECGI and OpenLDap, and possibly perl).
+
+  To build everything run ./make_all.sh
+
+
+OPENLDAP configuration.
+  SCHEMA:
+    copy local.schema to the location of your schema directory. you may name
+    the file whatever you wish, provided it is included through your
+    slapd.conf file
+ 
+  SLAPD.CONF
+    It should look similar to the provided slapd.conf file. You
+    may wish to change your rootpw to a more discrete value.  This is the
+    same value you will put in cgi/include/lbone_cgi_base.h for the password.
+    A mis-match will break only the cgi pages.
+
+  BEGIN:
+    once you have populated the database with information, you may start the
+    ldap server.
+
+    slapd -f slapd.conf -h ldap://yourhostname:portnum
+
+    where <yourhostname> is your hostname and <portnum> is the desired port
+    you wish to run the server.  These are the same values you placed in
+    lbone_cgi_base.h
+
+  DATABASE:
+    After starting your slapd server, you may wish to populate the ldap
+    database with the location information of your area.  Provided are
+    zipcodes within the US, and airport codes from around the world.
+
+    As a minimum, you will need to add the root.ldif definitions.  These
+    providea 'root directory' to add zipcodes, or country codes, or whatever
+    you'd like later.  This is done as follows:
+
+    ldapadd -x -wlbone -H ldap://yourhost.name:<portnum> -D "cn=root,o=lbone" \
+                -f root.ldif
+
+    continue with as many of the ldif files as you'd like. Some provide only a
+    template of possible information. For instance,
+
+    ldapadd -x -wlbone -H ldap://yourhost.name:6776 -D "cn=root,o=lbone" \
+                -f zips.ldif
+
+    To verify that the data has been added, you may check with ldapsearch.
+
+    ldapsearch -x -h <yourldapserver>:<portnum> -w '<yourpasswd>' -b 'o=lbone' \
+            -LLL "(objectclass=*)"
+
+    This will dump everything under Organization lbone. You may further
+    restrict the search by zipcodes, for example, by changing the 'base dn'
+    (or base distinguished name, in ldap parlance).
+
+    ldapsearch -x -h <yourldapserver>:<portnum> -w '<yourpasswd>' \
+            -b 'ou=zipcodes,o=lbone' -LLL "(objectclass=*)"
+
+    This is analogous to moving up in a filesystem hierarchy.  In a unix like
+    fs, you would have /lbone/zipcodes/zip. In ldap, the hierarcy is read
+    right to left, rather than left to right.
+
+
+LBONE CONFIGURATION:
+  WEB:
+    After starting the slapd server you should now be able to add depots via the
+    cgi page. lbone_list_view.cgi will be empty, but click 'Add A Depot' and
+    enter the information it asks.
+
+    You will want to enter at least one valid depot before starting the
+    lbone_server.
+
+  LBONE SERVER:
+  options:
+     [-cp <path>]      : the absolute path to find the config file
+     [-lh <ldap host>] : the ldap server to use
+     [-p  <port>]      : the port to use [1024 < port < 65353]
+     [-no-poll]        : do not poll the depots to update the ldap server
+                         (for use with slave ldap servers)
+     
+     lbone_server -cp /absolute/path/lbone.cfg -pw <your ldap passwd>
+
+     the provided lbone.cfg should be altered to reflect your hostnames.
+
+  SHUTDOWN:
+     To safely shutdown the ldap server send it the INT signal via 'kill' or
+     some other signal sender thingy. You risk loss or corruption of your lbone
+     database otherwise. 
+
+     The lbone_server, on the otherhand, is stateless.  Kill it by any means
+     you see necessary or appropriate.  You risk losing no data.
+

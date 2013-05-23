@@ -1,0 +1,78 @@
+*****************
+* NOW TESTED ON *
+*****************
+
+- linux glibc 2.1 gcc 2.95.2
+- solaris7 gcc 2.95.2
+
+***********************
+* SOURCE CODE CHANGES *
+***********************
+
+0.6.2
+-----
+- added comments headers to files - juhuu!
+- copied gpl to doc/COPYING
+- fixed bug in html2h - input files where also parsed in comments
+13.02.2001
+- there was only ONE untouched function from cgic 0.5 left in my ecgi lib,
+  and this bastard function had an segfault in it (which occured only
+  VERY rarely) - thanks to "Bao C. Ha" <bao@hacom.net> for showing me.
+  (who also maintains a ecgi debian package now ...)
+- fixed a bug in memfile.h, where i used a "va_list *ap" instead of a
+  "va_list ap" - how silly ...
+  thanks to Ramon Poca <ramon@tau.uab.es> for telling me
+- ecgitk uses time.h - added an "#include <time.h>", so you dont have to
+  include it in your programm
+
+0.6.1
+------
+08.12.2000
+- compiled now on solaris - fixed some segfaulting typecasts.
+- added: html2h preprozessor now finds HTML input tags and adds them to
+  the .h header - so you allways know, what names to ask for with cgiParam(),
+  when getting input from a template
+- "ANSI-CLEANED" the sources by changing some things after invoking gcc
+  with -ansi and -pedantic - changed all // to /* .. */ - ANSI-PROVED now :)
+- cleaned up Makefile - ie: if the "gcc --shared" fails now, this happens
+  as the last thing - should not make any real problems, since libecgi.a
+  should be generated then
+- replaced setenv() with putenv() in loadDebugData(), because setenv is not
+  supported on solaris (why ever)
+- read basics about "autoconf" and decided NOT to do this myself, since my
+  focus is c-programming!
+
+0.6 Initial Release 
+-------------------
+December 2000
+- rewrote complete source from Todor Prokopov - only 1 untouched function 
+  in the sources - added new functions for file handling, for accessing all 
+  objects without the name and saving/loading the whole environment for 
+  debugging.
+06.12.2000
+- added mfFileToMFileN()
+- cgiLoadDebugData() and cgiSaveDebugData() functions work now
+- mfprintf()  added to memory files
+- added "make install" to the Makefile (it creates a .a ar 
+  archive and a .so lib now)
+- html2h preprozessor added
+- added first functions to ecgitk - eCgiToolkit 
+
+*************************
+* Documentation Changes *
+*************************
+
+13.02.2000
+- added example to cgiInit() documentation, since i got an email with a
+  segfault while calling the cgi from bash
+
+06.12.2000
+- documented mfFileToMFileN() - see 3.4.3.2
+- updated cgiLoadDebugData() and cgiSaveDebugData() documentation (3.5.1 and 3.5.2)
+- added mfprintf() without further documentation to 3.4.2
+- updated chapter 3.6 ecgi Toolkit
+- added chapter 3.7 html2h HTML preprozessor
+
+December 2000
+- wrote first version
+

@@ -1,0 +1,20 @@
+QUICK NOTE:
+-----------
+- you MUST have:
+  strdup(), strncasecmp(), strcasecmp(), putenv(), vsnprintf(), snprintf()
+  installed on your system to make ecgilib compile
+- "gcc --shared" fails on some systems - ignore this and make a simple
+  "make install" - you should have the libecgi.a then
+- some systems need "gcc -G" instead - changed SHAREDOPT in Makefile to -G
+
+INSTALL
+-------
+just type "make" and "make install" in the main dir.
+if you dont want ecgilib to install to /usr/bin, /usr/include, /usr/lib,
+change the Makefile.
+
+HELP
+----
+If anyone has experience with autoconf and wants to help me: great!
+especially interesting would be the part, how to put the functions mentioned
+above to not error on specific compilers

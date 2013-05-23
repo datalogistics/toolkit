@@ -1,0 +1,31 @@
+#!/bin/sh
+
+if test "x$OS" != "x"; then
+    # windows
+    PS="ps -s"
+else
+    case $OSTYPE in
+        darwin*)
+        PS="ps -ax"
+        ;;
+        linux*)
+        PS="ps ax"
+        ;;
+        solaris*)
+        PS="ps -ae"
+        ;;
+        cygwin*)
+        PS="ps -s"
+        ;;
+    esac
+fi
+if test "x$1" != "x"; then
+    L=`$PS | grep -v grep | grep -v pkill | grep "$1" | awk '{print $1}'`
+    echo "L = $L"
+    for i in $L; do
+        echo "killing $i"
+        kill -9 $i
+    done
+else 
+    echo "Provide at least one argument"
+fi

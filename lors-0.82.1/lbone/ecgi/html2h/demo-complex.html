@@ -1,0 +1,167 @@
+<!--#Section htmlNewEntryHead 'Header'-->
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<style>
+.DataFields { font-family: Verdana, Arial, Helvetica, sans-serif; background-color: #000000; list-style-type: upper-roman; font-size: 11px; font-style: normal; color: #00FF00 ; border-style: groove}
+.Text {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 12px; color: #000000}
+.Table {  background-color: #CCCCCC; border-style: groove; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 12px}
+body {  background-color: #666666}
+.button {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; font-style: normal; background-color: #CCCCCC; border-style: ridge}
+a {  color: #333333}
+.TableHead { background-color: #999999; border-style: groove ; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; text-transform: capitalize; text-align: center}
+.Tablerow {  background-color: #dcdcdc}
+</style>
+</head>
+
+<body bgcolor="#999999" text="#000000">
+<form name="form1" method="post" action="<!--#Param s script 'Script Name'-->">
+<input type="hidden" value="<!--#param 10.3f test 'Only for testing stuff'-->" name="testonly>
+<input type=hidden name="testchar" value="<!--#PARAM c testc 'Only for testing a char'-->">
+<table width="100%" class="Table">
+  <tr> 
+    <td colspan="5"> 
+      <div align="center"><font size="5"><span class="Text"><font size="4">Aktuell 
+        Tool V2.0</font></span></font><span class="Text"><br>
+        (c) 2000 by <a href="http://www.global-owl.de">Global-OWL GmbH</a> &amp; 
+        Sven Dawitz</span></div>
+    </td>
+  </tr>
+  <tr> 
+    <td class="Text"> 
+      <p align="center"><a href="<!--#SLink 'Link to entrylist' d act 'Action: List' s skey 'Session ID'-->">&Uuml;bersicht</a></p>
+    </td>
+    <td class="Text"> 
+      <div align="center"><a href="<!--#SLink 'Link to preview' d act 'Action: Preview' s skey 'Session ID'-->">Vorschau</a></div>
+    </td>
+    <td class="Text"> 
+      <div align="center"><a href="<!--#SLink 'Link to new entry' d act 'Action: New Entry' s skey 'Session ID'-->">Neuer Eintrag</a></div>
+    </td>
+    <td class="Text">
+      <div align="center"><a href="<!--#SLink d act 'Action: Kategorien' s skey 'Session ID'-->">Kategorien</a></div>
+    </td>
+    <td class="Text"> 
+      <div align="center"><a href="<!--#SLink 'Link to logout' d act 'Action: Logout' s skey 'Session ID'-->">Logout</a></div>
+    </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+  <table width="100%" class="Table">
+    <tr> 
+      <td class="TableHead">Kategorie</td>
+      <td> 
+        <div align="center">:</div>
+      </td>
+      <td> 
+        <select name="kat" class="DataFields">
+<!--#Section htmlNewEntryKatRow 'The select box items - one row for every possible'-->
+          <option <!--#Param s selected 'Write SELECTED here, if selected'-->><!--#Param -20s katname 'Kategory name'--></option>
+<!--#Section htmlNewEntryNextHead-->
+<!--#/*-->
+          <option>whatever</option>
+          <option>fuck</option>
+<!--#*/-->
+        </select>
+      </td>
+    </tr>
+    <tr> 
+      <td class="TableHead">Titel</td>
+      <td> 
+        <div align="center">:</div>
+      </td>
+      <td> 
+        <textarea name="title" class="DataFields" cols="50" rows="3"><!--#Param -10s title 'Title of Entry'--></textarea>
+      </td>
+    </tr>
+    <tr> 
+      <td class="TableHead">Text</td>
+      <td> 
+        <div align="center">:</div>
+      </td>
+      <td> 
+        <textarea name="text" cols="50" rows="5" class="DataFields"><!--#Param s text 'Text of Entry'--></textarea>
+      </td>
+    </tr>
+    <tr> 
+      <td class="TableHead">G&uuml;ltig ab</td>
+      <td> 
+        <div align="center">:</div>
+      </td>
+      <td> 
+        <input type="text" name="valid_from" class="DataFields" value="<!--#Param s valid_from 'Valid From'-->" size="50">
+      </td>
+    </tr>
+    <tr> 
+      <td class="TableHead">G&uuml;ltig bis</td>
+      <td> 
+        <div align="center">:</div>
+      </td>
+      <td> 
+        <input type="text" name="valid_till" class="DataFields" value="<!--#Param s valid_till 'Valid until'-->" size="50">
+      </td>
+    </tr>
+    <tr> 
+      <td class="TableHead">Bilder</td>
+      <td> 
+        <div align="center">:</div>
+      </td>
+      <td> 
+        <table width="100%" class="Table">
+          <tr> 
+            <td class="TableHead">Dateiname</td>
+            <td class="TableHead">Beschreibung</td>
+            <td class="TableHead">l&ouml;schen</td>
+            <td class="TableHead">ansehen</td>
+          </tr>
+<!--#Section htmlNewEntryPicRow 'a Row for every Picture attached'-->
+          <tr> 
+            <td class="Tablerow"><!--#Param s filename--></td>
+            <td class="Tablerow"><!--#Param s Description--></td>
+            <td class="Tablerow"> 
+              <div align="center"><a href="<!--#SLink 'Link to del a picture' s bibiid d act 'Action: Pic Del' s skey 'Session ID'-->">-&gt;X&lt;-</a></div>
+            </td>
+            <td class="Tablerow"> 
+              <div align="center"><a href="<!--#SLink 'Link to view a pic' s bibiid d act 'Action: Pic View' s skey 'Session ID'-->">-&gt;X&lt;-</a></div>
+            </td>
+          </tr>
+<!--#/*-->
+          <tr> 
+            <td class="Tablerow">fsdfsdf</td>
+            <td class="Tablerow">fsdfsd</td>
+            <td class="Tablerow"> 
+              <div align="center"><a href="fsdf">-&gt;X&lt;-</a></div>
+            </td>
+            <td class="Tablerow"> 
+              <div align="center"><a href="fsdf">-&gt;X&lt;-</a></div>
+            </td>
+          </tr>
+<!--#*/-->
+<!--#Section htmlNewEntryFoot 'simple foot of file without params'-->
+          <tr> 
+            <td class="Tablerow" colspan="4">
+              <div align="center"><a href="<!--#SLink s skey 'Session ID' d act 'Action: new Pic' s enenid 'Entry ID'-->">neues Bild einf&uuml;gen</a></div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr> 
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr> 
+      <td colspan="3" class="button"> 
+        <div align="center"> 
+          <input type="submit" name="Submit" value="Speichern" class="button">
+          <input type="submit" name="Submit" value="Vorschau ansehen" class="button">
+          <input type="reset" name="reset" value="Zur&uuml;cksetzen" class="button">
+        </div>
+      </td>
+    </tr>
+  </table>
+</form>
+<p>&nbsp;</p>
+</body>
+</html>

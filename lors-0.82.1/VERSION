@@ -1,0 +1,15 @@
+Release beta
+Revision 82
+Build 1
+Date Thu Jun 13 10:51:30 2002
+Version 0.82-8
+FILELIST file.list
+EXTRAPACKAGE /ficus/homes/lociweb/www-home/exnode/distributions/libexnode-0.6.5.tar.gz . libexnode-0.6.5 libexnode
+EXTRAPACKAGE /ficus/homes/lociweb/www-home/lbone/distributions/lbone-0.8.10.tar.gz . lbone-0.8.10 lbone
+EXTRAPACKAGE /ficus/homes/lociweb/www-home/exnode/distributions/libmd5.tar.gz libe2e md5 md5
+EXTRAPACKAGE /ficus/homes/lociweb/www-home/lors/distributions/libaes-2.0.1.tar.gz libe2e libaes-2.0 aes
+EXTRAPACKAGE /ficus/homes/lociweb/www-home/exnode/distributions/libdes.tar.gz libe2e des des
+EXTRAPACKAGE /ficus/homes/lociweb/www-home/exnode/distributions/libxml2-2.4.25.tar.gz . libxml2-2.4.25 libxml2
+EXTRAPACKAGE /ficus/homes/lociweb/www-home/exnode/distributions/popt-1.7.tar.gz . popt-1.7 popt
+EXTRAPACKAGE /ficus/homes/lociweb/www-home/lors/distributions/zlib.tar.gz .  zlib zlib
+EXTRAPACKAGE /home/soltesz/research/xnd_suite/eXnode/demo/BWidget-1.4.1.tar.gz visual BWidget-1.4.1 BWidget-1.4.1

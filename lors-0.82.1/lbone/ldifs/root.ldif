@@ -1,0 +1,19 @@
+dn: o=lbone
+objectClass: organization
+o: lbone
+
+dn: ou=depots,o=lbone
+objectClass: organizationalUnit
+ou: depots
+
+dn: ou=locations,o=lbone
+objectClass: organizationalUnit
+ou: locations
+
+dn: ou=zipcodes,o=lbone
+objectClass: organizationalUnit
+ou: zipcodes
+
+dn: ou=airports,o=lbone
+objectClass: organizationalUnit
+ou: airports

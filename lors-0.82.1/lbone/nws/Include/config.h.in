@@ -1,0 +1,69 @@
+/* $Id: config.h.in,v 1.38 2001/03/26 15:11:55 swany Exp $ */
+
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#ifndef NULL
+#  define NULL 0
+#endif
+
+
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef pid_t
+
+/* Define if you have the alarm function.  */
+#undef HAVE_ALARM
+
+/* Define if you have the getrusage function.  */
+#undef HAVE_GETRUSAGE
+
+/* Define if you have the sighold function.  */
+#undef HAVE_SIGHOLD
+
+/* Define if you have the sigrelse function.  */
+#undef HAVE_SIGRELSE
+
+/* Define if you have the statvfs function.  */
+#undef HAVE_STATVFS
+
+/* Define if you have the sys/vfs.h header.  */
+#undef HAVE_SYS_VFS_H
+
+/* Define if you have the sysconf function.  */
+#undef HAVE_SYSCONF
+
+/* Define if you have the getpgid function.  */
+#undef HAVE_GETPGID
+
+/* Define to the type pointed to by the third parameter of getpeername(). */
+#undef SOCKLEN_T
+
+/* Define to the (char *) version of the NWS sources. */
+#undef VERSION
+
+/* Define as the path to the `uptime' program. */
+#undef UPTIME_PATH
+
+/* Define as the path to the `vmstat' program. */
+#undef VMSTAT_PATH
+
+/* in some realloc()s, realloc(ptr, 0) != free(ptr) */
+#undef REALLOC_NOT_POSIX
+
+#undef PS
+
+#undef AWK
+
+#undef WITH_NETLOGGER
+
+#define MALLOC(size) malloc ((size)==0?1:(size))
+
+#ifdef REALLOC_NOT_POSIX
+#define REALLOC(ptr,size) (((size > 0)?((ptr == NULL)?malloc(size):\
+	realloc(ptr,size)):((ptr == NULL)?NULL:(free(ptr),NULL))))
+#else
+#define REALLOC(ptr,size) realloc(ptr,size)
+#endif
+
+#endif

@@ -1,0 +1,23 @@
+
+CFLAGS = -g #-Wall -pedantic -std=c99
+
+top_srcdir = ..
+DOXYGEN = @DOXYGEN@ 
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+INSTALL_DIR = @prefix@/doc/lors
+
+all: html_doc/index.html
+
+html_doc/index.html:
+	$(DOXYGEN) doxygen.cfg
+
+install:
+	$(mkinstalldirs)  $(INSTALL_DIR)
+	if test -f html_doc/index.html; then \
+	   @INSTALL@ -m 644  html_doc/*.html style_dox.css  $(INSTALL_DIR); \
+	fi
+
+distclean: clean
+clean:
+	@rm -rf man/*
+

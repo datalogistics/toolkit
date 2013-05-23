@@ -1,0 +1,84 @@
+LoRS Library and Command Line Tools.
+========================
+
+Build:
+
+    The Lors-0.82 package should build on any moderately current Unix like
+    environment.  Any uncommon packages (libxml2, popt, and zlib) are included
+    with the distribution.  In addition to these, all other LoCI packages
+    (libexnode, lbone, and IBP) and their dependencies are included for your 
+    convenience.
+
+    The general procedure for compilation and installation follow these four
+    steps.
+
+        ./configure --prefix=$HOME/local
+        (depending on your platform, configure may take up to 20 minutes.)
+        make 
+        make install
+        (Add your install directory to your PATH 
+         and setup LD_LIBRARY_PATH if necessary.)
+        sh ./lors_setup.sh
+
+    You may specify an installation prefix using the --prefix=<dir>
+    switch to 'configure', where "<dir>" is the full path to the
+    destination directory.  The default value is:
+
+        /<LoRS source package root>/local/ 
+
+    If you do not wish to have the included packages built because they are
+    already on your system, you should be able to specify the location; 
+    see ./configure --help for the available options.
+
+    After configure completes successfully, run 'make' followed by 'make
+    install'
+
+    After this has successfully completed, we recommend you run the
+    'lors_setup.sh' script to setup the "~/.xndrc" config file for the LoRS
+    Command line Tools.
+
+    If the included libxml2 package was compiled and installed, you will 
+    need to set your LD_LIBRARY_PATH environment variable in order for your 
+    command line tools to find this library.
+    in CSH environment:
+
+        setenv LD_LIBRARY_PATH $LD_LIBRARY_PATH:<installpath>/lib
+
+    or in BASH/SH environment:
+
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<installpath>/lib
+
+
+    Where "<installpath>" is replaced with the value given to --prefix
+
+    In the event that this value is set improperly, when running the lors tools
+    you will see an error similar to this:
+
+        ld.so.1: /homes/user/local/bin/lors_ls: fatal: libxml2.so.2:
+        open failed: No such file or directory
+        Killed
+
+Instructions for AIX:
+    In AIX, you would set LIBPATH rather than LD_LIBRARY_PATH to the location
+    of the dynamic libraries.
+    Due to compiler differences it may be necessary to change the predefined
+    Makefiles in libe2e/des and libe2e/md5 to compile proplerly.
+        Remove -fomit-frame-pointer, and change 'gcc' to your system's
+        compiler.
+
+    Before running configure set the following environment variables:
+        CFLAGS="-w"
+        CC=lxc          # or your compiler of choice.
+
+Run:
+
+    Example commands.
+
+        lors_upload filename -f -F 8 -c 2 -l "st= TN" 
+        lors_ls filename.xnd
+        lors_download filename.xnd -o filename2
+
+        diff filename filename2
+
+Notes:
+

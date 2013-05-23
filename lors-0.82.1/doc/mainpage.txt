@@ -1,0 +1,20 @@
+/**
+
+@mainpage LoRS C-API Documentation
+@section intro Introduction
+
+    Welcome to the Logistical Runtime System (LoRS) C-API documentation.
+
+    <br>Please take a look at the documentation while you are here. If you are
+    interested in our work and you would like to test the tools, you may
+    download them <a href="http://loci.cs.utk.edu/modules.php?name=Downloads&d_op=viewdownload&cid=4_7">here</a>.  If you have difficulty, please send mail 
+    to <a href="mailto:lors@cs.utk.edu">lors@cs.utk.edu</a>.
+
+    <br>If you find descriptions here confusing or incomplete 
+    <b>by all means</b>
+    let <a href="mailto:lors@cs.utk.edu">us know</a>.  Documentation, like
+    software design, is a reflective cycle which grows not only from the
+    direction of the developers but from the changing needs of the users.
+    We are fully committed to the development and success of our software and 
+    tools, and we are happy to help.
+

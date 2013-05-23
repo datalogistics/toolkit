@@ -1,0 +1,63 @@
+Building NWS
+------------
+
+The NWS build process attempts to automatically configure the sources to work
+with a variety of Unix systems.  To build the NWS binaries, it should suffice
+to:
+
+  cd <NWS root>
+  ./configure
+  make
+
+where <NWS root> is the NWS source root directory.  Send mail to
+swany@cs.utk.edu if you experience difficulties building the binaries.  After
+the above steps, you can execute
+
+  make install
+
+to collect the NWS binaries into a single installation directory.  This
+directory defaults to be <NWS root>/<os>/bin, where <os> is solaris, linux,
+aix, irix, hpux, or some other designation of your operating system.  If you
+want the binaries placed elsewhere, use a --prefix switch when you run the
+configure program to specify the installation root directory:
+
+  ./configure --prefix=$HOME/WhereIPutNWS
+
+In this example, "make install" would leave a copy of the NWS executables in
+$HOME/WhereIPutNWS/bin.  In addition to collecting the NWS executables, "make
+install" also creates the subdirectories doc/, examples/, include/, lib/, and
+(optionally) java/ in the installation directory.
+
+configure takes a number of other standard options, few of which are likely to
+be useful to you.  For a complete list, see the GNU autoconf documentation, or
+enter
+
+  ./configure --help
+
+on the command line.  The NWS configuration script recognizes four options in
+addition to the standard ones:
+
+  --disable-debug
+        Compile without the -g switch.
+
+  --enable-java
+        The JavaProtocol subdirectory contains a set of Java classes that
+        speak the NWS client protocols.  Using these classes, you can perform
+        any of the tasks that the NWS command line tools like nws_extract,
+        nws_search, and ctrl_host perform.  To obtain compiled versions of
+        these classes, use the --enable-java configure option.  The NWS make
+        procedure will then compile the Java files into .class files and
+        combine them into a nwsclasses.zip file.  "make install" will copy this
+        file to your installation directory.  If you have JDK 1.2 installed,
+        "make install" will also use javadoc to produce a set of HTML
+        documentation for the NWS JavaProtocol classes.
+
+  --enable-profiling
+        Compile and link with the -p switch (-pg if using gcc).
+
+  --with-purify=<dir>
+        If you have Rational Software's purify package installed, you can use
+        it to link the NWS binaries to detect memory access errors.  Use the
+        --with-purify configure option to specify the root directory of the
+        purify installation, then execute "make pure".  This will produce
+        purify-linked versions of all the NWS executables.

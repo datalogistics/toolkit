@@ -1,0 +1,25 @@
+All case insensitive 
+
+section:
+<!--#Section name 'comment'-->
+<!--#Section name-->
+=> const char name[]=".......";
+
+Params: - with usual format discriptors
+<!--#Param s name 'comment'-->
+<!--#Param s name-->
+<!--#Param d name 'comment'-->
+<!--#Param d name-->
+<!--#Param c name 'comment'-->
+<!--#Param c name-->
+<!--#Param 0.2f name 'comment'-->
+<!--#Param f name-->
+
+Script Link:
+<!--#SLink 'link comment' s pname1 c pname2 'comment' ... d pnameN 'comment'-->
+<!--#SLink s pname 1 c pname 2 'comment' ... d pnameN 'comment'-->
+=> %s?pname1=%s&pname2=%c&pnameN=%d
+
+Block Exclude:
+<!--#/*-->
+<!--#*/-->

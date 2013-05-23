@@ -1,0 +1,106 @@
+
+
+set pd [ pwd ] 
+global env
+lappend auto_path "$env(HOME)/BWidget-1.4.1"
+foreach x $auto_path {
+    puts "dir: $x"
+}
+package require BWidget
+source combobox.tcl
+package require combobox 2.2
+catch {namespace import combobox::*}
+
+  #. config -bg white -width 480 -height 480
+
+  set xnd_command(bg_color) grey80
+  set xnd_command(mode) play
+
+  frame .f -borderwidth 5
+  wm title . "notebook test"
+  pack .f -fill both -expand yes
+  set f [ frame .f.cmds ]
+    button $f.quit -text Quit -command { exit } \
+        -foreground red -background $xnd_command(bg_color)
+    pack $f.quit -fill x -side left -expand yes
+    button $f.exec -text Run -command { exec_any_cmd $xnd_command(mode) } \
+        -foreground red -background $xnd_command(bg_color)
+    pack $f.exec -fill x -side left -expand yes
+    button $f.mlist -text List -command { exec_any_cmd list } \
+        -foreground red -background $xnd_command(bg_color)
+    pack $f.mlist -fill x -side left -expand yes
+    button $f.kill -text Kill -command exec_kill_cmd \
+        -foreground red -background $xnd_command(bg_color)
+    pack $f.kill -fill x -side left -expand yes
+  pack $f -fill x -side bottom
+    
+  set note [NoteBook .f.nb -tabbevelsize 4 -activebackground #ffcccc ]
+  set f0 [ $note insert end demoA -text "Upload" ]
+  set topf  [frame $f0.topf]
+  pack $topf -fill both -expand yes
+  set titleF0 [TitleFrame $topf.titF0 -text "Required" ]
+    set subf [ $titleF0 getframe ]
+    set f [frame $subf.fopen ]
+        label $f.lab -text "Select a file to Upload: " 
+        entry $f.ent -width 30 -textvariable xnd_command(open_regular)
+        button $f.but -text "Browse.." -command "fileDialog $subf $f.ent open_regular xyz"
+        pack $f.lab -side top -anchor w
+        pack $f.ent -side left -expand yes -anchor w -fill x
+        pack $f.but -side right 
+        pack $f -fill x -pady 3 -side top -expand yes
+    set f [frame $subf.fsave]
+        label $f.lab -text "Save the exNode as: " 
+        entry $f.ent -width 20 -textvariable xnd_command(xnd)
+        button $f.but -text "Browse.." -command \
+                    "fileDialog $subf $f.ent save_xnd $xnd_command(open_regular) $xnd_command(open_regular).xnd"
+        pack $f.lab -side top -anchor w
+        pack $f.ent -side left -expand yes -fill x
+        pack $f.but -side right 
+        pack $f -fill x -pady 3 -side top -expand yes
+    set f [ frame $subf.location ]
+        label $f.loc_lab -text "Choose location:"
+        set l [list "zip= " "state= " "country= " "airport= " ]
+        set xnd_command(loc_keyword) "zip= "
+        ComboBox $f.combo_keyword -editable false -textvariable xnd_command(loc_keyword) \
+                -values $l -width 8
+
+        set l [list "37921" "49231" "10010" "84912" "73721" ]
+        ComboBox $f.combo_value -editable true -textvariable xnd_command(loc_value) \
+                -values $l -width 8
+
+        pack $f.loc_lab -side left -anchor w
+        pack $f.combo_keyword -side left -anchor e
+        pack $f.combo_value -side left -anchor e
+        pack $f -side top -fill x -expand yes
+    pack $titleF0 -side top -fill x 
+
+  set titleF1 [TitleFrame $topf.titF1 -text "Optional" ]
+    pack $titleF1 -side top -fill both -expand yes 
+    set subf [ $titleF1 getframe ] 
+    checkbutton $subf.chk2 -text "View toolbar 2" -variable toolbar2 \
+            -command {puts "checkbutton2" }
+    pack $subf.chk2 -expand yes -anchor w
+
+  set f1 [ $note insert end demoB -text "Download" ]
+  set f2 [ $note insert end demoC -text "Add Copy" ]
+  set f3 [ $note insert end demoD -text "Refresh" ]
+  set f4 [ $note insert end demoE -text "Delete" ]
+  set f5 [ $note insert end demoF -text "View" ]
+  set f6 [ $note insert end demoG -text "Other" ]
+  set topf [ frame $f6.topf ]
+  pack $topf -fill both -expand yes
+  set note2 [ NoteBook $topf.nb -tabbevelsize 4 -bg blue ]
+  set f5_1 [ $note2 insert end d1 -text "Route" ]
+  set f5_2 [ $note2 insert end d2 -text "NWS" ]
+  set f5_4 [ $note2 insert end d4 -text "Preferences" ]
+  pack $topf 
+  pack $note2 -fill both -expand yes 
+  $note2 compute_size 
+  $note2 raise [$note2 page 0]
+
+
+  $note compute_size
+  pack $note -fill both -expand yes 
+# -padx 4 -pady 4
+  $note raise [ $note page 0 ]
+

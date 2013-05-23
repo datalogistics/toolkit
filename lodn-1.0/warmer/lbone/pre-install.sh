@@ -5,15 +5,15 @@ BUILD_IBP=
 if test "${BUILD_IBP}" = yes; then
     echo "Building ibp package..."
     cd 
-    ./configure --prefix=/export/ibpadmin/cvsLoDN2/LoDN/warmer/lbone/local --enable-clientonly=yes
+    ./configure --prefix=/usr/local/src/toolkit/lodn-1.0/warmer/lbone/local --enable-clientonly=yes
     make install
     if test $? -ne 0; then
         echo "****** Error in building ibp package"
-        cd /export/ibpadmin/cvsLoDN2/LoDN/warmer/lbone
+        cd /usr/local/src/toolkit/lodn-1.0/warmer/lbone
         /bin/rm Makefile
         exit 1
     fi
-    cd /export/ibpadmin/cvsLoDN2/LoDN/warmer/lbone
+    cd /usr/local/src/toolkit/lodn-1.0/warmer/lbone
 fi
 
 BUILD_ECGI=no,
@@ -24,11 +24,11 @@ if test "${BUILD_ECGI}" = yes; then
     ranlib libecgi.a
     if test $? -ne 0; then
         echo "****** Error in building ecgi package"
-        cd /export/ibpadmin/cvsLoDN2/LoDN/warmer/lbone
+        cd /usr/local/src/toolkit/lodn-1.0/warmer/lbone
         /bin/rm Makefile
         exit 1
     fi
-    cd /export/ibpadmin/cvsLoDN2/LoDN/warmer/lbone
+    cd /usr/local/src/toolkit/lodn-1.0/warmer/lbone
 fi
 
 BUILD_NWS=no,
@@ -47,11 +47,11 @@ if test "${BUILD_NWS}" = yes; then
     cp libnws.a Library/$UNAME/
     if test $? -ne 0; then
         echo "****** Error in building nws package"
-        cd /export/ibpadmin/cvsLoDN2/LoDN/warmer/lbone
+        cd /usr/local/src/toolkit/lodn-1.0/warmer/lbone
         /bin/rm Makefile
         exit 1
     fi
-    cd /export/ibpadmin/cvsLoDN2/LoDN/warmer/lbone
+    cd /usr/local/src/toolkit/lodn-1.0/warmer/lbone
 fi
 
 exit 0

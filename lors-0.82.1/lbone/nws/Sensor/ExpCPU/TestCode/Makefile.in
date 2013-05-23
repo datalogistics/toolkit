@@ -1,0 +1,84 @@
+# System-dependent values determined by the configuration script.
+AR          = @AR@
+C_FLAGS     = @C_FLAGS@
+CC          = @CC@
+JAVA_VERSION= @JAVA_VERSION@
+LD_FLAGS    = @LD_FLAGS@
+OBJECT_DIR  = @OBJECT_DIR@
+PROFILE     = @PROFILE@
+PURIFY      = @PURIFY@
+RANLIB      = @RANLIB@
+ROOT_DIR    = @ROOT_DIR@
+VERSION     = @VERSION@
+
+DIST_NAME = NWS-$(VERSION)
+DIST_ROOT = $(ROOT_DIR)/$(DIST_NAME)
+LIBRARY   = $(ROOT_DIR)/libnws.a
+
+prefix 		= @prefix@
+exec_prefix	= @exec_prefix@
+bindir		= @bindir@
+libdir		= @libdir@
+includedir	= @includedir@
+
+# Compilation rules for C.
+.c.o:
+	@ if test -z "$(<D)" -o "$(<D)" = "." -o "$(<D)" = "./"; then \
+	    echo $(CC) -c $(C_FLAGS) -I$(ROOT_DIR)/Include $(X_INCLUDE) -o $@ $<; \
+	    $(CC) -c $(C_FLAGS) -I$(ROOT_DIR)/Include $(X_INCLUDE) -o $@ $<; \
+	  else \
+	    cd $(@D); $(MAKE) $(@F); \
+	  fi
+
+# Link procedure.
+LD = $(CC)
+
+PROGRAMS = endlessSpinner hybridDriver passiveDriver spintest
+UTILITY_DIR = ../../../Utility
+X_INCLUDE = -I ..
+
+endlessSpinner_DEPENDENCIES = ../spinner.o \
+                              ../profiler.o
+
+hybridDriver_DEPENDENCIES = ../hybridCpu.o \
+                            ../spinner.o \
+                            ../profiler.o \
+                            ../passiveCpu.o \
+                            ../activeCpu.o \
+                            $(UTILITY_DIR)/diagnostic.o \
+                            $(UTILITY_DIR)/osutil.o \
+                            $(UTILITY_DIR)/strutil.o
+
+passiveDriver_DEPENDENCIES = ../passiveCpu.o \
+                             $(UTILITY_DIR)/diagnostic.o \
+                             $(UTILITY_DIR)/osutil.o \
+                             $(UTILITY_DIR)/strutil.o
+
+spintest_DEPENDENCIES = ../spinner.o ../profiler.o
+
+all: $(PROGRAMS)
+
+clean:
+	rm -f *.o $(PROGRAMS) Makefile
+
+dist install:
+	mkdir $(DIST_ROOT)/Sensor/ExpCPU/TestCode
+	cp Makefile.in *.c *.h $(DIST_ROOT)/Sensor/ExpCPU/TestCode/
+
+pure:
+	$(MAKE) LD="$(PURIFY) $(LD)"
+
+endlessSpinner: endlessSpinner.o $(endlessSpinner_DEPENDENCIES)
+	$(LD) -o endlessSpinner endlessSpinner.o $(endlessSpinner_DEPENDENCIES) $(LD_FLAGS)
+
+hybridDriver: hybridDriver.o $(hybridDriver_DEPENDENCIES)
+	$(LD) -o hybridDriver hybridDriver.o $(hybridDriver_DEPENDENCIES) $(LD_FLAGS)
+
+passiveDriver: passiveDriver.o $(passiveDriver_DEPENDENCIES)
+	$(LD) -o passiveDriver passiveDriver.o $(passiveDriver_DEPENDENCIES) $(LD_FLAGS)
+
+spintest: spintest.o $(spintest_DEPENDENCIES)
+	$(LD) -o spintest spintest.o $(spintest_DEPENDENCIES) $(LD_FLAGS)
+
+distclean:
+	rm Makefile

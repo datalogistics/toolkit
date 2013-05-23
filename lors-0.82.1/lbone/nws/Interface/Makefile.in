@@ -1,0 +1,127 @@
+# System-dependent values determined by the configuration script.
+AR          = @AR@
+C_FLAGS     = @C_FLAGS@
+CC          = @CC@
+JAVA_VERSION= @JAVA_VERSION@
+LD_FLAGS    = @LD_FLAGS@
+OBJECT_DIR  = @OBJECT_DIR@
+PROFILE     = @PROFILE@
+PURIFY      = @PURIFY@
+RANLIB      = @RANLIB@
+ROOT_DIR    = @ROOT_DIR@
+VERSION     = @VERSION@
+
+DIST_NAME = NWS-$(VERSION)
+DIST_ROOT = $(ROOT_DIR)/$(DIST_NAME)
+LIBRARY   = $(ROOT_DIR)/libnws.a
+
+prefix 		= @prefix@
+exec_prefix	= @exec_prefix@
+bindir		= @bindir@
+libdir		= @libdir@
+includedir	= @includedir@
+
+# Compilation rules for C.
+.c.o:
+	@ if test -z "$(<D)" -o "$(<D)" = "." -o "$(<D)" = "./"; then \
+	    echo $(CC) -c $(C_FLAGS) -I$(ROOT_DIR)/Include $(X_INCLUDE) -o $@ $<; \
+	    $(CC) -c $(C_FLAGS) -I$(ROOT_DIR)/Include $(X_INCLUDE) -o $@ $<; \
+	  else \
+	    cd $(@D); $(MAKE) $(@F); \
+	  fi
+
+# Link procedure.
+LD = $(CC)
+
+EXAMPLES = add_forecast.c halt_activity.c nws_extract.c nws_insert.c \
+           nws_search.c start_activity.c
+OBJECTS  = nws_api.o
+PROGRAMS = add_forecast ctrl_host halt_activity nws_extract nws_insert \
+           nws_search start_activity ctrl_mem
+SCRIPTS  = html-hosts nws-hostadmin
+
+forecast_api_DEPENDENCIES = ../Forecaster/forecast_api.o \
+                            ../Forecaster/exp_smooth.o \
+                            ../Forecaster/fbuff.o \
+                            ../Forecaster/forc.o \
+                            ../Forecaster/last_value.o \
+                            ../Forecaster/median.o \
+                            ../Forecaster/mse_forc.o \
+                            ../Forecaster/run_mean.o
+nws_api_DEPENDENCIES = nws_api.o \
+                       ../Nameserver/register.o \
+                       ../Protocol/host_protocol.o \
+                       ../Protocol/messages.o \
+                       ../Protocol/protocol.o \
+                       ../Sensor/exp_protocol.o \
+                       ../Utility/diagnostic.o \
+                       ../Utility/dnsutil.o \
+                       ../Utility/formatutil.o \
+                       ../Utility/osutil.o \
+                       ../Utility/strutil.o
+
+add_forecast_DEPENDENCIES = $(forecast_api_DEPENDENCIES) \
+                            ../Utility/diagnostic.o
+ctrl_host_DEPENDENCIES = ../Nameserver/register.o \
+                         ../Protocol/host_protocol.o \
+                         ../Protocol/messages.o \
+                         ../Protocol/protocol.o \
+                         ../Utility/diagnostic.o \
+                         ../Utility/dnsutil.o \
+                         ../Utility/formatutil.o \
+                         ../Utility/osutil.o \
+                         ../Utility/strutil.o
+halt_activity_DEPENDENCIES = $(nws_api_DEPENDENCIES)
+nws_extract_DEPENDENCIES = $(nws_api_DEPENDENCIES) \
+                           $(forecast_api_DEPENDENCIES)
+nws_insert_DEPENDENCIES = $(nws_api_DEPENDENCIES)
+nws_search_DEPENDENCIES = $(nws_api_DEPENDENCIES)
+start_activity_DEPENDENCIES = $(nws_api_DEPENDENCIES)
+
+all: $(OBJECTS) $(PROGRAMS)
+
+clean:
+	rm -f *.o $(PROGRAMS) 
+
+distclean: clean
+	rm -f *.o $(PROGRAMS) Makefile
+
+dist:
+	mkdir $(DIST_ROOT)/Interface
+	cp Makefile.in *.c $(SCRIPTS) $(DIST_ROOT)/Interface
+
+install: $(PROGRAMS)
+	if test ! -d $(bindir); then mkdir $(bindir); fi
+	cp $(PROGRAMS) $(SCRIPTS) $(bindir)
+	if test ! -d $(prefix)/examples; then mkdir $(prefix)/examples; fi
+	cp $(EXAMPLES) $(prefix)/examples
+
+lib: $(OBJECTS)
+	$(AR) cr $(LIBRARY) $(OBJECTS)
+
+pure:
+	$(MAKE) LD="$(PURIFY) $(LD)"
+
+add_forecast: add_forecast.o $(add_forecast_DEPENDENCIES)
+	$(LD) -o add_forecast add_forecast.o $(add_forecast_DEPENDENCIES) $(LD_FLAGS)
+
+ctrl_host: ctrl_host.o $(ctrl_host_DEPENDENCIES)
+	$(LD) -o ctrl_host ctrl_host.o $(ctrl_host_DEPENDENCIES) $(LD_FLAGS)
+
+halt_activity: halt_activity.o $(halt_activity_DEPENDENCIES)
+	$(LD) -o halt_activity halt_activity.o $(halt_activity_DEPENDENCIES) $(LD_FLAGS)
+
+nws_extract: nws_extract.o $(nws_extract_DEPENDENCIES)
+	$(LD) -o nws_extract nws_extract.o $(nws_extract_DEPENDENCIES) $(LD_FLAGS)
+
+nws_insert: nws_insert.o $(nws_insert_DEPENDENCIES)
+	$(LD) -o nws_insert nws_insert.o $(nws_insert_DEPENDENCIES) $(LD_FLAGS)
+
+nws_search: nws_search.o $(nws_search_DEPENDENCIES)
+	$(LD) -o nws_search nws_search.o $(nws_search_DEPENDENCIES) $(LD_FLAGS)
+
+start_activity: start_activity.o $(start_activity_DEPENDENCIES)
+	$(LD) -o start_activity start_activity.o $(start_activity_DEPENDENCIES) $(LD_FLAGS)
+
+ctrl_mem: ctrl_mem.o $(nws_api_DEPENDENCIES)
+	$(LD) -o ctrl_mem ctrl_mem.o $(nws_api_DEPENDENCIES) $(LD_FLAGS)

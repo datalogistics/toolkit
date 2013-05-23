@@ -1,0 +1,21 @@
+dn: c=US,ou=locations,o=lbone
+objectClass: cc
+c: US
+lat: 37.00
+lon: -96.00
+
+dn: st=TN,c=US,ou=locations,o=lbone
+objectClass: state
+st: TN
+c: US
+lat: 35.80
+lon: -95.85
+
+dn: l=Knoxville,st=TN,c=US,ou=locations,o=lbone
+objectClass: city
+l: Knoxville
+c: US
+st: TN
+lat: 35.99
+lon: -84.12
+

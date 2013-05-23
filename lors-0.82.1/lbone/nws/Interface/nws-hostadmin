@@ -1,0 +1,310 @@
+#! /bin/sh
+# $Id: nws-hostadmin,v 1.15 2000/01/28 20:37:16 swany Exp $
+
+# This is a script that assists in the remote maintenance of NWS hosts.  See
+# the USERSGUIDE for information on its use.
+
+commands=",add,cycle,forget,halt,kill,purge,revive,start,test,"
+# Make sure argv[1] is a valid command
+if [ $# -eq 0 -o \
+        `echo "$commands" | grep -ic ",$1[a-z]*,"` -eq 0 ]; then
+  echo 'nws-hostadmin <command> [[<switches>] <hosts> ...]'
+  echo '  where <command> is one of:' `echo $commands | sed 's/,/ /g'`
+  echo '        <switches> is -bBmM <path> -lL <login> -sS <switches>'
+  echo '        <hosts> is machine[:<host type>[:<port>][,<host type>[:port]...]]'
+  exit 1
+fi
+
+command="$1"
+shift
+
+hostDB="$HOME/.nwshosts"
+binPathDefault='$HOME/nws/bin'  ;# Single quotes: $HOME on *remote* machine.
+loginDefault="$USER"
+methodPathDefault="ssh"
+switchesDefault=""
+dollar="\$"
+
+for var in binPath hostSpec login methodPath switches argVar results; do
+  eval $var=""
+done
+
+# For each host spec...
+for arg in "$@"; do
+
+  if [ -n "$argVar" ]; then
+    eval "$argVar='$arg'"
+    argVar=""
+  elif [ "$arg" = "-b" ]; then
+    argVar="binPath"
+  elif [ "$arg" = "-B" ]; then
+    argVar="binPathDefault"
+  elif [ "$arg" = "-f" ]; then
+    argVar="hostDB"
+  elif [ "$arg" = "-l" ]; then
+    argVar="login"
+  elif [ "$arg" = "-L" ]; then
+    argVar="loginDefault"
+  elif [ "$arg" = "-m" ]; then
+    argVar="methodPath"
+  elif [ "$arg" = "-M" ]; then
+    argVar="methodPathDefault"
+  elif [ "$arg" = "-s" ]; then
+    argVar="switches"
+  elif [ "$arg" = "-S" ]; then
+    argVar="switchesDefault"
+  else
+    hostSpec="$arg"
+  fi
+
+  if [ -z "$hostSpec" ]; then
+    # Keep parsing switches until we see a host specification.
+    continue
+  fi
+
+  # Set all variables that the user didn't specify to their default values.
+  for var in binPath login methodPath switches; do
+    value=`eval echo "$dollar$var"`
+    if [ -z "$value" ]; then
+      value=`eval echo "$dollar${var}Default"`
+      eval "$var='$value'"
+    fi
+  done
+
+  # Split host spec into a machine name and a list of hosts.  If the user
+  # specified no hosts, get any host set from the host db or default to the
+  # standard NWS host set.
+  case "$hostSpec" in
+  *:*)
+    hostSet=`echo $hostSpec | sed 's/^[^:]*://' | sed 's/,/ /g'`
+    machine=`echo $hostSpec | sed 's/:.*//'`
+  ;;
+  *)
+    hostSet=""
+    machine="$hostSpec"
+    if [ -r $hostDB ]; then
+      hostSet=`grep "^$machine " $hostDB | awk ' {printf $2 " "}'`
+    fi
+    if [ -z "$hostSet" ]; then
+      hostSet="memory:8050 sensor:8060 forecaster:8070"
+    fi
+  ;;
+  esac
+
+  for host in $hostSet; do
+
+    # Split host into a type/port pair and determine the exec from the type.
+    hostAttrs=`echo $host | sed 's/:/ /'`
+
+    case "$hostAttrs" in
+    [fF]*)
+      hostExec="nws_forecast"
+      hostType="forecaster"
+      hostPort=8070
+    ;;
+    [mM]*)
+      hostExec="nws_memory"
+      hostType="memory"
+      hostPort=8050
+    ;;
+    [nN]*)
+      hostExec="nws_nameserver"
+      hostType="nameserver"
+      hostPort=8090
+    ;;
+    [sS]*)
+      hostExec="nws_sensor"
+      hostType="sensor"
+      hostPort=8060
+    ;;
+    esac
+
+    # If hostAttrs includes a port, use it instead of the default.
+    hostPort=`echo $hostAttrs $hostPort | awk ' {print $2}'`
+
+    # Determine the current status of the host, if appropriate.
+    hostStat=""
+    case "$command" in
+    [aAfF]*)
+      # No test needed.
+    ;;
+    *)
+      testOut=`ctrl_host test ${machine}:$hostPort 2>&1 | cat`
+      for healthWord in healthy dead unresponsive sick confused; do
+        case "$testOut" in
+        *$healthWord*)
+          hostStat="$healthWord"
+          break
+        ;;
+        esac
+      done
+    ;;
+    esac
+
+    # Process the command.  Each command sets hostStat and either leaves
+    # deadStat blank, indicating that the host status has been determined, or
+    # sets it to a value for a post-command test.
+    deadStat=""
+    tempDB=".nwsadmin$$"
+
+    case "$command" in
+
+    [aA]*)
+      hostStat="added"
+      if [ -r $hostDB ]; then
+        if [ `grep -ic "^$machine  *$hostType" $hostDB` -ne 0 ]; then
+          hostStat="known"
+        fi
+      fi
+      if [ "$hostStat" != "known" ]; then
+        echo "$machine,${hostType}:$hostPort,$binPath,$switches" | \
+             awk -F, ' {printf "%-25s %-15s %s %s\n", $1, $2, $3, $4}' >> $hostDB
+        sort $hostDB > $tempDB
+        mv $tempDB $hostDB
+      fi
+    ;;
+
+    [cC]*)
+      if [ "$hostStat" != "dead" ]; then
+        # Recursively try to halt, then restart, the host.
+        hostStat=`$0 h -l $login ${machine}:${hostType}:$hostPort | awk ' {print $NF}'`
+        if [ "$hostStat" != "unhaltable" ]; then
+          $0 s -l $login -m $methodPath ${machine}:${hostType}:$hostPort \
+            > /dev/null 2>&1
+          hostStat="cycled"
+          deadStat="uncycled"
+        fi
+      fi
+    ;;
+
+    [fF]*)
+      hostStat="unknown"
+      if [ -r $hostDB ]; then
+        if [ `grep -ic "^$machine  *$hostType" $hostDB` -ne 0 ]; then
+          grep -v "^$machine  *$hostType" $hostDB > $tempDB
+          mv $tempDB $hostDB
+          hostStat="forgotten"
+        fi
+      fi
+    ;;
+
+    [hH]*)
+      if [ "$hostStat" != "dead" ]; then
+        ctrl_host halt ${machine}:$hostPort > /dev/null 2>&1
+        sleep 2  # Give it some time to exit.
+        hostStat="unhaltable"
+        deadStat="halted"
+      fi
+    ;;
+
+    [kK]*)
+      if [ "$hostStat" != "dead" ]; then
+        # We don't know whether the ps on the target host is BSD or SYSV.  This
+        # test selects the proper parameter format depending on whether an
+        # attempt to invoke ps using BSD parameters succeeds.
+        bsdTest="[ \`ps w 2>&1 | grep -c \"^[0-9]\"\` -gt 0 ]"
+        psCommand="sh -c 'if $bsdTest; then ps uwx; else ps -fu \$USER; fi'"
+        # Note: We assume here that the process we want to kill is the only one
+        # that has $hostExec in its name.  This will not be true if $machine is
+        # the same one that we're running on (the awk command will show up in
+        # the ps output), but we'll only try to kill an already-dead process.
+        prePids=`$methodPath -l $login $machine "$psCommand" | awk "/$hostExec/ {print ${dollar}2}"`
+        $methodPath -l $login $machine "kill -9 $prePids" > /dev/null 2>&1
+        postPids=`$methodPath -l $login $machine "$psCommand" | awk "/$hostExec/ {print ${dollar}2}"`
+        if [ "$postPids" != "$prePids" ]; then
+          hostStat="killed"
+        else
+          hostStat="unkillable"
+        fi
+      fi
+    ;;
+
+    [pP]*)
+      if [ "$hostStat" != "dead" ]; then
+        # Recursively try to halt and forget the host.
+        hostStat=`$0 h -l $login ${machine}:${hostType}:$hostPort | awk ' {print $NF}'`
+        if [ "$hostStat" != "unhaltable" ]; then
+          $0 f ${machine}:${hostType}:$hostPort > /dev/null 2>&1
+          hostStat="purged"
+        fi
+      fi
+    ;;
+
+    [rR]*)
+      if [ "$hostStat" = "dead" ]; then
+        $0 s -l $login -m $methodPath ${machine}:${hostType}:$hostPort \
+          > /dev/null 2>&1
+        hostStat="revived"
+        deadStat="unrevivable"
+      fi
+    ;;
+
+    [sS]*)
+      if [ "$hostStat" = "dead" ]; then
+        # Construct the standard switches.  Since we put them on the command
+        # line before the user's switches, the user's will take precedence.
+        dataDir="nws/$machine"
+        defaultSwitches="-p $hostPort -e $dataDir/$hostType.err -l $dataDir/$hostType.log"
+        if [ "$hostType" = "memory" ]; then
+          defaultSwitches="-d $dataDir $defaultSwitches"
+        fi
+        # Grab switches from any previous runs.  It's debatable that we should
+        # retain these, but, again, new switches will take precedence.
+        oldSwitches=
+        if [ -r $hostDB ]; then
+          nwsAttrs=`grep "^$machine  *$hostType" $hostDB`
+          if [ -n "$nwsAttrs" ]; then
+            binPath=`echo $nwsAttrs | awk ' {print $3}'`
+            oldSwitches=`echo $nwsAttrs | sed "s@.*$binPath@@"`
+          fi
+        fi
+        $methodPath -l $login $machine \
+          "$binPath/$hostExec $defaultSwitches $oldSwitches $switches &"
+        # Delete any existing entry for this host and add a new one.
+        $0 f "$machine:$hostType" > /dev/null 2>&1
+        if [ -n "$oldSwitches$switches" ]; then
+          $0 a -b "$binPath" -s "$oldSwitches $switches" "${machine}:${hostType}:${hostPort}" > /dev/null 2>&1
+        else
+          $0 a -b "$binPath" "${machine}:${hostType}:${hostPort}" > /dev/null 2>&1
+        fi
+        hostStat="started"
+        deadStat="unstarted"
+      fi
+    ;;
+
+    [tT]*)
+      # Nothing more to do.
+    ;;
+
+    esac
+
+    if [ -n "$deadStat" ]; then
+      testOut=`ctrl_host test ${machine}:$hostPort 2>&1 | cat`
+      case "$testOut" in
+      *dead*)
+        hostStat="$deadStat"
+      ;;
+      esac
+    fi
+
+    results="${machine}:${hostType}:${hostPort} $hostStat"
+    echo "$results"
+
+  done
+
+  for var in binPath hostSpec login methodPath switches; do
+    eval $var=""
+  done
+
+done
+
+if [ -z "$results" ]; then
+  # If the user gave no host specification, apply the arguments to every host
+  # in the data base, if it exists.
+  if [ -r $hostDB ]; then
+    hosts=`awk ' {print $1 " "}' < $hostDB | grep -v '#' |  sort | uniq | awk ' {printf $1 " "}'`
+    $0 $command "$@" $hosts
+  fi
+fi
+
+exit 0

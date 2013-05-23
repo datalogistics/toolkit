@@ -1,0 +1,226 @@
+attributetype ( 10600.2.1.1 NAME 'depotname'
+	DESC 'DepotName'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.2 NAME 'hostname'
+	DESC 'Hostname'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.3 NAME 'port'
+	DESC 'port'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.4 NAME 'StableStorage'
+	DESC 'Stable Storage'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.5 NAME 'AvailableStableStorage'
+	DESC 'Available Stable Storage'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.6 NAME 'VolatileStorage'
+	DESC 'Volatile Storage'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.7 NAME 'AvailableVolatileStorage'
+	DESC 'Available Volatile Storage'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.8 NAME 'Duration'
+	DESC 'Duration'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.9 NAME 'lastUpdate'
+	DESC 'Last Update'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.10 NAME 'status'
+	DESC 'Status'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.11 NAME 'lat'
+	DESC 'Latitude'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.12 NAME 'lon'
+	DESC 'Longitude'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.13 NAME 'airport'
+	DESC 'Airport Code'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.14 NAME 'zip'
+	DESC 'Zipcode'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.15 NAME 'email'
+	DESC 'Contact Email'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.16 NAME 'connection'
+	DESC 'Connection Type'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.17 NAME 'monitoring'
+	DESC 'Monitoring Description'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.18 NAME 'power'
+	DESC 'Backup Power Available'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.19 NAME 'backup'
+	DESC 'Data Backup Regularity'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.20 NAME 'polled'
+	DESC 'Number of Times Depot Has Been Polled'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.21 NAME 'responded'
+	DESC 'Number of Times Depot Responded'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.22 NAME 'firewall'
+	DESC 'Does the Depot have a Firewall'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.23 NAME 'notifyOwnerPeriod'
+	DESC 'If depot is down, notify after this time period'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+attributetype ( 10600.2.1.24 NAME 'lastMail'
+	DESC 'Last Depot Down Mail Update'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+
+
+
+
+
+
+objectClass ( 10600.2.2.1 NAME 'depot'
+	DESC 'Depot'
+	SUP  top
+	MUST ( depotname $ hostname $ port )
+	MAY  ( StableStorage $ AvailableStableStorage $
+	       VolatileStorage $ AvailableVolatileStorage $
+	       Duration $ status $ lastUpdate $ c $
+	       st $ l $ lat $ lon $ zip $ airport $
+	       email $ connection $ monitoring $ power $
+	       backup $ polled $ responded $ firewall $
+	       notifyOwnerPeriod $ lastMail ) )
+
+
+objectClass ( 10600.2.2.2 NAME 'location'
+	DESC 'Location'
+	SUP  top
+	MUST ( lat $ lon ) )
+
+
+objectClass ( 10600.2.2.3 NAME 'zipcode'
+	DESC 'Zipcode'
+	SUP  location
+	MUST ( zip )
+	MAY  ( c $ st $ l ) )
+
+
+objectClass ( 10600.2.2.4 NAME 'airportClass'
+	DESC 'Airport'
+        SUP  location
+	MUST ( airport )
+	MAY  ( c $ st $ l ) )
+
+
+objectClass ( 10600.2.2.5 NAME 'cc'
+	DESC 'Country Code'
+        SUP  location
+	MUST ( c ) )
+
+
+objectClass ( 10600.2.2.6 NAME 'state'
+	DESC 'State'
+        SUP  location
+	MUST ( st )
+	MAY  ( c ) )
+
+
+objectClass ( 10600.2.2.7 NAME 'city'
+	DESC 'City'
+        SUP  location
+	MUST ( l )
+	MAY  ( c $ st ) )
+
+
