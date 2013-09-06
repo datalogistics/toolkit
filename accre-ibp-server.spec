@@ -10,7 +10,7 @@ Source0:	http://www.lstore.org/pwiki/uploads/Download/ibp_server-accre.tgz
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 BuildRequires:	cmake protobuf-c-devel apr-devel apr-util-devel openssl-devel czmq-devel hwloc-devel uuid-devel fuse-devel libattr-devel gcc gcc-c++ openssl-devel 
-Requires: czmq fuse openssl accre-toolbox accre-gop accre-jerasure
+Requires: czmq fuse openssl
 
 %description
 The Internet Backplane Protocol (IBP) Server handles exposes storage 
