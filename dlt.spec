@@ -9,11 +9,13 @@ BuildRoot: %{_builddir}/%{name}-root
 Packager: Ezra Kissel <ezkissel@indiana.edu>
 BuildArch: noarch
 
-Requires : libxsp-client phoebus-client periscope blipp
-# ibp
+Requires : libxsp-client phoebus-client periscope blipp accre-ibp-server
 
-%description
-Configures the machine as a Compute node.
+%description 
+
+Configures the machine as a DLT node.  This meta package installs the
+ACCRE IBP server, XSP clients, a Periscope measurement store, and the
+BLiPP monitoring agent.
 
 %prep
 
