@@ -6,10 +6,10 @@ Summary: Internet Backplane Protocol (IBP) Server
 Group:	Applications/System
 License: ACCRE
 URL:	http://www.reddnet.org/
-Source0:	http://www.lstore.org/pwiki/uploads/Download/ibp_server-accre.tgz
+Source0:	https://github.com/datalogistics/ibp_server/archive/master.zip
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
-BuildRequires:	cmake protobuf-c-devel apr-devel apr-util-devel openssl-devel czmq-devel hwloc-devel uuid-devel fuse-devel libattr-devel gcc gcc-c++ openssl-devel 
+BuildRequires:	cmake apr-devel apr-util-devel openssl-devel czmq-devel hwloc-devel uuid-devel fuse-devel libattr-devel gcc gcc-c++ openssl-devel 
 Requires: czmq fuse openssl
 
 %description
@@ -18,7 +18,7 @@ to the network via IBP. It is an integral part of various distributed
 storage technologies (ex http://www.reddnet.org)
 
 %prep
-%setup -n ibp_server
+%setup -n ibp_server-master
 
 
 %build
