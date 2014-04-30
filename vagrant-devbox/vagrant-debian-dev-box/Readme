@@ -1,0 +1,11 @@
+Readme
+----------------------------------------------------
+- You would need access to both github.com and gitlab.crest.iu.edu repositories mentioned in the bootstrap.sh
+- This vagrant uses ssh forwarding so make sure you have right set of keys in your ~/.ssh folder
+
+Usage:
+-----------------
+> vagrant up
+> vagrant ssh
+
+
