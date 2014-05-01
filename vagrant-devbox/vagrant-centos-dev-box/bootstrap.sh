@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 yum check-update
-sudo bash -c "yum -y install libconfig-devel libxml2-devel libdb-devel libc6-devel vim pkg-config cmake openssl-devel libtool gawk bison byacc automake m4 autoconf autotools-devel libevent-devel apr-devel apr-util-devel openssl libconfig9 libxml2 libdb-devel jansson-devel git libcurl-devel libjansson-devel python-setuptools python-argparse python-devel mongodb swig python-pip python-zmq python-psutil python-m2crypto"
+sudo bash -c "yum -y install libconfig-devel libxml2-devel libdb-devel libc6-devel vim pkg-config cmake openssl-devel libtool gawk bison byacc automake m4 autoconf autotools-devel libevent-devel apr-devel apr-util-devel openssl libconfig9 libxml2 libdb-devel jansson-devel git libcurl-devel libjansson-devel python-setuptools python-argparse python-devel mongodb swig python-pip python-zmq python-psutil python-m2crypto mongodb-server"
 
 # some housekeeping
 cd /usr/include

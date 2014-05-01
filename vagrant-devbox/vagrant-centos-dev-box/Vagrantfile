@@ -40,4 +40,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # provision
   config.vm.provision :shell, :path => "bootstrap.sh"
 
+  # port forward for unis
+  Vagrant.configure("2") do |config|
+    config.vm.network "forwarded_port", guest: 8888, host: 8888
+  end
+
 end
