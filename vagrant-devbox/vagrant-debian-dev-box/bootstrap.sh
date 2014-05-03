@@ -11,6 +11,7 @@ ln -s apr-1.0 apr-1
 # Pulling up repos
 cd /home/vagrant/
 sudo -u vagrant git clone git@github.com:datalogistics/ibp_server.git
+sudo -u vagrant git clone git@github.com:datalogistics/toolkit.git
 sudo -u vagrant git clone git@github.com:periscope-ps/libunis-c.git
 sudo -u vagrant git clone git@gitlab.crest.iu.edu:damsl/xsp.git
 sudo -u vagrant git clone git@gitlab.crest.iu.edu:damsl/phoebus.git
