@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 %define default_release 1
 Name: libunis-c
 Version: 1.0
