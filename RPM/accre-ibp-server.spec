@@ -13,7 +13,7 @@ Source0: ibp_server.tar.gz
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 BuildRequires:	cmake apr-devel apr-util-devel openssl-devel czmq-devel hwloc-devel uuid-devel fuse-devel libattr-devel gcc gcc-c++ openssl-devel jansson-devel
-Requires: czmq fuse openssl jansson libunis-c
+Requires: czmq fuse openssl jansson libunis-c python-argparse
 
 %description
 The Internet Backplane Protocol (IBP) Server handles exposes storage 
