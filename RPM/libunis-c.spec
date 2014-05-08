@@ -1,6 +1,7 @@
+%define default_release 1
 Name: libunis-c
 Version: 1.0.0pre
-Release: 1%{?dist}
+Release: %{?release}%{!?release:%{default_release}}
 Summary: Unis C library
 
 Group: Applications/System

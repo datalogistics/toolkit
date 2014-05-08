@@ -1,6 +1,8 @@
-Name: accre-ibp-server-phoebus
+%define default_release 1
+
+Name: accre-ibp-server
 Version: 1.0.0pre
-Release: 1%{?dist}
+Release: %{?release}%{!?release:%{default_release}}
 Summary: Internet Backplane Protocol (IBP) Server
 
 Group: Applications/System

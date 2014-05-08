@@ -1,6 +1,8 @@
+%define default_release 8
+
 Name: libxsp
 Version: 1.0
-Release: 8
+Release: %{?release}%{!?release:%{default_release}}
 Summary: XSP RPM
 
 Group: Application/Network
@@ -72,11 +74,11 @@ install -m 755 scripts/xspd.init ${RPM_BUILD_ROOT}/etc/init.d/xspd
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-#%post xspd
-#/sbin/chkconfig --add xspd
-#/usr/sbin/useradd -r -s /bin/nologin -d /tmp xspd || :
-#touch /var/log/xspd.log
-#chown xspd:xspd /var/log/xspd.log
+%post xspd
+/sbin/chkconfig --add xspd
+/usr/sbin/useradd -r -s /bin/nologin -d /tmp xspd || :
+touch /var/log/xspd.log
+chown xspd:xspd /var/log/xspd.log
 
 %preun xspd
 if [ $1 -eq 0 ]; then
