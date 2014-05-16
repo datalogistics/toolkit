@@ -11,8 +11,7 @@ BuildRoot: %{_builddir}/%{name}-root
 Packager: Ezra Kissel <ezkissel@indiana.edu>
 BuildArch: noarch
 
-Requires: libxsp-client accre-ibp-server
-#Requires : libxsp-client phoebus-client periscope blipp accre-ibp-server-phoebus
+Requires : libxsp-client phoebus-client periscope blipp accre-ibp-server
 
 %description 
 

@@ -1,7 +1,7 @@
 %define default_release 1
 
 Name: accre-ibp-server
-Version: 1.0.0pre
+Version: 1.0
 Release: %{?release}%{!?release:%{default_release}}
 Summary: Internet Backplane Protocol (IBP) Server
 
@@ -36,6 +36,7 @@ install -m 755 ibp_server ibp_attach_rid ibp_detach_rid ibp_rescan ${RPM_BUILD_R
 install -m 755 get_alloc get_config get_corrupt get_version ${RPM_BUILD_ROOT}/bin
 install -m 755 print_alog read_alloc repair_history ${RPM_BUILD_ROOT}/bin
 install -m 755 date_spacefree chksum_test expire_list mkfs.resource ${RPM_BUILD_ROOT}/bin
+install -m 755 misc/ibp_configure.py ${RPM_BUILD_ROOT}/bin
 %clean
 rm -rf %{buildroot}
 
