@@ -1,0 +1,48 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+# vim: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  # All Vagrant configuration is done here. The most common configuration
+  # options are documented and commented below. For a complete reference,
+  # please see the online documentation at vagrantup.com.
+
+  # Every Vagrant virtual environment requires a box to build off of.
+  config.vm.box = "dlt-centos-devbox-32bit"
+  
+  # Add any centos 6 32bit image here
+  config.vm.box_url = "https://dl.dropbox.com/sh/9rldlpj3cmdtntc/56JW-DSK35/centos-62-32bit-puppet.box"
+
+  config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+
+  config.ssh.forward_agent = true
+
+  config.vm.provision :shell do |shell|
+    shell.inline = "touch $1 && chmod 0440 $1 && echo $2 > $1"
+    shell.args = %q{/etc/sudoers.d/root_ssh_agent "Defaults    env_keep += \"SSH_AUTH_SOCK\""}
+  end
+
+  # add github to the list of known_hosts
+  config.vm.provision :shell do |shell|
+    shell.inline = "touch $2 && ssh-keyscan -H $3 >> $2 && chown vagrant:vagrant $2 && sudo -u vagrant chmod 600 $2"
+    shell.args = %q{/home/vagrant/.ssh /home/vagrant/.ssh/known_hosts "github.com"}
+  end
+
+  # add crest.gitlab.iu.edu to the list of known_hosts
+  config.vm.provision :shell do |shell|
+    shell.inline = "touch $2 && ssh-keyscan -H $3 >> $2 && chown vagrant:vagrant $2 && sudo -u vagrant chmod 600 $2"
+    shell.args = %q{/home/vagrant/.ssh /home/vagrant/.ssh/known_hosts "gitlab.crest.iu.edu"}
+  end
+
+  # provision
+  #config.vm.provision :shell, :path => "bootstrap.sh"
+
+  # port forward for unis
+  Vagrant.configure("2") do |config|
+    config.vm.network "forwarded_port", guest: 8888, host: 8888
+  end
+
+end
