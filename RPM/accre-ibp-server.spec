@@ -49,4 +49,5 @@ rm -rf %{buildroot}
 %attr(755,root,root) /etc/init.d/ibp-server
 
 %changelog
-* Tue May 27 2014 Akshay Dorwat <adorwat@indiana.edu> 1.1-accre-ibp-server Updated the permissions for /etc/init.d/ibp-server script.
+* Tue May 27 2014 Akshay Dorwat <adorwat@indiana.edu> 1.1-accre-ibp-server 
+- Updated the permissions for /etc/init.d/ibp-server script.
