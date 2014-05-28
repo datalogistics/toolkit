@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 yum check-update
-sudo bash -c "yum -y install libconfig-devel libxml2-devel libdb-devel libc6-devel vim pkg-config cmake openssl-devel libtool gawk bison byacc automake m4 autoconf autotools-devel libevent-devel apr-devel apr-util-devel openssl libconfig9 libxml2 libdb-devel jansson-devel git libcurl-devel libjansson-devel python-setuptools python-argparse python-devel mongodb swig python-pip python-zmq python-psutil python-m2crypto mongodb-server python-netifaces"
+sudo bash -c "yum -y install libconfig-devel libxml2-devel libdb-devel libc6-devel vim pkg-config cmake openssl-devel libtool gawk bison byacc automake m4 autoconf autotools-devel libevent-devel apr-devel apr-util-devel openssl libconfig9 libxml2 libdb-devel jansson-devel git libcurl-devel libjansson-devel python-setuptools python-argparse python-devel mongodb swig python-pip python-zmq python-psutil python-m2crypto mongodb-server python-netifaces libffi-devel python-daemon"
 
 # some housekeeping
 cd /usr/include
@@ -18,7 +18,7 @@ sudo -u vagrant git clone git@gitlab.crest.iu.edu:damsl/phoebus.git
 sudo -u vagrant git clone git@gitlab.crest.iu.edu:damsl/idms.git
 sudo -u vagrant git clone git@github.com:periscope-ps/blipp.git
 sudo -u vagrant git clone git@github.com:periscope-ps/unis.git
-sudo -u vagrant git clone git@gitlab.crest.iu.edu:damsl/idms.git
+
 
 
 # lets compile stuff

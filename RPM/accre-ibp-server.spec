@@ -18,7 +18,8 @@ Requires: czmq fuse openssl jansson libunis-c python-argparse
 %description
 The Internet Backplane Protocol (IBP) Server handles exposes storage 
 to the network via IBP. It is an integral part of various distributed
-storage technologies (ex http://www.reddnet.org)
+storage technologies (ex http://www.reddnet.org). In case of bug or issue 
+please report it to data-logistics@googlegroups.org.
 
 %prep
 %setup -n ibp_server
@@ -37,6 +38,7 @@ install -m 755 get_alloc get_config get_corrupt get_version ${RPM_BUILD_ROOT}/bi
 install -m 755 print_alog read_alloc repair_history ${RPM_BUILD_ROOT}/bin
 install -m 755 date_spacefree chksum_test expire_list mkfs.resource ${RPM_BUILD_ROOT}/bin
 install -m 755 misc/ibp_configure.py ${RPM_BUILD_ROOT}/bin
+
 %clean
 rm -rf %{buildroot}
 
@@ -44,6 +46,7 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 /bin/*
 /etc/ibp.cfg
-/etc/init.d/ibp-server
+%attr(755,root,root) /etc/init.d/ibp-server
 
 %changelog
+* Tue May 27 2014 Akshay Dorwat <adorwat@indiana.edu> 1.1-accre-ibp-server Updated the permissions for /etc/init.d/ibp-server script.
