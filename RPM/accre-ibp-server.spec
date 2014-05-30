@@ -1,4 +1,4 @@
-%define default_release 3
+%define default_release 4
 
 Name: accre-ibp-server
 Version: 1.0
@@ -18,7 +18,8 @@ Requires: czmq fuse openssl jansson libunis-c python-argparse
 %description
 The Internet Backplane Protocol (IBP) Server handles exposes storage 
 to the network via IBP. It is an integral part of various distributed
-storage technologies (ex http://www.reddnet.org)
+storage technologies (ex http://www.reddnet.org).In case of bug or issue 
+please report it to data-logistics@googlegroups.org.
 
 %prep
 %setup -n ibp_server
@@ -47,6 +48,8 @@ rm -rf %{buildroot}
 %attr(755,root,root) /etc/init.d/ibp-server
 
 %changelog
+* Thu May 30 2014 Akshay Dorwat <adorwat@indiana.edu> 1.0-4-accre-ibp-server 
+- Updated the ibp_configure.py to suppress DEBUG warning and added note to add more resources in IBP_SERVER.
 * Thu May 29 2014 Akshay Dorwat <adorwat@indiana.edu> 1.0-2-accre-ibp-server 
 - Fixed the bug in ibp_configure.py script. 
 * Tue May 27 2014 Akshay Dorwat <adorwat@indiana.edu> 1.0-1-accre-ibp-server 
