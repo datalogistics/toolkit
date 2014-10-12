@@ -33,13 +33,14 @@ make
 chmod 755 misc/ibp-server
 make install
 install -d ${RPM_BUILD_ROOT}/bin
+install -d ${RPM_BUILD_ROOT}/usr/local/etc
 install -m 755 ibp_server ibp_attach_rid ibp_detach_rid ibp_rescan ${RPM_BUILD_ROOT}/bin
 install -m 755 get_alloc get_config get_corrupt get_version ${RPM_BUILD_ROOT}/bin
 install -m 755 print_alog read_alloc repair_history ${RPM_BUILD_ROOT}/bin
 install -m 755 date_spacefree chksum_test expire_list mkfs.resource ${RPM_BUILD_ROOT}/bin
 install -m 755 misc/ibp_configure.py ${RPM_BUILD_ROOT}/bin
-install -m 755 misc/dlt-client.pem /usr/local/etc/
-install -m 755 misc/dlt-client.key /usr/local/etc/
+install -m 755 misc/dlt-client.pem ${RPM_BUILD_ROOT}/usr/local/etc/
+install -m 755 misc/dlt-client.key ${RPM_BUILD_ROOT}/usr/local/etc/
 %clean
 rm -rf %{buildroot}
 
@@ -47,6 +48,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 /bin/*
 /etc/ibp.cfg
+/usr/local/etc/dlt-client.pem
+/usr/local/etc/dlt-client.key
 %attr(755,root,root) /etc/init.d/ibp-server
 
 %changelog
