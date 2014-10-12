@@ -1,4 +1,4 @@
-%define default_release 1
+%define default_release 2
 Name: libunis-c
 Version: 1.0
 Release: %{?release}%{!?release:%{default_release}}
@@ -43,6 +43,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Sat Oct 11 2014 <ezkissel@indiana.edu> 1.0-2-libunis-c
+- Adding location support.
 * Fri Apr 25 2014 Amey Jahagirdar <ajahagir@indiana.com>
 - Basic reusable library for c services
 - Added pluggable log function callback registration to get realtime feedback

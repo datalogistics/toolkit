@@ -1,4 +1,4 @@
-%define default_release 4
+%define default_release 5
 
 Name: accre-ibp-server
 Version: 1.0
@@ -38,6 +38,8 @@ install -m 755 get_alloc get_config get_corrupt get_version ${RPM_BUILD_ROOT}/bi
 install -m 755 print_alog read_alloc repair_history ${RPM_BUILD_ROOT}/bin
 install -m 755 date_spacefree chksum_test expire_list mkfs.resource ${RPM_BUILD_ROOT}/bin
 install -m 755 misc/ibp_configure.py ${RPM_BUILD_ROOT}/bin
+install -m 755 misc/dlt-client.pem /usr/local/etc/
+install -m 755 misc/dlt-client.key /usr/local/etc/
 %clean
 rm -rf %{buildroot}
 
@@ -48,6 +50,8 @@ rm -rf %{buildroot}
 %attr(755,root,root) /etc/init.d/ibp-server
 
 %changelog
+* Sat Oct 11 2014 <ezkissel@indiana.edu> 1.0-5-accre-ibp-server 
+- Updates to ibp_configure.py.  Including DLT client certificate for UNIS registration.
 * Thu May 30 2014 Akshay Dorwat <adorwat@indiana.edu> 1.0-4-accre-ibp-server 
 - Updated the ibp_configure.py to suppress DEBUG warning and added note to add more resources in IBP_SERVER.
 * Thu May 29 2014 Akshay Dorwat <adorwat@indiana.edu> 1.0-2-accre-ibp-server 
