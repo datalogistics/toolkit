@@ -1,4 +1,4 @@
-%define default_release 5
+%define default_release 6
 
 Name: accre-ibp-server
 Version: 1.0
@@ -53,6 +53,8 @@ rm -rf %{buildroot}
 %attr(755,root,root) /etc/init.d/ibp-server
 
 %changelog
+* Thu Oct 16 2014 <ezkissel@indiana.edu> 1.0-6-accre-ibp-server 
+- Minor configure script improvements.  Default RID is now 1.  Prompt to delete existing DB env.
 * Sat Oct 11 2014 <ezkissel@indiana.edu> 1.0-5-accre-ibp-server 
 - Updates to ibp_configure.py.  Including DLT client certificate for UNIS registration.
 * Thu May 30 2014 Akshay Dorwat <adorwat@indiana.edu> 1.0-4-accre-ibp-server 
