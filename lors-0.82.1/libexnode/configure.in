@@ -5,6 +5,7 @@ AM_INIT_AUTOMAKE(libexnode,0.6.5)
 dnl Default install directory
 AC_PREFIX_DEFAULT(`pwd`/local)
 
+
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_RANLIB
@@ -17,6 +18,7 @@ AC_CHECK_LIB(xml2,xmlNewDocNode,,AC_MSG_WARN(Can't find libxml2))
 dnl Checks for header files.
 AC_HEADER_STDC
 
+dnl check and setup path of libxml2 package                                                                       
 AC_ARG_WITH(libxml2,[  --with-libxml2=DIR      path to libxml2 [DIR/include]],
             [XMLDIR="$with_libxml2";
              XMLINC="-I\$(XMLDIR)/include/libxml2";
@@ -28,6 +30,20 @@ AC_ARG_WITH(libxml2,[  --with-libxml2=DIR      path to libxml2 [DIR/include]],
 AC_SUBST(XMLDIR)
 AC_SUBST(XMLINC)
 AC_SUBST(XMLLIB)
+
+dnl check and setup path of libjansson package                                                                    
+AC_ARG_WITH(libjansson,[  --with-libjansson=path         path to libjansson[default=path]],
+            [JANSSONDIR="$with_libjansson";
+             JANSSONINC="-I\$(JANSSONDIR)/include";
+             JANSSONLIB="-L\$(JANSSONDIR)/lib -ljansson"],
+	    [JANSSONDIR= /usr/local;
+             JANSSONINC="-I\$(JANSSONDIR)/include";
+             JANSSONLIB="-L\$(JANSSONDIR)/lib -ljansson"])
+	    
+AC_SUBST(JANSSONDIR)
+AC_SUBST(JANSSONINC)
+AC_SUBST(JANSSONLIB)
+
 
 AC_ARG_WITH(libfdr,[  --with-libfdr=DIR       path to libfdr [DIR/include]],
             [FDRDIR="$with_libfdr";

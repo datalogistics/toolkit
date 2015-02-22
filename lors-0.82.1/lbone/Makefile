@@ -18,7 +18,7 @@ SHELL = /bin/bash
 srcdir = .
 top_srcdir = .
 
-prefix = /usr/local/LORS
+prefix = /home/vagrant/usr
 exec_prefix = ${prefix}
 sbindir = ${exec_prefix}/sbin
 libexecdir = ${exec_prefix}/libexec
@@ -35,10 +35,10 @@ pkglibdir = $(libdir)/lbone_lib
 pkgincludedir = $(includedir)/lbone_lib
 top_builddir = .
 
-ACLOCAL = ${SHELL} /usr/local/src/toolkit/lors-0.82.1/lbone/missing --run aclocal-1.6
-AUTOCONF = ${SHELL} /usr/local/src/toolkit/lors-0.82.1/lbone/missing --run autoconf
-AUTOMAKE = ${SHELL} /usr/local/src/toolkit/lors-0.82.1/lbone/missing --run automake-1.6
-AUTOHEADER = ${SHELL} /usr/local/src/toolkit/lors-0.82.1/lbone/missing --run autoheader
+ACLOCAL = ${SHELL} /home/vagrant/toolkit/lors-0.82.1/lbone/missing --run aclocal-1.6
+AUTOCONF = ${SHELL} /home/vagrant/toolkit/lors-0.82.1/lbone/missing --run autoconf
+AUTOMAKE = ${SHELL} /home/vagrant/toolkit/lors-0.82.1/lbone/missing --run automake-1.6
+AUTOHEADER = ${SHELL} /home/vagrant/toolkit/lors-0.82.1/lbone/missing --run autoheader
 
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = /usr/bin/install -c
@@ -67,14 +67,14 @@ EXEEXT =
 OBJEXT = o
 PATH_SEPARATOR = :
 
-bindir = /usr/local/LORS/bin
-libdir = /usr/local/LORS/lib
-AMTAR = ${SHELL} /usr/local/src/toolkit/lors-0.82.1/lbone/missing --run tar
+bindir = /home/vagrant/usr/bin
+libdir = /home/vagrant/usr/lib
+AMTAR = ${SHELL} /home/vagrant/toolkit/lors-0.82.1/lbone/missing --run tar
 AWK = mawk
 CC = gcc
-CGIDIR = /usr/local/src/toolkit/lors-0.82.1/lbone/ecgi
+CGIDIR = /home/vagrant/toolkit/lors-0.82.1/lbone/ecgi
 DEPDIR = .deps
-IBPDIR = /usr/local/LORS
+IBPDIR = /home/vagrant/usr
 INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
 LDAPDIR = /usr
 LN_S = ln -s
@@ -82,19 +82,19 @@ LORS_BUILD_ECGI = no,
 LORS_BUILD_IBP = yes
 LORS_BUILD_NWS = no,
 LORS_ECGI_SRC_DIR = 
-LORS_IBP_SRC_DIR = /usr/local/src/toolkit/lors-0.82.1/lbone/ibp
+LORS_IBP_SRC_DIR = /home/vagrant/toolkit/lors-0.82.1/lbone/ibp
 LORS_NWS_SRC_DIR = 
-NWSDIR = /usr/local/src/toolkit/lors-0.82.1/lbone/nws
+NWSDIR = /home/vagrant/toolkit/lors-0.82.1/lbone/nws
 OSDEF = _LINUX
 OSTYPE = Linux
 PACKAGE = lbone_lib
-PREFIX = /usr/local/src/toolkit/lors-0.82.1/lbone
+PREFIX = /home/vagrant/toolkit/lors-0.82.1/lbone
 RANLIB = ranlib
 STRIP = 
 VERSION = 0.5
 am__include = include
 am__quote = 
-install_sh = /usr/local/src/toolkit/lors-0.82.1/lbone/install-sh
+install_sh = /home/vagrant/toolkit/lors-0.82.1/lbone/install-sh
 
 SUBDIRS = client server cgi
 subdir = .
@@ -443,14 +443,14 @@ ibp-install:
 
 install-exec-local:
 	cd ibp && make install
-#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/lib/libibp.a /usr/local/LORS/lib
-#	#ranlib /usr/local/LORS/lib/libibp.a
-#	#/usr/bin/install -c -m 0751 $(srcdir)/ibp/local/bin/ibp-smoketest /usr/local/LORS/bin
-#	#/usr/bin/install -c -m 0751 $(srcdir)/ibp/local/bin/ibp-dmtest2 /usr/local/LORS/bin
-#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_ClientLib.h /usr/local/LORS/include
-#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_protocol.h /usr/local/LORS/include
-#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_errno.h /usr/local/LORS/include
-#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_os.h /usr/local/LORS/include
+#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/lib/libibp.a /home/vagrant/usr/lib
+#	#ranlib /home/vagrant/usr/lib/libibp.a
+#	#/usr/bin/install -c -m 0751 $(srcdir)/ibp/local/bin/ibp-smoketest /home/vagrant/usr/bin
+#	#/usr/bin/install -c -m 0751 $(srcdir)/ibp/local/bin/ibp-dmtest2 /home/vagrant/usr/bin
+#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_ClientLib.h /home/vagrant/usr/include
+#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_protocol.h /home/vagrant/usr/include
+#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_errno.h /home/vagrant/usr/include
+#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_os.h /home/vagrant/usr/include
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

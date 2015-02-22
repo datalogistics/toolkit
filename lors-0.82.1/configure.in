@@ -170,6 +170,22 @@ AC_SUBST(LORS_BUILD_XML2)
 AC_SUBST(LORS_XML2_DIR)
 AC_SUBST(LORS_XML2_SRC_DIR)
 
+dnl check and setup path of libjansson package 
+AC_ARG_WITH(libjansson,[--with-libjansson=path         path to libjansson[default=/usr]],
+            LORS_JANSSON_DIR="$with_libjansson",
+            LORS_JANSSON_DIR="/usr/local")
+AC_FIND_FILE("${LORS_JANSSON_DIR}/include/jansson.h",
+            LORS_BUILD_JANSSON="no",
+            AC_FIND_FILE("${PREFIX}/libjansson/src/jansson.h",
+                          LORS_BUILD_JANSSON="yes"
+                          LORS_JANSSON_SRC_DIR="${PREFIX}/libjansson"
+                          LORS_JANSSON_DIR="${INS_DIR}",
+                          AC_MSG_ERROR("Can not find libjansson package")))
+AC_SUBST(LORS_BUILD_JANSSON)
+AC_SUBST(LORS_JANSSON_DIR)
+AC_SUBST(LORS_JANSSON_SRC_DIR)
+
+
 dnl check and setup path of lbone package
 AC_ARG_WITH(lbone,[--with-lbone=path    path to lbone package],
             LORS_LBONE_DIR="$with_lbone",
