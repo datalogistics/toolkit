@@ -542,6 +542,7 @@ int exnodeDeserializeMapping(Exnode *exnode,xmlDocPtr doc,xmlNsPtr ns,
 	return(EXNODE_SUCCESS);
 }
 
+
 int exnodeDeserialize(char *buf,int len,Exnode **exnode)
 {
 	Exnode *temp;

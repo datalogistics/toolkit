@@ -92,7 +92,8 @@ ARFLAGS = cru
 libexnode_a_AR = $(AR) $(ARFLAGS)
 libexnode_a_LIBADD =
 am_libexnode_a_OBJECTS = metadata.$(OBJEXT) function.$(OBJEXT) \
-	mapping.$(OBJEXT) exnode.$(OBJEXT) serialize.$(OBJEXT)
+	mapping.$(OBJEXT) exnode.$(OBJEXT) xndSerialize.$(OBJEXT) \
+	uefSerialize.$(OBJEXT)
 libexnode_a_OBJECTS = $(am_libexnode_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -213,7 +214,7 @@ AM_CPPFLAGS = -I../include -I/usr/local/include \
               @XMLINC@ @XMLLIB@ @FDRINC@ @FDRLIB@ 
 
 libexnode_a_SOURCES = metadata.c function.c mapping.c exnode.c \
-                      serialize.c 
+                      xndSerialize.c uefSerialize.c
 
 all: all-am
 
@@ -295,7 +296,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/function.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mapping.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/metadata.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/serialize.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uefSerialize.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xndSerialize.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

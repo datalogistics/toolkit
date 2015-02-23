@@ -25,6 +25,7 @@ extern "C" {
 #include "jval.h"
 #include "dllist.h"
 #include "jrb.h"
+#include <jansson.h>
 
 /**
  * Error codes.
