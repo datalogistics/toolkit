@@ -25,7 +25,7 @@ static void lorsDeserializeMapping(ExnodeMapping *emap, LorsMapping **lmap)
     LorsMapping     *lm;
 
     *lmap = NULL;
-
+	
 
     /*fprintf(stderr, "deserializing: 0x%x\n", emap);*/
     exnodeGetMappingMetadata(emap, &emd);
@@ -75,6 +75,9 @@ int    safeVersions(double d1, double d2)
     }
 }
 
+
+/* using schema field to pass file type to parse. It serves purpose dont need to change all interfaces
+*/
 int    lorsDeserialize (LorsExnode ** exnode,
                         char         *buffer,
                         int           length,
@@ -87,13 +90,21 @@ int    lorsDeserialize (LorsExnode ** exnode,
     LorsMapping       *lm;
     ExnodeValue        val;
     ExnodeType         type;
-    double              d;
-    int                 eret;
+    double             d;
+    int                eret;
+    char              *buf;
+	const char        *filetype;
 
-    char        *buf;
+	filetype = schema;
 
-    eret = uefDeserialize(buffer, length, &e);
-    //eret = exnodeDeserialize(buffer, length, &e);
+	if(filetype == NULL){
+		eret = exnodeDeserialize(buffer, length, &e);
+	}else if(strcmp(filetype,"xnd") ==  0 ){
+		eret = exnodeDeserialize(buffer, length, &e);
+	}else if(strcmp(filetype,"uef") ==  0 ){
+		eret = uefDeserialize(buffer, length, &e);
+	}
+    
     if ( eret != EXNODE_SUCCESS )
     {
         return LORS_FAILURE;
@@ -156,6 +167,7 @@ int    lorsFileDeserialize (LorsExnode ** exnode,
     int             ret;
     struct stat     mystat;
     char            *buf;
+	char            *filetype;
 
     ret = stat(filename, &mystat);
     if ( ret == -1 )
@@ -192,8 +204,16 @@ int    lorsFileDeserialize (LorsExnode ** exnode,
         return LORS_SYS_FAILED;
     }
 
-
-    ret =  lorsDeserialize(exnode, buf, mystat.st_size, NULL);
+	if(strstr( filename, ".xnd")){
+		filetype = "xnd";
+	}else if(strstr( filename, ".uef")){
+		filetype = "uef";
+	}else{
+		fprintf(stderr, "WARNING: No file type found \n");
+		filetype = NULL;
+	}
+    
+    ret =  lorsDeserialize(exnode, buf, mystat.st_size, filetype);
 
     close(fd);
     free(buf);
@@ -256,7 +276,7 @@ int    lorsSerialize (LorsExnode * exnode,
 
     if ( exnode->exnode != NULL ) {
         fprintf(stderr,"serialize: not null\n");
-    };
+    }
 
     exnodeCreateExnode(&(exnode->exnode));
 
