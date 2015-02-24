@@ -86,13 +86,14 @@ libcurl_la-curl_sasl.lo: curl_sasl.c curl_setup.h curl_config.h \
  curl_addrinfo.h /usr/include/netdb.h /usr/include/rpc/netdb.h \
  /usr/include/x86_64-linux-gnu/bits/netdb.h /usr/include/arpa/inet.h \
  asyn.h /usr/include/setjmp.h /usr/include/x86_64-linux-gnu/bits/setjmp.h \
- splay.h imap.h pingpong.h pop3.h smtp.h ftp.h file.h ssh.h http.h rtsp.h \
- smb.h wildcard.h multihandle.h curl_base64.h curl_md5.h curl_hmac.h \
- vtls/vtls.h ../lib/curl_setup.h vtls/openssl.h ../lib/urldata.h \
- vtls/gtls.h vtls/nssg.h vtls/gskit.h vtls/polarssl.h vtls/axtls.h \
- vtls/cyassl.h vtls/curl_schannel.h vtls/curl_darwinssl.h curl_sasl.h \
- warnless.h curl_memory.h strtok.h rawstr.h non-ascii.h \
- ../include/curl/mprintf.h memdebug.h
+ splay.h imap.h pingpong.h pop3.h smtp.h ftp.h file.h ssh.h \
+ /usr/include/libssh2.h /usr/include/libssh2_sftp.h \
+ /usr/include/libssh2.h http.h rtsp.h smb.h wildcard.h multihandle.h \
+ curl_base64.h curl_md5.h curl_hmac.h vtls/vtls.h ../lib/curl_setup.h \
+ vtls/openssl.h ../lib/urldata.h vtls/gtls.h vtls/nssg.h vtls/gskit.h \
+ vtls/polarssl.h vtls/axtls.h vtls/cyassl.h vtls/curl_schannel.h \
+ vtls/curl_darwinssl.h curl_sasl.h warnless.h curl_memory.h strtok.h \
+ rawstr.h non-ascii.h ../include/curl/mprintf.h memdebug.h
 
 curl_setup.h:
 
@@ -407,6 +408,12 @@ ftp.h:
 file.h:
 
 ssh.h:
+
+/usr/include/libssh2.h:
+
+/usr/include/libssh2_sftp.h:
+
+/usr/include/libssh2.h:
 
 http.h:
 

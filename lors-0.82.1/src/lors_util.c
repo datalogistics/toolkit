@@ -27,6 +27,11 @@ extern ulong_t g_lm_id;
 int g_db_level = 0;
 int g_lors_demo = 0;
 
+struct MemoryStruct {
+    char *memory;
+    size_t size;
+};
+
 LorsMapping *_lorsAllocMapping ( void )
 {
     LorsMapping *lm = NULL;
@@ -862,3 +867,70 @@ IBP_depot lors_strtodepot(char *hostname)
     return ibpdepot;
 }
 
+/**
+ * SOURCE : curl examples
+ */
+
+static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
+{
+    size_t realsize = size * nmemb;
+    struct MemoryStruct *mem = (struct MemoryStruct *)userp;
+
+    mem->memory = realloc(mem->memory, mem->size + realsize + 1);
+    if(mem->memory == NULL) {
+        /* out of memory! */
+        printf("not enough memory (realloc returned NULL)\n");
+        return 0;
+    }
+
+    memcpy(&(mem->memory[mem->size]), contents, realsize);
+    mem->size += realsize;
+    mem->memory[mem->size] = 0;
+
+    return realsize;
+}
+
+int curl_get_json_string(char *url, char **buf, int *size){
+	
+	CURL                *curl_handle;
+	struct               MemoryStruct chunk;
+	struct curl_slist   *headers = NULL;
+	int                  res;
+	
+	
+	printf("getting json\n");
+	chunk.memory = malloc(1); 
+	chunk.size = 0;   
+	
+	curl_global_init(CURL_GLOBAL_ALL);
+	curl_handle = curl_easy_init();
+	curl_easy_setopt(curl_handle, CURLOPT_URL,url);
+	curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+	curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);
+	curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+	headers = curl_slist_append(headers, "Accept: application/json,application/perfsonar+json");
+	curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, headers);
+	
+	res = curl_easy_perform(curl_handle);
+	if(res != CURLE_OK) {
+		fprintf(stderr, "curl_easy_perform() failed: %s\n",	curl_easy_strerror(res));
+		return LORS_FAILURE;
+	}
+	else {
+		*size = chunk.size;
+		*buf = (char *)malloc(chunk.size * sizeof(char));
+		strncpy(*buf, chunk.memory, *size);
+	}
+	
+	/* cleanup curl stuff */
+	curl_easy_cleanup(curl_handle);
+	
+	if(chunk.memory)
+		free(chunk.memory);
+	
+	/* we're done with libcurl, so clean it up */
+	curl_global_cleanup();
+	
+	return LORS_SUCCESS;
+
+}

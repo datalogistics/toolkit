@@ -87,9 +87,10 @@ libcurl_la-smtp.lo: smtp.c curl_setup.h curl_config.h \
  /usr/include/zlib.h /usr/include/zconf.h http_chunks.h hostip.h hash.h \
  llist.h curl_addrinfo.h asyn.h /usr/include/setjmp.h \
  /usr/include/x86_64-linux-gnu/bits/setjmp.h splay.h imap.h pingpong.h \
- pop3.h smtp.h ftp.h file.h ssh.h http.h rtsp.h smb.h wildcard.h \
- multihandle.h sendf.h progress.h transfer.h escape.h socks.h strtoofft.h \
- strequal.h vtls/vtls.h ../lib/curl_setup.h vtls/openssl.h \
+ pop3.h smtp.h ftp.h file.h ssh.h /usr/include/libssh2.h \
+ /usr/include/libssh2_sftp.h /usr/include/libssh2.h http.h rtsp.h smb.h \
+ wildcard.h multihandle.h sendf.h progress.h transfer.h escape.h socks.h \
+ strtoofft.h strequal.h vtls/vtls.h ../lib/curl_setup.h vtls/openssl.h \
  ../lib/urldata.h vtls/gtls.h vtls/nssg.h vtls/gskit.h vtls/polarssl.h \
  vtls/axtls.h vtls/cyassl.h vtls/curl_schannel.h vtls/curl_darwinssl.h \
  connect.h nonblock.h sockaddr.h strerror.h select.h \
@@ -411,6 +412,12 @@ ftp.h:
 file.h:
 
 ssh.h:
+
+/usr/include/libssh2.h:
+
+/usr/include/libssh2_sftp.h:
+
+/usr/include/libssh2.h:
 
 http.h:
 

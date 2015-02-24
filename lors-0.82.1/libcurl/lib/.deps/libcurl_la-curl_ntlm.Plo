@@ -85,10 +85,11 @@ libcurl_la-curl_ntlm.lo: curl_ntlm.c curl_setup.h curl_config.h \
  curl_addrinfo.h /usr/include/netdb.h /usr/include/rpc/netdb.h \
  /usr/include/x86_64-linux-gnu/bits/netdb.h /usr/include/arpa/inet.h \
  asyn.h /usr/include/setjmp.h /usr/include/x86_64-linux-gnu/bits/setjmp.h \
- splay.h imap.h pingpong.h pop3.h smtp.h ftp.h file.h ssh.h http.h rtsp.h \
- smb.h wildcard.h multihandle.h sendf.h rawstr.h curl_ntlm.h \
- curl_ntlm_msgs.h curl_ntlm_wb.h curl_sasl.h url.h curl_memory.h \
- ../include/curl/mprintf.h memdebug.h
+ splay.h imap.h pingpong.h pop3.h smtp.h ftp.h file.h ssh.h \
+ /usr/include/libssh2.h /usr/include/libssh2_sftp.h \
+ /usr/include/libssh2.h http.h rtsp.h smb.h wildcard.h multihandle.h \
+ sendf.h rawstr.h curl_ntlm.h curl_ntlm_msgs.h curl_ntlm_wb.h curl_sasl.h \
+ url.h curl_memory.h ../include/curl/mprintf.h memdebug.h
 
 curl_setup.h:
 
@@ -403,6 +404,12 @@ ftp.h:
 file.h:
 
 ssh.h:
+
+/usr/include/libssh2.h:
+
+/usr/include/libssh2_sftp.h:
+
+/usr/include/libssh2.h:
 
 http.h:
 

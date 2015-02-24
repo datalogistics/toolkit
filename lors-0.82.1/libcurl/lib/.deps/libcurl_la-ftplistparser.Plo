@@ -86,10 +86,11 @@ libcurl_la-ftplistparser.lo: ftplistparser.c curl_setup.h curl_config.h \
  curl_addrinfo.h /usr/include/netdb.h /usr/include/rpc/netdb.h \
  /usr/include/x86_64-linux-gnu/bits/netdb.h /usr/include/arpa/inet.h \
  asyn.h /usr/include/setjmp.h /usr/include/x86_64-linux-gnu/bits/setjmp.h \
- splay.h imap.h pingpong.h pop3.h smtp.h ftp.h file.h ssh.h http.h rtsp.h \
- smb.h wildcard.h multihandle.h fileinfo.h strtoofft.h rawstr.h \
- ftplistparser.h curl_fnmatch.h ../include/curl/mprintf.h curl_memory.h \
- memdebug.h
+ splay.h imap.h pingpong.h pop3.h smtp.h ftp.h file.h ssh.h \
+ /usr/include/libssh2.h /usr/include/libssh2_sftp.h \
+ /usr/include/libssh2.h http.h rtsp.h smb.h wildcard.h multihandle.h \
+ fileinfo.h strtoofft.h rawstr.h ftplistparser.h curl_fnmatch.h \
+ ../include/curl/mprintf.h curl_memory.h memdebug.h
 
 curl_setup.h:
 
@@ -404,6 +405,12 @@ ftp.h:
 file.h:
 
 ssh.h:
+
+/usr/include/libssh2.h:
+
+/usr/include/libssh2_sftp.h:
+
+/usr/include/libssh2.h:
 
 http.h:
 

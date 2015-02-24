@@ -37,4 +37,4 @@ AM_CPPFLAGS = -I@GCC_INC_DIR@ -I../include -I$(XNDXMLINC) -I$(XNDINC) -I$(LBNINC
 ldadd = $(XNDLIB) $(LBNLIB) $(FDRLIB) $(IBPLIB) -L@XNDXMLDIR@/lib @LIBS@ $(ZLIB_LIB) $(POPT_LIB) -lpthread  $(CURL_LIB) 
 #$(E2ELIB)
 
-liblors_a_SOURCES = lors_exnode.c lors_serialize.c lors_metadata.c lors_depotpool.c lors_util.c lors_job.c lors_set_copy.c lors_set_load.c lors_set_merge.c lors_set_misc.c lors_set_query.c lors_set_refresh.c lors_set_stat.c lors_set_store.c lors_set_trim.c lors_set_alloc.c lors_resolution.c curl_context.c th-lock.c
+liblors_a_SOURCES = lors_exnode.c lors_serialize.c lors_metadata.c lors_depotpool.c lors_util.c lors_job.c lors_set_copy.c lors_set_load.c lors_set_merge.c lors_set_misc.c lors_set_query.c lors_set_refresh.c lors_set_stat.c lors_set_store.c lors_set_trim.c lors_set_alloc.c lors_resolution.c

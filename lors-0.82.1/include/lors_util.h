@@ -10,6 +10,8 @@
 #include <ibp.h>
 #include <lors_resolution.h>
 #include "lors_job.h"
+#include <curl/curl.h>
+#include <string.h>
 
 #define D_LORS_NONE    0x0000
 #define D_LORS_TERSE   0x0001
@@ -89,6 +91,8 @@ int _lorsCreateDepotList( IBP_depot *dp_list, int max_depots, JRB jrb_tree,get_I
 int strtotimeout(char *str, time_t *ret_timeout);
 int _lorsCalcTimeout(longlong length);
 IBP_depot lors_strtodepot(char *hostname);
+int curl_get_json_string(char *url, char **buf, int *size);
+
 #ifdef __GNU__ 
 #define LOCATION() set_location(__FILE__, __FUNCTION__, __LINE__, pthread_self())
 #else 

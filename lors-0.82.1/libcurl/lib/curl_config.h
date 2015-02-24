@@ -32,10 +32,10 @@
 /* #undef CURL_DISABLE_IMAP */
 
 /* to disable LDAP */
-#define CURL_DISABLE_LDAP 1
+/* #undef CURL_DISABLE_LDAP */
 
 /* to disable LDAPS */
-#define CURL_DISABLE_LDAPS 1
+/* #undef CURL_DISABLE_LDAPS */
 
 /* to disable --libcurl C code generation option */
 /* #undef CURL_DISABLE_LIBCURL_OPTION */
@@ -299,13 +299,13 @@
 /* #undef HAVE_GSSMIT */
 
 /* Define to 1 if you have the `idna_strerror' function. */
-/* #undef HAVE_IDNA_STRERROR */
+#define HAVE_IDNA_STRERROR 1
 
 /* Define to 1 if you have the `idn_free' function. */
-/* #undef HAVE_IDN_FREE */
+#define HAVE_IDN_FREE 1
 
 /* Define to 1 if you have the <idn-free.h> header file. */
-/* #undef HAVE_IDN_FREE_H */
+#define HAVE_IDN_FREE_H 1
 
 /* Define to 1 if you have the <ifaddrs.h> header file. */
 #define HAVE_IFADDRS_H 1
@@ -360,16 +360,16 @@
 /* #undef HAVE_IO_H */
 
 /* Define to 1 if you have the lber.h header file. */
-/* #undef HAVE_LBER_H */
+#define HAVE_LBER_H 1
 
 /* Define to 1 if you have the ldapssl.h header file. */
 /* #undef HAVE_LDAPSSL_H */
 
 /* Define to 1 if you have the ldap.h header file. */
-/* #undef HAVE_LDAP_H */
+#define HAVE_LDAP_H 1
 
 /* Define to 1 if you have the `ldap_init_fd' function. */
-/* #undef HAVE_LDAP_INIT_FD */
+#define HAVE_LDAP_INIT_FD 1
 
 /* Use LDAPS implementation */
 #define HAVE_LDAP_SSL 1
@@ -378,25 +378,25 @@
 /* #undef HAVE_LDAP_SSL_H */
 
 /* Define to 1 if you have the `ldap_url_parse' function. */
-/* #undef HAVE_LDAP_URL_PARSE */
+#define HAVE_LDAP_URL_PARSE 1
 
 /* Define to 1 if you have the <libgen.h> header file. */
 #define HAVE_LIBGEN_H 1
 
 /* Define to 1 if you have the `idn' library (-lidn). */
-/* #undef HAVE_LIBIDN */
+#define HAVE_LIBIDN 1
 
 /* Define to 1 if you have the `resolve' library (-lresolve). */
 /* #undef HAVE_LIBRESOLVE */
 
 /* Define to 1 if you have the <librtmp/rtmp.h> header file. */
-/* #undef HAVE_LIBRTMP_RTMP_H */
+#define HAVE_LIBRTMP_RTMP_H 1
 
 /* Define to 1 if you have the `ssh2' library (-lssh2). */
-/* #undef HAVE_LIBSSH2 */
+#define HAVE_LIBSSH2 1
 
 /* Define to 1 if you have the <libssh2.h> header file. */
-/* #undef HAVE_LIBSSH2_H */
+#define HAVE_LIBSSH2_H 1
 
 /* Define to 1 if you have the `ssl' library (-lssl). */
 #define HAVE_LIBSSL 1
@@ -709,10 +709,10 @@
 #define HAVE_TIME_H 1
 
 /* Define to 1 if you have the <tld.h> header file. */
-/* #undef HAVE_TLD_H */
+#define HAVE_TLD_H 1
 
 /* Define to 1 if you have the `tld_strerror' function. */
-/* #undef HAVE_TLD_STRERROR */
+#define HAVE_TLD_STRERROR 1
 
 /* Define to 1 if you have the `uname' function. */
 #define HAVE_UNAME 1
@@ -917,10 +917,10 @@
 /* #undef USE_GNUTLS_NETTLE */
 
 /* if librtmp is in use */
-/* #undef USE_LIBRTMP */
+#define USE_LIBRTMP 1
 
 /* if libSSH2 is in use */
-/* #undef USE_LIBSSH2 */
+#define USE_LIBSSH2 1
 
 /* If you want to build curl with the built-in manual */
 #define USE_MANUAL 1
@@ -935,7 +935,7 @@
 /* #undef USE_NSS */
 
 /* Use OpenLDAP-specific code */
-/* #undef USE_OPENLDAP */
+#define USE_OPENLDAP 1
 
 /* if OpenSSL is in use */
 #define USE_OPENSSL 1

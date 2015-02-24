@@ -91,11 +91,12 @@ vtls/libcurl_la-openssl.lo: vtls/openssl.c ../lib/curl_setup.h \
  ../lib/asyn.h /usr/include/setjmp.h \
  /usr/include/x86_64-linux-gnu/bits/setjmp.h ../lib/splay.h ../lib/imap.h \
  ../lib/pingpong.h ../lib/pop3.h ../lib/smtp.h ../lib/ftp.h ../lib/file.h \
- ../lib/ssh.h ../lib/http.h ../lib/rtsp.h ../lib/smb.h ../lib/wildcard.h \
- ../lib/multihandle.h ../lib/sendf.h ../lib/formdata.h ../lib/url.h \
- ../lib/inet_pton.h vtls/openssl.h ../lib/connect.h ../lib/nonblock.h \
- ../lib/sockaddr.h ../lib/slist.h ../lib/strequal.h ../lib/select.h \
- /usr/include/x86_64-linux-gnu/sys/poll.h \
+ ../lib/ssh.h /usr/include/libssh2.h /usr/include/libssh2_sftp.h \
+ /usr/include/libssh2.h ../lib/http.h ../lib/rtsp.h ../lib/smb.h \
+ ../lib/wildcard.h ../lib/multihandle.h ../lib/sendf.h ../lib/formdata.h \
+ ../lib/url.h ../lib/inet_pton.h vtls/openssl.h ../lib/connect.h \
+ ../lib/nonblock.h ../lib/sockaddr.h ../lib/slist.h ../lib/strequal.h \
+ ../lib/select.h /usr/include/x86_64-linux-gnu/sys/poll.h \
  /usr/include/x86_64-linux-gnu/bits/poll.h vtls/vtls.h vtls/gtls.h \
  vtls/nssg.h vtls/gskit.h vtls/polarssl.h vtls/axtls.h vtls/cyassl.h \
  vtls/curl_schannel.h vtls/curl_darwinssl.h ../lib/rawstr.h \
@@ -419,6 +420,12 @@ vtls/libcurl_la-openssl.lo: vtls/openssl.c ../lib/curl_setup.h \
 ../lib/file.h:
 
 ../lib/ssh.h:
+
+/usr/include/libssh2.h:
+
+/usr/include/libssh2_sftp.h:
+
+/usr/include/libssh2.h:
 
 ../lib/http.h:
 

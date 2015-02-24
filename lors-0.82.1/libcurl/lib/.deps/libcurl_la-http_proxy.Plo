@@ -85,8 +85,10 @@ libcurl_la-http_proxy.lo: http_proxy.c curl_setup.h curl_config.h \
  curl_addrinfo.h /usr/include/netdb.h /usr/include/rpc/netdb.h \
  /usr/include/x86_64-linux-gnu/bits/netdb.h /usr/include/arpa/inet.h \
  asyn.h /usr/include/setjmp.h /usr/include/x86_64-linux-gnu/bits/setjmp.h \
- splay.h imap.h pingpong.h pop3.h smtp.h ftp.h file.h ssh.h http.h rtsp.h \
- smb.h wildcard.h multihandle.h http_proxy.h sendf.h url.h select.h \
+ splay.h imap.h pingpong.h pop3.h smtp.h ftp.h file.h ssh.h \
+ /usr/include/libssh2.h /usr/include/libssh2_sftp.h \
+ /usr/include/libssh2.h http.h rtsp.h smb.h wildcard.h multihandle.h \
+ http_proxy.h sendf.h url.h select.h \
  /usr/include/x86_64-linux-gnu/sys/poll.h \
  /usr/include/x86_64-linux-gnu/bits/poll.h rawstr.h progress.h \
  non-ascii.h connect.h nonblock.h sockaddr.h ../include/curl/mprintf.h \
@@ -405,6 +407,12 @@ ftp.h:
 file.h:
 
 ssh.h:
+
+/usr/include/libssh2.h:
+
+/usr/include/libssh2_sftp.h:
+
+/usr/include/libssh2.h:
 
 http.h:
 
