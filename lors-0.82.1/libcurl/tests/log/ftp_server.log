@@ -1,0 +1,12 @@
+14:22:42.613068 ====> Client connect
+14:22:42.613162 FTPD: Getting commands from log/ftpserver.cmd
+14:22:42.613206 FTPD: delay reply for CWD with 60 seconds
+14:22:42.613260 > "220-        _   _ ____  _     [CR][LF]220-    ___| | | |  _ \| |    [CR][LF]220-   / __| | | | |_) | |    [CR][LF]220-  | (__| |_| |  _ {| |___ [CR][LF]220    \___|\___/|_| \_\_____|[CR][LF]"
+14:22:42.613918 < "USER anonymous"
+14:22:42.613961 > "331 We are happy you popped in![CR][LF]"
+14:22:42.614196 < "PASS ftp@example.com"
+14:22:42.614232 > "230 Welcome you silly person[CR][LF]"
+14:22:42.614460 < "PWD"
+14:22:42.614500 > "257 "/" is current directory[CR][LF]"
+14:22:42.614836 < "CWD path"
+14:22:42.614872 Sleep for 60 seconds
