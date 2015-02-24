@@ -21,6 +21,9 @@ XNDLIB = @LORS_LIBXND_DIR@/lib/libexnode.a
 XML2_INC = @LORS_XML2_DIR@/include/libxml2
 XML2_LIB = @LORS_XML2_DIR@/lib
 
+JANSSON_INC = @LORS_JANSSON_DIR@/include
+JANSSON_LIB = @LORS_JANSSON_DIR@/lib/ -ljansson
+
 POPT_INC=@LORS_POPT_DIR@/include
 POPT_LIB=-L@LORS_POPT_DIR@/lib -lpopt
 
@@ -32,10 +35,10 @@ E2ELIB = @E2EDIR@/libend2end.a $(E2EDIR)/md5/libmd5.a $(E2EDIR)/des/libdes.a $(E
 
 LORSLIB = ../src/liblors.a
 
-AM_CPPFLAGS = -I../include -I$(XML2_INC) -I$(XNDINC) -I$(LBNINC) -I$(IBPINC) -I$(E2EINC) -I$(POPT_INC) -I$(ZLIB_INC)  
+AM_CPPFLAGS = -I../include -I$(XML2_INC) -I$(XNDINC) -I$(LBNINC) -I$(IBPINC) -I$(E2EINC) -I$(POPT_INC) -I$(ZLIB_INC)  -I$(JANSSON_INC)
 
 AM_CFLAGS=  -g -D@OSDEF@ @EXTRA_CFLAGS@
-LDADD = $(LORSLIB) $(XNDLIB) $(LBNLIB) $(FDRLIB) $(IBPLIB) -L$(XML2_LIB) $(POPT_LIB) -lpthread -lxml2 $(E2ELIB) $(ZLIB_LIB) @LIBS@  
+LDADD = $(LORSLIB) $(XNDLIB) $(LBNLIB) $(FDRLIB) $(IBPLIB) -L$(XML2_LIB) $(POPT_LIB) -lpthread -lxml2 $(E2ELIB) $(ZLIB_LIB) -L$(JANSSON_LIB) @LIBS@  
 
 lors_upload_SOURCES = lors_upload.c lors_file.c lors_libe2e.c parse_xndrc.c
 lors_upload_LDADD = -lpopt $(LDADD)

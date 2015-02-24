@@ -92,7 +92,8 @@ int    lorsDeserialize (LorsExnode ** exnode,
 
     char        *buf;
 
-    eret = exnodeDeserialize(buffer, length, &e);
+    eret = uefDeserialize(buffer, length, &e);
+    //eret = exnodeDeserialize(buffer, length, &e);
     if ( eret != EXNODE_SUCCESS )
     {
         return LORS_FAILURE;

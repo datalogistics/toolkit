@@ -110,7 +110,7 @@ CFLAGS = -g -O2
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
-DEFS = -DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -DPACKAGE_STRING=\"\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DPACKAGE=\"libexnode\" -DVERSION=\"0.6.5\" -DSTDC_HEADERS=1 -DHAVE_STRDUP=1 -DHAVE_STRTOD=1 -DHAVE_STRTOUL=1
+DEFS = -DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -DPACKAGE_STRING=\"\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DPACKAGE=\"libexnode\" -DVERSION=\"0.6.5\" -DHAVE_LIBXML2=1 -DSTDC_HEADERS=1 -DHAVE_STRDUP=1 -DHAVE_STRTOD=1 -DHAVE_STRTOUL=1
 DEPDIR = .deps
 ECHO_C = 
 ECHO_N = -n
@@ -131,7 +131,7 @@ JANSSONINC = -I$(JANSSONDIR)/include
 JANSSONLIB = -L$(JANSSONDIR)/lib -ljansson
 LDFLAGS = 
 LIBOBJS = 
-LIBS = 
+LIBS = -lxml2 
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/vagrant/toolkit/lors-0.82.1/libexnode/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
@@ -149,7 +149,7 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = 
 VERSION = 0.6.5
-XMLDIR = /home/vagrant/usr
+XMLDIR = /usr
 XMLINC = -I$(XMLDIR)/include/libxml2
 XMLLIB = -L$(XMLDIR)/lib -lm -lz
 abs_builddir = /home/vagrant/toolkit/lors-0.82.1/libexnode/include
