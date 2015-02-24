@@ -29,6 +29,7 @@ if test "${BUILD_ZLIB}" = yes; then
     fi
     cd @PREFIX@
 fi
+
 BUILD_XML2=@LORS_BUILD_XML2@
 if test "${BUILD_XML2}" = yes; then
     echo "Building libxml2 package..."
@@ -47,10 +48,20 @@ if test "${BUILD_XML2}" = yes; then
     fi
     cd @PREFIX@
 fi
+
 BUILD_JANSSON=@LORS_BUILD_JANSSON@
 if test "${BUILD_JANSSON}" = yes; then
     echo "Building libjansson package..."
     cd @LORS_JANSSON_SRC_DIR@
+    ./configure --prefix=@prefix@
+    make install
+    cd @PREFIX@
+fi
+
+BUILD_LIBCURL=@LORS_BUILD_LIBCURL@
+if test "${BUILD_LIBCURL}" = yes; then
+    echo "Building libjansson package..."
+    cd @LORS_LIBCURL_SRC_DIR@
     ./configure --prefix=@prefix@
     make install
     cd @PREFIX@

@@ -171,7 +171,7 @@ AC_SUBST(LORS_XML2_DIR)
 AC_SUBST(LORS_XML2_SRC_DIR)
 
 dnl check and setup path of libjansson package 
-AC_ARG_WITH(libjansson,[--with-libjansson=path         path to libjansson[default=/usr]],
+AC_ARG_WITH(libjansson,[--with-libjansson=path         path to libjansson[default=/usr/local]],
             LORS_JANSSON_DIR="$with_libjansson",
             LORS_JANSSON_DIR="/usr/local")
 AC_FIND_FILE("${LORS_JANSSON_DIR}/include/jansson.h",
@@ -184,6 +184,22 @@ AC_FIND_FILE("${LORS_JANSSON_DIR}/include/jansson.h",
 AC_SUBST(LORS_BUILD_JANSSON)
 AC_SUBST(LORS_JANSSON_DIR)
 AC_SUBST(LORS_JANSSON_SRC_DIR)
+
+
+dnl check and setup path of libcurl package 
+AC_ARG_WITH(libcurl,[--with-libcurl=path         path to libcurl[default=/usr/local]],
+            LORS_LIBCURL_DIR="$with_libcurl",
+            LORS_LIBCURL_DIR="/usr/local")
+AC_FIND_FILE("${LORS_LIBCURL_DIR}/include/curl/curl.h",
+            LORS_BUILD_LIBCURL="no",
+            AC_FIND_FILE("${PREFIX}/libcurl/include/curl/curl.h",
+                          LORS_BUILD_LIBCURL="yes"
+                          LORS_LIBCURL_SRC_DIR="${PREFIX}/libcurl"
+                          LORS_LIBCURL_DIR="${INS_DIR}",
+                          AC_MSG_ERROR("Can not find libcurl package")))
+AC_SUBST(LORS_BUILD_LIBCURL)
+AC_SUBST(LORS_LIBCURL_DIR)
+AC_SUBST(LORS_LIBCURL_SRC_DIR)
 
 
 dnl check and setup path of lbone package

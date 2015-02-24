@@ -755,7 +755,8 @@ static int _lorsInitFileJobQueue( _LorsFileJobQueue **file_job_queue,
     return (LORS_SUCCESS);
 };
 
-int lorsDownloadFile(char       *exnode_filename, 
+
+int lorsDownloadFile(char       *exnode_uri, 
                      char       *filename, 
                      longlong   offset,
                      longlong   mlength,
@@ -810,12 +811,17 @@ int lorsDownloadFile(char       *exnode_filename,
 #endif
     
     /* added for ls/download combo - may be removed. 11/11/02*/
-    /*lorsListFile(exnode_filename, nthreads, timeout, opts);*/
+    /*lorsListFile(exnode_uri, nthreads, timeout, opts);*/
 
-    lret = lorsFileDeserialize(&exnode, exnode_filename, 0);
+	if(strstr(exnode_uri, "http://")){
+		lret = lorsUrleDeserialize(&exnode, exnode_uri, 0);
+	}else{
+		lret = lorsFileDeserialize(&exnode, exnode_uri, 0);
+	}
+
     if ( lret != LORS_SUCCESS ) 
     {
-        fprintf(stderr, "deserialize failed! : %s\n", exnode_filename);
+        fprintf(stderr, "deserialize failed! : %s\n", exnode_uri);
         exit(EXIT_FAILURE);
     }
     if ( filename == NULL )

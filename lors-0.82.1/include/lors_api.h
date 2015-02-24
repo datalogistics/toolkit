@@ -636,6 +636,23 @@ int    lorsDeserialize (LorsExnode ** exnode,
                         int  length,
                         char *schema);
 /**
+ * This method will get JSON data in UEF format from URL and deserialize it using
+ * @cu efDeserializer().
+ *
+ * @brief  Deserialize JSON data from URL.
+ * @param   exnode  A pointer to a pointer, in which the new structure is returned.
+ * @param   url     URL to prob.
+ * @param   schema  An optional Schema file for DTD or Schema Validation. (unsupported)
+ * @ingroup lors_api_exnode
+ * @return                     There are various error conditions. See list of
+ *                          all possible errors @ref lors_api_errors.
+ *
+ */
+int    lorsUrleDeserialize (LorsExnode ** exnode,
+                            char *url,
+                            char *schema);
+
+/**
  * After a @c lorsFileSerialize() call, you will ahve an XML  file
  * representative of the Exnode data structure.  To recover the data structure
  * from the XML serialization, you must deserialize it.

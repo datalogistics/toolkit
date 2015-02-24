@@ -13,6 +13,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <curl_context.h>
 
 ulong_t g_lm_id = 0;
 
@@ -158,6 +159,49 @@ int    lorsDeserialize (LorsExnode ** exnode,
 
     return LORS_SUCCESS;
 }
+
+int    lorsUrleDeserialize (LorsExnode ** exnode,
+                            char *url,
+                            char *schema)
+{
+	int            ret;
+	char          *buf;
+	char          *filetype;
+	int            size;
+	curl_response *response;
+    curl_context   context;
+
+	if (init_curl(&context, 0) != 0) {
+		fprintf(stderr, "Could not start CURL context\n");
+		return LORS_FAILURE;
+    }
+    
+	curl_get_json_string(&context,
+						 url,
+						 &response);
+
+    if (response && (response->status != 200)) {
+		fprintf(stderr, "Error querying UNIS: %lu: %s", response->status, response->data);
+	}
+
+    if ( response && response->data) {
+		size = strlen(response->data);
+		buf = (char *)malloc( size * sizeof(char));
+		strncpy(buf, response->data, size);
+  		free_curl_response(response);
+    }else{
+		fprintf(stderr, "Error while extracting JSON from URL : %s  \n", url);
+		return LORS_FAILURE;
+	}
+	
+	filetype = "uef";
+	ret =  lorsDeserialize(exnode, buf, size, filetype);
+
+	free(buf);
+
+	return LORS_SUCCESS;
+}
+
 
 int    lorsFileDeserialize (LorsExnode ** exnode,
                             char *filename,
