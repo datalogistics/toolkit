@@ -1,4 +1,4 @@
-prefix=/home/adorwat/usr
+prefix=/home/vagrant/usr
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include

@@ -167,7 +167,7 @@ int    lorsUrleDeserialize (LorsExnode ** exnode,
     int            ret;
     char          *buf;
     char          *filetype;
-    int            size;
+    longlong       size;
     
     ret = curl_get_json_string( url, &buf, &size);
     

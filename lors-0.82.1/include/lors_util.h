@@ -91,7 +91,7 @@ int _lorsCreateDepotList( IBP_depot *dp_list, int max_depots, JRB jrb_tree,get_I
 int strtotimeout(char *str, time_t *ret_timeout);
 int _lorsCalcTimeout(longlong length);
 IBP_depot lors_strtodepot(char *hostname);
-int curl_get_json_string(char *url, char **buf, int *size);
+int curl_get_json_string(char *url, char **buf, longlong *size);
 
 #ifdef __GNU__ 
 #define LOCATION() set_location(__FILE__, __FUNCTION__, __LINE__, pthread_self())

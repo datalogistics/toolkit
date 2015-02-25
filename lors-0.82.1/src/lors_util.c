@@ -890,7 +890,8 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
     return realsize;
 }
 
-int curl_get_json_string(char *url, char **buf, int *size){
+
+int curl_get_json_string(char *url, char **buf, longlong *size){
 	
 	CURL                *curl_handle;
 	struct               MemoryStruct chunk;
@@ -917,7 +918,7 @@ int curl_get_json_string(char *url, char **buf, int *size){
 		return LORS_FAILURE;
 	}
 	else {
-		*size = chunk.size;
+		*size = (longlong)chunk.size;
 		*buf = (char *)malloc(chunk.size * sizeof(char));
 		strncpy(*buf, chunk.memory, *size);
 	}
