@@ -670,6 +670,12 @@ int    lorsFileDeserialize (LorsExnode ** exnode,
                             char *filename,
                             char *schema);
 
+
+int lorsUefSerialize(LorsExnode * exnode,
+					 char       *filename,
+					 time_t     duration,
+					 longlong   size );
+
 /**
  * To preserve the structure of the Exnode across invocations of an
  * application, the @c lorsSerialize() call translates the Exnode structure

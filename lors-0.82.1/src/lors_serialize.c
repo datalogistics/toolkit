@@ -389,3 +389,97 @@ int    lorsFileSerialize (LorsExnode * exnode,
     return LORS_SUCCESS;
 }
 
+
+int lorsUefSerialize(LorsExnode * exnode,
+					 char       *filename,
+					 time_t     duration,
+					 longlong   size
+)
+{
+	char           *buf;
+    int             len;
+    int             ret;
+    JRB             tree, node;
+    LorsMapping    *lm;
+    ExnodeMapping  *em;
+    ExnodeMetadata *ed;
+    ExnodeValue     val;
+    ExnodeType      type;
+	int             fd = 0;
+
+	if ( exnode->exnode != NULL ) {
+        fprintf(stderr,"serialize: not null\n");
+    }
+
+    exnodeCreateExnode(&(exnode->exnode));
+
+    jrb_traverse(node, exnode->mapping_map)
+    {
+        lm = node->val.v;
+        lorsSerializeMapping(lm, &em);
+
+        /*fprintf(stderr, "\tAppending Mapping:0x%x\n", em);*/
+        exnodeAppendMapping(exnode->exnode, em);
+    }
+
+
+    exnodeGetExnodeMetadata(exnode->exnode, &ed);
+
+    lorsGetLibraryVersion(NULL, &val.d);
+    if ( exnodeGetMetadataValue(ed, "lorsversion", &val, &type) != EXNODE_SUCCESS )
+    {
+#ifdef _MINGW
+        exnodeSetMetadataValue(ed, "lorsversion", val, DOUBLET, TRUE);
+#else
+        exnodeSetMetadataValue(ed, "lorsversion", val, DOUBLE, TRUE);
+#endif
+    }
+
+    if ( exnode->md != NULL )
+    {
+        lorsMetadataMerge(exnode->md, ed);
+    }
+
+	ret = uefSerialize(exnode->exnode, &buf,  &len, size, duration);
+    if ( ret != EXNODE_SUCCESS )
+    {
+        return LORS_FAILURE;
+    }
+	
+	if ( filename == NULL ) 
+    {
+        fd = 1;
+    } else  
+    {
+#ifdef _MINGW
+        fd = open(filename,  O_WRONLY|O_TRUNC|O_CREAT|O_BINARY, 0666);
+#else
+        fd = open(filename,  O_WRONLY|O_TRUNC|O_CREAT, 0666);
+#endif
+        if ( fd == -1 )
+        {
+            fprintf(stderr, "filename: %s : %d\n", filename, strlen(filename));
+			exnodeDestroyExnode(exnode->exnode);
+			perror("open filename failed");
+            return LORS_SYS_FAILED;
+        }
+    }
+	
+	ret = write(fd, buf, len);
+	if ( ret != len )
+    {
+        perror("write to file failed");
+        free(buf);
+        if ( fd > 1 ) close(fd);
+		exnodeDestroyExnode(exnode->exnode);
+        return LORS_SYS_FAILED;
+    }
+    free(buf);
+    if ( fd > 1 ) close(fd);
+
+    /*fprintf(stderr, "DESTROYING THE EXNODE IN SERIALIZE ______\n");*/
+    exnodeDestroyExnode(exnode->exnode);
+    exnode->exnode = NULL;
+    return LORS_SUCCESS;
+
+}
