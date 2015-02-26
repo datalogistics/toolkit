@@ -65,7 +65,9 @@ int main (int argc, char **argv)
   { "stdin",   'i', POPT_ARG_NONE,   0,                  READ_STDIN, 
         "Read from standard input rather than a specified filename.", NULL },
   { "outputfile", 'o', POPT_ARG_STRING, &output_filename,   OUTPUTNAME, 
-        "Specify a specific name for the output exNode file.", NULL},
+	"Specify a specific name for the output exNode file. "
+	"Default output format is Exnode but If file extension is \".uef\" "
+	"then output file format will be Unis Exnode Format (.uef) ", NULL},
   { "version",    'v', POPT_ARG_NONE,   0,                  LORS_VERSION, 
         "Display Version information about this package.", NULL},
   { "verbose",    'V', POPT_ARG_INT,    &xndrc.verbose,        VERBOSE, 
@@ -73,8 +75,8 @@ int main (int argc, char **argv)
   { "lbone-host", 'H', POPT_ARG_STRING, &lbonehost,         LBONESERVER, 
         "Specify an L-Bone Server for resource discover and proxmity resolution.", NULL},
   { "lbone-port", 'P', POPT_ARG_INT,    &lbone_server.port, LBONEPORT, 
-        "Specify the port number when using an L-Bone Server on a non standard port.", 
-        "6767"},
+	"Specify the port number when using an L-Bone Server on a non standard port.", 
+	"6767"},
   { "location",   'l', POPT_ARG_STRING, &xndrc.location,          LOCATION_HINT, 
         "Specify a location hint to pass the L-Bone Query.", "\"state= TN\""},
   { "duration",   'd', POPT_ARG_STRING,     &s_duration,          DURATION, 

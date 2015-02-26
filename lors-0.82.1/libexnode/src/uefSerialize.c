@@ -133,7 +133,6 @@ int uefSerialize(Exnode *exnode, char **buf, int *len, size_t file_size, time_t 
 	if(md!=NULL) {
 		jrb_traverse(jrbptr,md) {
 			ptr = (ExnodeMetadata *)jval_v(jrbptr->val);
-			printf("Processing Metadata (%s) \n", ptr->name);
 			if(strcmp(ptr->name, "filename") == 0) {  uefSerializeMetadata( ptr, "name", &exnode_obj); }
 		}
 	}

@@ -676,14 +676,19 @@ upload_partial:
         /*fprintf(stderr, "p4\n");*/
     if ( lc != NULL ) { free(lc); } 
 
-        /*fprintf(stderr, "p5\n");*/
+	/*fprintf(stderr, "p5\n");*/
     free(buf_array[0]);
     free(buf_array[1]);
 
     exnodeSetMetadataValue(emd, "filename", val, STRING, TRUE);
 
-        /*fprintf(stderr, "p6\n");*/
-    ret = lorsFileSerialize(xnd, output_filename, 0, 0);
+	/*fprintf(stderr, "p6\n");*/
+	if(output_filename != NULL && strstr(output_filename,".uef")){
+		ret = lorsUefSerialize(xnd, output_filename, duration, length);
+	}else{
+		ret = lorsFileSerialize(xnd, output_filename, 0, 0);
+	}
+
     if ( ret != LORS_SUCCESS )
     {
         fprintf(stderr, "Serialize Failed.\n");
