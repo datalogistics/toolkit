@@ -770,10 +770,11 @@ printDepotPool(LorsDepotPool *dpp)
  * exnode.*/
 Depot *_unique_depots(Depot *list)
 {
-    Depot   *d;
+    Depot   *d,de;
     int     count = 0, len = 0;
     JRB     unique_list, node;
-    int         i = 0;
+    int     i = 0;
+	int     flag  = 0;
 
     if ( list == NULL ) return NULL;
     unique_list = make_jrb();
@@ -782,10 +783,18 @@ Depot *_unique_depots(Depot *list)
     /*fprintf(stderr, "Unique: len: %d\n", len);*/
     for(i=0; i < len; i++)
     {
-
         /*fprintf(stderr, "list[i]->host: %s\n", list[i]->host);*/
-        node = jrb_find_str(unique_list, list[i]->host);
-        if (node == NULL)
+        //node = jrb_find_str(unique_list, list[i]->host);
+		flag = 0;
+		jrb_traverse(node, unique_list){
+			de = (Depot) node->val.v;
+			if( (strcmp(de->host, list[i]->host) == 0)  &&  (de->port == list[i]->port)){
+				flag = 1;
+				break;
+			}
+		}
+
+        if (flag == 0)
         {
             jrb_insert_str(unique_list, list[i]->host, new_jval_v(list[i]));
             count++;
