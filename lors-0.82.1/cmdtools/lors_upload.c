@@ -66,8 +66,10 @@ int main (int argc, char **argv)
         "Read from standard input rather than a specified filename.", NULL },
   { "outputfile", 'o', POPT_ARG_STRING, &output_filename,   OUTPUTNAME, 
 	"Specify a specific name for the output exNode file. "
-	"Default output format is Exnode but If file extension is \".uef\" "
-	"then output file format will be Unis Exnode Format (.uef) ", NULL},
+	"Default output format is Exnode. 1) If file extension is \".uef\" "
+	"then output file format will be Unis Exnode Format (.uef) "
+	"2) if ouputfile contain  link then exnodes will posted"
+	" to that link", NULL},
   { "version",    'v', POPT_ARG_NONE,   0,                  LORS_VERSION, 
         "Display Version information about this package.", NULL},
   { "verbose",    'V', POPT_ARG_INT,    &xndrc.verbose,        VERBOSE, 

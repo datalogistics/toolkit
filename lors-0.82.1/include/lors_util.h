@@ -92,6 +92,7 @@ int strtotimeout(char *str, time_t *ret_timeout);
 int _lorsCalcTimeout(longlong length);
 IBP_depot lors_strtodepot(char *hostname);
 int curl_get_json_string(char *url, char **buf, longlong *size);
+int curl_post_json_string(char *url, char *buf, longlong size, char **response, longlong *len);
 
 #ifdef __GNU__ 
 #define LOCATION() set_location(__FILE__, __FUNCTION__, __LINE__, pthread_self())

@@ -666,16 +666,22 @@ int    lorsUrleDeserialize (LorsExnode ** exnode,
  *                          all possible errors @ref lors_api_errors.
  *
  */
-int    lorsFileDeserialize (LorsExnode ** exnode,
-                            char *filename,
-                            char *schema);
 
-
+int lorsFileDeserialize (LorsExnode ** exnode,
+						 char *filename,
+						 char *schema);
+	
+int lorsPostUnis(LorsExnode *exnode,
+				 char       *url,
+				 time_t     duration,
+				 longlong   size );
+	
+	
 int lorsUefSerialize(LorsExnode * exnode,
 					 char       *filename,
 					 time_t     duration,
 					 longlong   size );
-
+	
 /**
  * To preserve the structure of the Exnode across invocations of an
  * application, the @c lorsSerialize() call translates the Exnode structure

@@ -685,10 +685,12 @@ upload_partial:
 	/*fprintf(stderr, "p6\n");*/
 	if(output_filename != NULL && strstr(output_filename,".uef")){
 		ret = lorsUefSerialize(xnd, output_filename, duration, length);
+	}else if(output_filename != NULL && strstr(output_filename,"http://")){
+		ret = lorsPostUnis(xnd, output_filename, duration, length);
 	}else{
 		ret = lorsFileSerialize(xnd, output_filename, 0, 0);
 	}
-
+	
     if ( ret != LORS_SUCCESS )
     {
         fprintf(stderr, "Serialize Failed.\n");

@@ -483,3 +483,81 @@ int lorsUefSerialize(LorsExnode * exnode,
     return LORS_SUCCESS;
 
 }
+
+int lorsPostUnis(LorsExnode *exnode,
+				 char       *url,
+				 time_t     duration,
+				 longlong   size
+)
+{
+	char           *buf;
+	char           *response;
+	longlong        response_len;
+    longlong        len;
+    int             ret;
+    JRB             tree, node;
+    LorsMapping    *lm;
+    ExnodeMapping  *em;
+    ExnodeMetadata *ed;
+    ExnodeValue     val;
+    ExnodeType      type;
+	int             fd = 0;
+
+	if(url == NULL){
+		fprintf(stderr, "Url not found \n");
+		return LORS_FAILURE;
+	}
+	
+	if ( exnode->exnode != NULL ) {
+        fprintf(stderr,"serialize: not null\n");
+    }
+
+    exnodeCreateExnode(&(exnode->exnode));
+
+    jrb_traverse(node, exnode->mapping_map)
+    {
+        lm = node->val.v;
+        lorsSerializeMapping(lm, &em);
+        exnodeAppendMapping(exnode->exnode, em);
+    }
+
+    exnodeGetExnodeMetadata(exnode->exnode, &ed);
+
+    lorsGetLibraryVersion(NULL, &val.d);
+    if ( exnodeGetMetadataValue(ed, "lorsversion", &val, &type) != EXNODE_SUCCESS )
+    {
+#ifdef _MINGW
+        exnodeSetMetadataValue(ed, "lorsversion", val, DOUBLET, TRUE);
+#else
+        exnodeSetMetadataValue(ed, "lorsversion", val, DOUBLE, TRUE);
+#endif
+    }
+
+    if ( exnode->md != NULL )
+    {
+        lorsMetadataMerge(exnode->md, ed);
+    }
+
+	ret = uefSerialize(exnode->exnode, &buf,  &len, size, duration);
+    if ( ret != EXNODE_SUCCESS )
+    {
+        return LORS_FAILURE;
+    }
+	
+	ret = curl_post_json_string(url, buf, len, &response, &response_len);
+	// doing clean up stuff before
+	free(buf);
+	exnodeDestroyExnode(exnode->exnode);
+    exnode->exnode = NULL;
+	
+	if ( ret != LORS_SUCCESS )
+    {
+		fprintf(stderr, "Failed to post exnode to %s \n", url);
+		return LORS_FAILURE;
+    }else{
+		fprintf(stdout, "Successfully posted exnode to %s \n", url);
+	}
+	
+    return LORS_SUCCESS;
+
+}
