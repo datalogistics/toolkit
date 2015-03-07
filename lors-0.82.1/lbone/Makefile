@@ -56,7 +56,7 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/pre-install.sh.in $(top_srcdir)/configure AUTHORS \
 	COPYING ChangeLog INSTALL NEWS config.guess config.sub depcomp \
-	install-sh missing mkinstalldirs
+	install-sh ltmain.sh missing mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -136,7 +136,7 @@ AUTOHEADER = ${SHELL} /home/vagrant/toolkit/lors-0.82.1/lbone/missing --run auto
 AUTOMAKE = ${SHELL} /home/vagrant/toolkit/lors-0.82.1/lbone/missing --run automake-1.11
 AWK = mawk
 CC = gcc
-CCDEPMODE = depmode=none
+CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2
 CGIDIR = /home/vagrant/toolkit/lors-0.82.1/lbone/ecgi
 CPP = gcc -E

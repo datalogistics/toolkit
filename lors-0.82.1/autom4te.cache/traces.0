@@ -926,10 +926,29 @@ fi])
 m4trace:configure.in:200: -1- m4_pattern_allow([^LORS_BUILD_LIBCURL$])
 m4trace:configure.in:201: -1- m4_pattern_allow([^LORS_LIBCURL_DIR$])
 m4trace:configure.in:202: -1- m4_pattern_allow([^LORS_LIBCURL_SRC_DIR$])
-m4trace:configure.in:211: -2- AC_FIND_FILE(["${PREFIX}/lbone/client/include/lbone_base.h"], [LORS_BUILD_LBONE="yes"
+m4trace:configure.in:211: -2- AC_FIND_FILE(["${PREFIX}/libcellophane/include/cellophane_io.h"], [LORS_BUILD_LIBCELLOPHANE="yes"
+                          LORS_LIBCELLOPHANE_SRC_DIR="${PREFIX}/libcellophane"
+                          LORS_LIBCELLOPHANE_DIR="${INS_DIR}"], [as_fn_error $? "\"Can not find libcellophane package\"" "$LINENO" 5])
+m4trace:configure.in:209: -1- AC_FIND_FILE(["${LORS_LIBCELLOPHANE_DIR}/include/cellophane_io.h"], [LORS_BUILD_LIBCELLOPHANE="no"], [{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for \"${PREFIX}/libcellophane/include/cellophane_io.h\"" >&5
+$as_echo_n "checking for \"${PREFIX}/libcellophane/include/cellophane_io.h\"... " >&6; }
+if test -r "${PREFIX}/libcellophane/include/cellophane_io.h"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
+$as_echo "found" >&6; }
+    LORS_BUILD_LIBCELLOPHANE="yes"
+                          LORS_LIBCELLOPHANE_SRC_DIR="${PREFIX}/libcellophane"
+                          LORS_LIBCELLOPHANE_DIR="${INS_DIR}"
+else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+    as_fn_error $? "\"Can not find libcellophane package\"" "$LINENO" 5
+fi])
+m4trace:configure.in:216: -1- m4_pattern_allow([^LORS_BUILD_LIBCELLOPHANE$])
+m4trace:configure.in:217: -1- m4_pattern_allow([^LORS_LIBCELLOPHANE_DIR$])
+m4trace:configure.in:218: -1- m4_pattern_allow([^LORS_LIBCELLOPHANE_SRC_DIR$])
+m4trace:configure.in:226: -2- AC_FIND_FILE(["${PREFIX}/lbone/client/include/lbone_base.h"], [LORS_BUILD_LBONE="yes"
                         LORS_LBONE_DIR="${INS_DIR}"
                         LORS_LBONE_SRC_DIR="${PREFIX}/lbone"], [as_fn_error $? "\"Can not find lbone package\"" "$LINENO" 5])
-m4trace:configure.in:209: -1- AC_FIND_FILE(["${LORS_LBONE_DIR}/lib/liblbone.a"], [LORS_BUILD_LBONE="no"], [{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for \"${PREFIX}/lbone/client/include/lbone_base.h\"" >&5
+m4trace:configure.in:224: -1- AC_FIND_FILE(["${LORS_LBONE_DIR}/lib/liblbone.a"], [LORS_BUILD_LBONE="no"], [{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for \"${PREFIX}/lbone/client/include/lbone_base.h\"" >&5
 $as_echo_n "checking for \"${PREFIX}/lbone/client/include/lbone_base.h\"... " >&6; }
 if test -r "${PREFIX}/lbone/client/include/lbone_base.h"; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
@@ -942,13 +961,13 @@ else
 $as_echo "no" >&6; }
     as_fn_error $? "\"Can not find lbone package\"" "$LINENO" 5
 fi])
-m4trace:configure.in:216: -1- m4_pattern_allow([^LORS_BUILD_LBONE$])
-m4trace:configure.in:217: -1- m4_pattern_allow([^LORS_LBONE_SRC_DIR$])
-m4trace:configure.in:218: -1- m4_pattern_allow([^LORS_LBONE_DIR$])
-m4trace:configure.in:227: -2- AC_FIND_FILE(["${PREFIX}/libexnode/src/exnode.c"], [LORS_BUILD_LIBXND="yes"
+m4trace:configure.in:231: -1- m4_pattern_allow([^LORS_BUILD_LBONE$])
+m4trace:configure.in:232: -1- m4_pattern_allow([^LORS_LBONE_SRC_DIR$])
+m4trace:configure.in:233: -1- m4_pattern_allow([^LORS_LBONE_DIR$])
+m4trace:configure.in:242: -2- AC_FIND_FILE(["${PREFIX}/libexnode/src/exnode.c"], [LORS_BUILD_LIBXND="yes"
                         LORS_LIBXND_DIR="${INS_DIR}"
                         LORS_LIBXND_SRC_DIR="${PREFIX}/libexnode"], [as_fn_error $? "\"Can not find libexnode package\"" "$LINENO" 5])
-m4trace:configure.in:225: -1- AC_FIND_FILE(["${LORS_LIBXND_DIR}/lib/libexnode.a"], [LORS_BUILD_LIBXND="no"], [{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for \"${PREFIX}/libexnode/src/exnode.c\"" >&5
+m4trace:configure.in:240: -1- AC_FIND_FILE(["${LORS_LIBXND_DIR}/lib/libexnode.a"], [LORS_BUILD_LIBXND="no"], [{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for \"${PREFIX}/libexnode/src/exnode.c\"" >&5
 $as_echo_n "checking for \"${PREFIX}/libexnode/src/exnode.c\"... " >&6; }
 if test -r "${PREFIX}/libexnode/src/exnode.c"; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
@@ -961,13 +980,13 @@ else
 $as_echo "no" >&6; }
     as_fn_error $? "\"Can not find libexnode package\"" "$LINENO" 5
 fi])
-m4trace:configure.in:232: -1- m4_pattern_allow([^LORS_BUILD_LIBXND$])
-m4trace:configure.in:233: -1- m4_pattern_allow([^LORS_LIBXND_SRC_DIR$])
-m4trace:configure.in:234: -1- m4_pattern_allow([^LORS_LIBXND_DIR$])
-m4trace:configure.in:239: -2- AC_FIND_FILE(["${PREFIX}/libe2e/aes/aes.h"], [LORS_BUILD_LIBAES="yes"
+m4trace:configure.in:247: -1- m4_pattern_allow([^LORS_BUILD_LIBXND$])
+m4trace:configure.in:248: -1- m4_pattern_allow([^LORS_LIBXND_SRC_DIR$])
+m4trace:configure.in:249: -1- m4_pattern_allow([^LORS_LIBXND_DIR$])
+m4trace:configure.in:254: -2- AC_FIND_FILE(["${PREFIX}/libe2e/aes/aes.h"], [LORS_BUILD_LIBAES="yes"
                         LORS_LIBAES_DIR="${INS_DIR}"
                         LORS_LIBAES_SRC_DIR="${PREFIX}/libe2e/aes"], [as_fn_error $? "\"Can not find libaes package\"" "$LINENO" 5])
-m4trace:configure.in:237: -1- AC_FIND_FILE(["${INS_DIR}/lib/libaes.a"], [LORS_BUILD_LIBAES="no"], [{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for \"${PREFIX}/libe2e/aes/aes.h\"" >&5
+m4trace:configure.in:252: -1- AC_FIND_FILE(["${INS_DIR}/lib/libaes.a"], [LORS_BUILD_LIBAES="no"], [{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for \"${PREFIX}/libe2e/aes/aes.h\"" >&5
 $as_echo_n "checking for \"${PREFIX}/libe2e/aes/aes.h\"... " >&6; }
 if test -r "${PREFIX}/libe2e/aes/aes.h"; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
@@ -980,23 +999,23 @@ else
 $as_echo "no" >&6; }
     as_fn_error $? "\"Can not find libaes package\"" "$LINENO" 5
 fi])
-m4trace:configure.in:244: -1- m4_pattern_allow([^LORS_BUILD_LIBAES$])
-m4trace:configure.in:245: -1- m4_pattern_allow([^LORS_LIBAES_SRC_DIR$])
-m4trace:configure.in:246: -1- m4_pattern_allow([^LORS_LIBAES_DIR$])
-m4trace:configure.in:253: -1- m4_pattern_allow([^E2EDIR$])
-m4trace:configure.in:257: -1- m4_pattern_allow([^DOXYGEN$])
-m4trace:configure.in:258: -1- m4_pattern_allow([^DOXYGEN$])
-m4trace:configure.in:261: -1- m4_pattern_allow([^WISH$])
-m4trace:configure.in:262: -1- m4_pattern_allow([^WISH$])
-m4trace:configure.in:264: -1- m4_pattern_allow([^PREFIX$])
-m4trace:configure.in:266: -1- _m4_warn([obsolete], [AC_OUTPUT should be used without arguments.
+m4trace:configure.in:259: -1- m4_pattern_allow([^LORS_BUILD_LIBAES$])
+m4trace:configure.in:260: -1- m4_pattern_allow([^LORS_LIBAES_SRC_DIR$])
+m4trace:configure.in:261: -1- m4_pattern_allow([^LORS_LIBAES_DIR$])
+m4trace:configure.in:268: -1- m4_pattern_allow([^E2EDIR$])
+m4trace:configure.in:272: -1- m4_pattern_allow([^DOXYGEN$])
+m4trace:configure.in:273: -1- m4_pattern_allow([^DOXYGEN$])
+m4trace:configure.in:276: -1- m4_pattern_allow([^WISH$])
+m4trace:configure.in:277: -1- m4_pattern_allow([^WISH$])
+m4trace:configure.in:279: -1- m4_pattern_allow([^PREFIX$])
+m4trace:configure.in:281: -1- _m4_warn([obsolete], [AC_OUTPUT should be used without arguments.
 You should run autoupdate.], [])
-m4trace:configure.in:266: -1- m4_pattern_allow([^LIB@&t@OBJS$])
-m4trace:configure.in:266: -1- m4_pattern_allow([^LTLIBOBJS$])
-m4trace:configure.in:266: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
-m4trace:configure.in:266: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
-m4trace:configure.in:266: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
-m4trace:configure.in:266: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
-m4trace:configure.in:266: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
-m4trace:configure.in:266: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
-m4trace:configure.in:266: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
+m4trace:configure.in:281: -1- m4_pattern_allow([^LIB@&t@OBJS$])
+m4trace:configure.in:281: -1- m4_pattern_allow([^LTLIBOBJS$])
+m4trace:configure.in:281: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
+m4trace:configure.in:281: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
+m4trace:configure.in:281: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
+m4trace:configure.in:281: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
+m4trace:configure.in:281: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
+m4trace:configure.in:281: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
+m4trace:configure.in:281: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS

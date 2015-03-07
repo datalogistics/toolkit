@@ -636,6 +636,9 @@ LORS_BUILD_LIBXND
 LORS_LBONE_DIR
 LORS_LBONE_SRC_DIR
 LORS_BUILD_LBONE
+LORS_LIBCELLOPHANE_SRC_DIR
+LORS_LIBCELLOPHANE_DIR
+LORS_BUILD_LIBCELLOPHANE
 LORS_LIBCURL_SRC_DIR
 LORS_LIBCURL_DIR
 LORS_BUILD_LIBCURL
@@ -761,6 +764,7 @@ with_zlib
 with_libxml2
 with_libjansson
 with_libcurl
+with_libcellophane
 with_lbone
 with_libexnode
 '
@@ -1401,6 +1405,7 @@ Optional Packages:
 --with-libxml2=path         path to libxml2default=/usr
 --with-libjansson=path         path to libjanssondefault=/usr/local
 --with-libcurl=path         path to libcurldefault=/usr/local
+--with-libcellophane=path         path to libcellophanedefault=/usr/local
 --with-lbone=path    path to lbone package
 --with-libexnode=path      path to libexnode
 
@@ -5366,6 +5371,41 @@ $as_echo "no" >&6; }
 fi
 fi
 
+
+
+
+
+
+# Check whether --with-libcellophane was given.
+if test "${with_libcellophane+set}" = set; then :
+  withval=$with_libcellophane; LORS_LIBCELLOPHANE_DIR="$with_libcellophane"
+else
+  LORS_LIBCELLOPHANE_DIR="/usr/local"
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for \"${LORS_LIBCELLOPHANE_DIR}/include/cellophane_io.h\"" >&5
+$as_echo_n "checking for \"${LORS_LIBCELLOPHANE_DIR}/include/cellophane_io.h\"... " >&6; }
+if test -r "${LORS_LIBCELLOPHANE_DIR}/include/cellophane_io.h"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
+$as_echo "found" >&6; }
+    LORS_BUILD_LIBCELLOPHANE="no"
+else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for \"${PREFIX}/libcellophane/include/cellophane_io.h\"" >&5
+$as_echo_n "checking for \"${PREFIX}/libcellophane/include/cellophane_io.h\"... " >&6; }
+if test -r "${PREFIX}/libcellophane/include/cellophane_io.h"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
+$as_echo "found" >&6; }
+    LORS_BUILD_LIBCELLOPHANE="yes"
+                          LORS_LIBCELLOPHANE_SRC_DIR="${PREFIX}/libcellophane"
+                          LORS_LIBCELLOPHANE_DIR="${INS_DIR}"
+else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+    as_fn_error $? "\"Can not find libcellophane package\"" "$LINENO" 5
+fi
+fi
 
 
 

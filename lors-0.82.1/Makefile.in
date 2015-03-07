@@ -60,7 +60,7 @@ DIST_COMMON = README $(am__configure_deps) $(include_HEADERS) \
 	$(srcdir)/pre-install.sh.in $(top_srcdir)/configure \
 	$(top_srcdir)/doc/Makefile.in $(top_srcdir)/doc/doxygen.cfg.in \
 	AUTHORS COPYING ChangeLog INSTALL NEWS acconfig.h config.guess \
-	config.sub depcomp install-sh missing mkinstalldirs
+	config.sub depcomp install-sh ltmain.sh missing mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -200,6 +200,7 @@ LN_S = @LN_S@
 LORS_BUILD_JANSSON = @LORS_BUILD_JANSSON@
 LORS_BUILD_LBONE = @LORS_BUILD_LBONE@
 LORS_BUILD_LIBAES = @LORS_BUILD_LIBAES@
+LORS_BUILD_LIBCELLOPHANE = @LORS_BUILD_LIBCELLOPHANE@
 LORS_BUILD_LIBCURL = @LORS_BUILD_LIBCURL@
 LORS_BUILD_LIBXND = @LORS_BUILD_LIBXND@
 LORS_BUILD_POPT = @LORS_BUILD_POPT@
@@ -211,6 +212,8 @@ LORS_LBONE_DIR = @LORS_LBONE_DIR@
 LORS_LBONE_SRC_DIR = @LORS_LBONE_SRC_DIR@
 LORS_LIBAES_DIR = @LORS_LIBAES_DIR@
 LORS_LIBAES_SRC_DIR = @LORS_LIBAES_SRC_DIR@
+LORS_LIBCELLOPHANE_DIR = @LORS_LIBCELLOPHANE_DIR@
+LORS_LIBCELLOPHANE_SRC_DIR = @LORS_LIBCELLOPHANE_SRC_DIR@
 LORS_LIBCURL_DIR = @LORS_LIBCURL_DIR@
 LORS_LIBCURL_SRC_DIR = @LORS_LIBCURL_SRC_DIR@
 LORS_LIBXND_DIR = @LORS_LIBXND_DIR@

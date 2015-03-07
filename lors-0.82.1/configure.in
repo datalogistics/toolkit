@@ -202,6 +202,21 @@ AC_SUBST(LORS_LIBCURL_DIR)
 AC_SUBST(LORS_LIBCURL_SRC_DIR)
 
 
+dnl check and setup path of libcellophane package 
+AC_ARG_WITH(libcellophane,[--with-libcellophane=path         path to libcellophane[default=/usr/local]],
+            LORS_LIBCELLOPHANE_DIR="$with_libcellophane",
+            LORS_LIBCELLOPHANE_DIR="/usr/local")
+AC_FIND_FILE("${LORS_LIBCELLOPHANE_DIR}/include/cellophane_io.h",
+            LORS_BUILD_LIBCELLOPHANE="no",
+            AC_FIND_FILE("${PREFIX}/libcellophane/include/cellophane_io.h",
+                          LORS_BUILD_LIBCELLOPHANE="yes"
+                          LORS_LIBCELLOPHANE_SRC_DIR="${PREFIX}/libcellophane"
+                          LORS_LIBCELLOPHANE_DIR="${INS_DIR}",
+                          AC_MSG_ERROR("Can not find libcellophane package")))
+AC_SUBST(LORS_BUILD_LIBCELLOPHANE)
+AC_SUBST(LORS_LIBCELLOPHANE_DIR)
+AC_SUBST(LORS_LIBCELLOPHANE_SRC_DIR)
+
 dnl check and setup path of lbone package
 AC_ARG_WITH(lbone,[--with-lbone=path    path to lbone package],
             LORS_LBONE_DIR="$with_lbone",

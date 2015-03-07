@@ -67,6 +67,16 @@ if test "${BUILD_LIBCURL}" = yes; then
     cd @PREFIX@
 fi
 
+BUILD_LIBCELLOPHANE=@LORS_BUILD_LIBCELLOPHANE@
+if test "${BUILD_LIBCELLOPHANE}" = yes; then
+    echo "Building libjansson package..."
+    cd @LORS_LIBCELLOPHANE_SRC_DIR@
+	./autogen.sh
+    ./configure --prefix=@prefix@ --with-libjansson=@LORS_JANSSON_DIR@ --with-libcurl=@LORS_LIBCURL_DIR@
+    make install
+    cd @PREFIX@
+fi
+
 BUILD_LBONE=@LORS_BUILD_LBONE@
 if test "${BUILD_LBONE}" = yes; then
     echo "Building lbone package..."
