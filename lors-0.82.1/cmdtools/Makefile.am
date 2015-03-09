@@ -1,4 +1,4 @@
-bin_PROGRAMS = lors_upload lors_download lors_ls lors_augment lors_refresh lors_test lors_trim lors_launch lbone_resolution lbone_test lors_route lors_e2etest lors_modify
+bin_PROGRAMS = lors_upload lors_download lors_ls lors_augment lors_refresh lors_test lors_trim lors_launch lbone_resolution lbone_test lors_route lors_e2etest lors_modify socket_io_test
 
 bindir = @prefix@/bin
 libdir = @prefix@/lib
@@ -27,6 +27,10 @@ JANSSON_LIB = @LORS_JANSSON_DIR@/lib/ -ljansson
 LIBCURL_INC = @LORS_LIBCURL_DIR@/include
 LIBCURL_LIB = @LORS_LIBCURL_DIR@/lib/ -lcurl
 
+CELOPHANEDIR = @LORS_LIBCELLOPHANE_DIR@
+CELLOPHANEINC = $(CELOPHANEDIR)/include
+CELLOPHANELIB = $(CELOPHANEDIR)/lib 
+
 POPT_INC=@LORS_POPT_DIR@/include
 POPT_LIB=-L@LORS_POPT_DIR@/lib -lpopt
 
@@ -38,10 +42,10 @@ E2ELIB = @E2EDIR@/libend2end.a $(E2EDIR)/md5/libmd5.a $(E2EDIR)/des/libdes.a $(E
 
 LORSLIB = ../src/liblors.a
 
-AM_CPPFLAGS = -I../include -I$(XML2_INC) -I$(XNDINC) -I$(LBNINC) -I$(IBPINC) -I$(E2EINC) -I$(POPT_INC) -I$(ZLIB_INC)  -I$(JANSSON_INC) -I$(LIBCURL_INC)
+AM_CPPFLAGS = -I../include -I$(XML2_INC) -I$(XNDINC) -I$(LBNINC) -I$(IBPINC) -I$(E2EINC) -I$(POPT_INC) -I$(ZLIB_INC)  -I$(JANSSON_INC) -I$(LIBCURL_INC) -I$(CELLOPHANEINC)
 
 AM_CFLAGS=  -g -D@OSDEF@ @EXTRA_CFLAGS@
-LDADD = $(LORSLIB) $(XNDLIB) $(LBNLIB) $(FDRLIB) $(IBPLIB) -L$(XML2_LIB) $(POPT_LIB) -lpthread -lxml2 $(E2ELIB) $(ZLIB_LIB) -L$(JANSSON_LIB) -L$(LIBCURL_LIB) @LIBS@  
+LDADD = $(LORSLIB) $(XNDLIB) $(LBNLIB) $(FDRLIB) $(IBPLIB) -L$(XML2_LIB) $(POPT_LIB) -lpthread -lxml2 $(E2ELIB) $(ZLIB_LIB) -L$(JANSSON_LIB) -L$(LIBCURL_LIB) -L$(CELLOPHANELIB) -lcellophane @LIBS@  
 
 lors_upload_SOURCES = lors_upload.c lors_file.c lors_libe2e.c parse_xndrc.c
 lors_upload_LDADD = -lpopt $(LDADD)
@@ -81,3 +85,6 @@ lors_modify_LDADD = -lpopt $(LDADD)
 
 lors_launch_SOURCES = lors_launch.c
 lors_launch_LDADD = $(LBNLIB)
+
+socket_io_test_SOURCES = socket_io_test.c
+socket_io_test_LDADD = $(LDADD)

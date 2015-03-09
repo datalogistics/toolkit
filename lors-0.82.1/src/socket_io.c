@@ -4,26 +4,35 @@
 #include <unistd.h>
 #include <math.h>
 
+//#define DEBUG 1
+
 #ifdef DEBUG 
 #define LOG(format, args...) fprintf(stderr,format, args...); fprintf("\n")
 #else
 #define LOG(format, args...)
-
+#endif
 		
 #define MAX_JOBS 100
 
 
+void static socket_io_keepAlive_thread(socket_io_handler *handle);
+void static socket_io_emit_thread(socket_io_handler *handle);
 
-
-
-int socket_io_init(socket_io_handler *handle ){
+int socket_io_init(socket_io_handler *handle, const char *host, const char *session_id ){
 	
 	struct parsed_url *URL;
 	
-	if(handle->server_add == NULL){
+	if(host == NULL){
 		fprintf(stderr, "Server address is NULL \n");
 		return SOCK_FAIL;
 	}
+	if(session_id == NULL){
+		fprintf(stderr, "Session id is NULL \n");
+		return SOCK_FAIL;
+	}
+
+	handle->server_add = strdup(host);
+	handle->session_id = strdup(session_id);
 	
 	URL = parse_url(handle->server_add);
 	if(URL == NULL){
@@ -94,7 +103,7 @@ int insert_into_queue(socket_io_handler *handle, socket_io_msg *msg){
 
 }
 
-void socket_io_emit_thread(socket_io_handler *handle){
+void static socket_io_emit_thread(socket_io_handler *handle){
 
 	Dllist node = NULL;
 	socket_io_msg *io_msg;
@@ -161,8 +170,15 @@ int socket_io_close(socket_io_handler *handle){
 			}
 		};
 	}
-
-	free_dllist(handle->job_list);
+	
+	if(handle->job_list != NULL)
+		free_dllist(handle->job_list);
+	
+	if(handle->server_add)
+		free(handle->server_add);
+	
+	if(handle->session_id)
+		free(handle->session_id);
 }
 
 
@@ -191,7 +207,7 @@ char *socket_io_get_event_name_from_type(Event_type type){
 	return strdup(event_name);
 }
 
-void socket_io_keepAlive_thread(socket_io_handler *handle){
+void static socket_io_keepAlive_thread(socket_io_handler *handle){
 	cellophane_keepAlive(&handle->client);
 }
 
@@ -291,4 +307,4 @@ int socket_io_push(socket_io_handler *handle, char *host, size_t offset, size_t 
 	return SOCK_SUCCESS;
 }
 
-#endif
+
