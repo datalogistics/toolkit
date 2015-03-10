@@ -14,7 +14,7 @@
 #define LOG(formar, ...)
 #endif
 		
-#define MAX_JOBS 100
+#define MAX_JOBS 1000000
 
 
 void static socket_io_keepAlive_thread(socket_io_handler *handle);
