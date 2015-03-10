@@ -79,6 +79,8 @@ int socket_io_init(socket_io_handler *handle, const char *host, const char *sess
 
 	LOG("Starting emitter thread");
 	pthread_create(&handle->emitter, NULL, socket_io_emit_thread, (void *)handle);
+
+	return SOCK_SUCCESS;
 }
 
 int insert_into_queue(socket_io_handler *handle, socket_io_msg *msg){
@@ -86,7 +88,8 @@ int insert_into_queue(socket_io_handler *handle, socket_io_msg *msg){
 		fprintf(stderr, "NO message to queue\n");
 		return SOCK_FAIL;
 	}
-
+	
+	//LOG("##Insert Lock !!");
 	pthread_mutex_lock(&handle->m_lock);
 	if(handle->num_job >= MAX_JOBS){
 		fprintf(stderr, "Queue is full, can not append message. Putting it on floor ... \n");
@@ -117,10 +120,12 @@ void static socket_io_emit_thread(socket_io_handler *handle){
 		node = NULL;
 		io_msg = NULL;
 		event_name = NULL;
-
+		
+		//LOG("##Emit lock ");
 		pthread_mutex_lock(&handle->m_lock);
+		//LOG("##Emit locked ");
 		while (handle->num_job <= 0 ){
-			if(!handle->stop_emitter){return;}
+			if(handle->stop_emitter){return;}
 			LOG("# %d Waiting for JOB",handle->num_job);
 			pthread_cond_wait(&handle->cond_emitter, &handle->m_lock);
 		}
@@ -135,7 +140,7 @@ void static socket_io_emit_thread(socket_io_handler *handle){
 
 		//pthread_cond_signal(&handle->cond_insert);
 		pthread_mutex_unlock(&handle->m_lock);
-		
+		//LOG("##Emit Unlock");
 		event_name  = socket_io_get_event_name_from_type(io_msg->type);
 		if((event_name != NULL) && (io_msg->msg != NULL)){
 			cellophane_emit(&handle->client, event_name, io_msg->msg, "");
@@ -168,8 +173,7 @@ int socket_io_close(socket_io_handler *handle){
 
 	LOG("Closing ");
 	close(handle->client.fd);
-	LOG("Closed") ;
-
+	
 	handle->client.fd_alive = 0;
 
 	if(handle->num_job != 0){
@@ -189,7 +193,7 @@ int socket_io_close(socket_io_handler *handle){
 		free(handle->server_add);
 	
 	if(handle->session_id)
-	free(handle->session_id);
+		free(handle->session_id);
 }
 
 
@@ -219,7 +223,6 @@ char *socket_io_get_event_name_from_type(Event_type type){
 }
 
 void static socket_io_keepAlive_thread(socket_io_handler *handle){
-	LOG("INside Keep Alive");
 	cellophane_keepAlive(&handle->client);
 }
 

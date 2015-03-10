@@ -43,6 +43,7 @@ long    lorsSetLoad (LorsSet * set,
                             2,
                             1,
                             -1,
+							NULL,
                             opts) );
     
 };
@@ -60,7 +61,8 @@ longlong    lorsSetRealTimeLoad (LorsSet * set,
                        int timeout,
                        int max_thds_per_depot,
                        int thds_per_job,
-                       int progress_n,
+					   int progress_n,
+					   socket_io_handler *handle,
                        int opts)
 {
     int                   ret, i;
@@ -243,6 +245,7 @@ longlong    lorsSetRealTimeLoad (LorsSet * set,
         job->src_length = node->length;
         job->dst_offset = dst_offset;
         job->dst_length = node->length;
+		job->handle = handle;
         dst_offset = dst_offset + node->length;
 
         job->extra_data = lc;
@@ -489,6 +492,8 @@ _lorsDoDownload ( __LorsJob *job,
 	    g_load_thread_count++;
 	    pthread_mutex_unlock(&load_thread_lock);
     }
+	 
+
     while (nread < p_len){ 
          if ((left_t = _lorsRemainTime(begin_time,timeout)) < 0) {
              ret = LORS_TIMEOUT_EXPIRED;
@@ -544,6 +549,11 @@ _lorsDoDownload ( __LorsJob *job,
          };
          nread = nread + nbytes; 
      };
+	
+	if(job->handle != NULL){
+		socket_io_send_push(job->handle, mapping->depot.host, job->src_offset, job->src_length);
+	} 
+	
      if ( g_lors_demo )
      {
         /* end time */

@@ -66,6 +66,7 @@
 #define LBONE_GEO             0x00000048
 #define LBONE_NWS             0x00000049
 #define READ_STDIN            0x0000004a
+#define VISUALIZE_PROGRESS    0x0000004b
 
 #define MAX_BUFFSIZE            (100 * 1024 * 1024)
 #define MIN_BUFFSIZE            (1024)

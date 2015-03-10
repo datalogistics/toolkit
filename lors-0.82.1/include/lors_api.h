@@ -17,7 +17,7 @@
 #include <jrb.h>
 #include <dllist.h>
 #include <ibp.h>
-
+#include <socket_io.h>
 #include <lors_error.h>
 #include <lors_opts.h>
 
@@ -1005,7 +1005,8 @@ long    lorsSetLoad (LorsSet     *set,
  * @param   thds_per_job            This is a measure of redundancy.
  * @param   progress_n              When @c progress_n is greater than 0, and
  *                              @c thds_per_job is greater than 1
- * @param opts              <ul>
+ * @param   handle            socket io handle to report status to visualization
+ * @param   opts              <ul>
  *                              <li>@c LORS_RETURN_ON_ANY_ERROR
  *                              <li>@c LORS_RETRY_UNTIL_TIMEOUT
  *                          </ul>
@@ -1029,6 +1030,7 @@ longlong    lorsSetRealTimeLoad (LorsSet * set,
                        int max_thds_per_depot,
                        int thds_per_job,
                        int progress_n,
+					   socket_io_handler *handle,
                        int opts);
 
 

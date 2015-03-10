@@ -8,7 +8,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <pthread.h>
-
+#include <socket_io.h>
 #include <xndrc.h>
 #include <lors_libe2e.h>
 #include <lors_resolution.h>
@@ -234,8 +234,8 @@ int lorsUploadFile( char      *filename,
                    ulong_t    max_internal_buffer,
                    char      *resolution_file,
                    int        nthreads,
-                   int        timeout, 
-                   int        opts)
+                   int        timeout,
+				   int        opts)
 {
     struct stat          mystat;
     char                *file_shortname;
@@ -257,8 +257,7 @@ int lorsUploadFile( char      *filename,
     pthread_t            tid;
     double duration_days;
     LboneResolution     *lr = NULL;
-
-    LorsSet             *set = NULL,*copy_set = NULL;
+	LorsSet             *set = NULL,*copy_set = NULL;
     LorsDepotPool       *dpp = NULL;
     LorsExnode          *xnd = NULL;
     ExnodeMetadata      *emd = NULL;
@@ -359,9 +358,7 @@ start_over:
     fflush(stderr);
     max = (max != 0 ? max : length/data_blocksize * copies+2);
 
-
-
-    lorsDebugPrint(D_LORS_VERBOSE, "GetDepotPool\n");
+	lorsDebugPrint(D_LORS_VERBOSE, "GetDepotPool\n");
 
     if ( length == -1 )
     {
@@ -779,7 +776,9 @@ int lorsDownloadFile(char       *exnode_uri,
                      char       *location,
                      char       *resolution_file,
                      int        nthreads,
-                     int        timeout, 
+                     int        timeout,
+					 char      *report_host,
+					 char      *session_id,
                      int        opts)
 {
     /* we will want to be able to specify, perthread blocksize, determined
@@ -806,7 +805,7 @@ int lorsDownloadFile(char       *exnode_uri,
     char        *buf_array[2];
     pthread_t   tid;
     _LorsFileJobQueue  *file_job_queue = NULL ;
-
+	socket_io_handler handle, *temp_handle = NULL;
     double      t1, t2;
     double      demo_len;
 
@@ -977,6 +976,15 @@ failed_open:
     * default.
     */
     
+	/*Start report status here*/
+	if(report_host != NULL && session_id != NULL){
+		//fprintf(stderr, "Init .. \n");
+		if(socket_io_init(&handle, report_host, session_id) == SOCK_SUCCESS){
+			//fprintf(stderr, "Registering \n");
+			temp_handle = &handle;
+			socket_io_send_register(temp_handle, filename, (size_t)length, (size_t)nthreads);
+		}
+	}
     written = 0;
     while ( written < length )
     {
@@ -1004,9 +1012,9 @@ failed_open:
 #endif
 
         dret = lorsSetRealTimeLoad(set, NULL,fd, offset+written, 
-                           len,data_blocksize,pre_buffer,cache,
-                           glob_lc, nthreads, 
-                           timeout,dp_threads,job_threads,progress, opts);
+								   len,data_blocksize,pre_buffer,cache,
+								   glob_lc, nthreads, 
+								   timeout,dp_threads,job_threads,progress,temp_handle, opts);
         /* TODO check for timeout? */
         if ( dret <= 0 )
         {
@@ -1037,6 +1045,11 @@ failed_open:
         fflush(stderr);
     }
 
+	if(temp_handle != NULL){
+		fprintf(stderr, "Closing .. \n");
+		socket_io_send_clear(temp_handle);
+		socket_io_close(temp_handle);
+	}
     lorsSetFree(set,0);
     lorsFreeDepotPool(dpp);
     lorsExnodeFree(exnode);

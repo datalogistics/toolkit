@@ -88,6 +88,8 @@ int lorsDownloadFile(char       *exnode_filename,
                      char       *resolution_file,
                      int        nthreads,
                      int        timeout, 
+ 					 char      *report_host,
+					 char      *session_id,
                      int        opts);
 
 int lorsRefreshFile(char *filename, 

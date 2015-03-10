@@ -97,6 +97,7 @@ typedef struct __lorsJob
 
     /* following fields are only used by download job */
     pthread_mutex_t  lock;
+	socket_io_handler *handle;
 #if 0
     JRB              worker_threads;
 #endif
