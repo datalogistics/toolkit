@@ -3,13 +3,15 @@
 #include "url.h"
 #include <unistd.h>
 #include <math.h>
+#include <signal.h>
+#include <string.h>
 
-//#define DEBUG 1
+#define DEBUG 1
 
 #ifdef DEBUG 
-#define LOG(format, args...) fprintf(stderr,format, args...); fprintf("\n")
+#define LOG(format, ...) fprintf(stderr, "DEBUG %s:%d: " format "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 #else
-#define LOG(format, args...)
+#define LOG(formar, ...)
 #endif
 		
 #define MAX_JOBS 100
@@ -71,7 +73,9 @@ int socket_io_init(socket_io_handler *handle, const char *host, const char *sess
 	handle->stop_emitter = 0;
 	handle->job_list = new_dllist();
 	LOG("Starting keepAlive thread");
-	pthread_create(&handle->emitter, NULL, socket_io_emit_thread, (void *)handle);
+
+	handle->client.keep_alive_flag = 1;
+	pthread_create(&handle->keepAlive, NULL, socket_io_keepAlive_thread, (void *)handle);
 
 	LOG("Starting emitter thread");
 	pthread_create(&handle->emitter, NULL, socket_io_emit_thread, (void *)handle);
@@ -145,20 +149,26 @@ int socket_io_close(socket_io_handler *handle){
 	int count = 1;
 	Dllist ptr = NULL;
 	socket_io_msg *io_msg;
+
 	while(handle->num_job != 0 && count < 3){
 		LOG("Waiting for job queue to complete ");
 		usleep(1000 * (int)pow((double)count, 2));
 		count++;
 	}
 	
+	LOG("Stopping emitter");
 	handle->stop_emitter = 1;
 	pthread_cond_signal(&handle->cond_emitter);
-	handle->client.keep_alive_flag = 0;
-	
-	pthread_join(&handle->emitter, NULL);
-	pthread_join(&handle->keepAlive, NULL);
+	pthread_join(handle->emitter, NULL);
 
+	LOG("Stopping keepAlive");
+	handle->client.keep_alive_flag = 0;
+	pthread_join(handle->keepAlive, NULL);
+
+	/*LOG("Closing ");
 	close(handle->client.fd);
+	LOG("Closed") ;
+
 	handle->client.fd_alive = 0;
 
 	if(handle->num_job != 0){
@@ -178,7 +188,7 @@ int socket_io_close(socket_io_handler *handle){
 		free(handle->server_add);
 	
 	if(handle->session_id)
-		free(handle->session_id);
+	free(handle->session_id);*/
 }
 
 
@@ -208,11 +218,14 @@ char *socket_io_get_event_name_from_type(Event_type type){
 }
 
 void static socket_io_keepAlive_thread(socket_io_handler *handle){
+	LOG("INside Keep Alive");
 	cellophane_keepAlive(&handle->client);
 }
 
 
 int socket_io_send_register(socket_io_handler *handle, char *filename, size_t size, int conn){
+	
+	char buff[1000];
 	
 	if(filename == NULL){
 		fprintf(stderr, "File name is required\n");
@@ -224,15 +237,20 @@ int socket_io_send_register(socket_io_handler *handle, char *filename, size_t si
 		return SOCK_FAIL;
 	}
 
-	json_t *json_obj;
+	json_t *json_obj = json_object();
 	char *dump;
+
+	LOG("hash_id : %s", handle->session_id );
+	LOG("filename : %s", filename);
+	LOG("totalsize : %lld", size);
+	LOG("Num of conn : %d" ,conn );
 
 	json_object_set(json_obj, "hashId" ,json_string(handle->session_id));
 	json_object_set(json_obj, "filename", json_string(filename));
 	json_object_set(json_obj, "totalSize", json_integer(size));
 	json_object_set(json_obj, "connections", json_integer(conn));
 
-	dump = json_dumps(json_obj, JSON_INDENT(1));
+	dump = json_dumps(json_obj, JSON_COMPACT);
 	if(dump == NULL){
 		fprintf(stderr, "Register JSON dump failed \n");
 		return SOCK_FAIL;
