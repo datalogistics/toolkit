@@ -119,9 +119,11 @@ void static socket_io_emit_thread(socket_io_handler *handle){
 		event_name = NULL;
 
 		pthread_mutex_lock(&handle->m_lock);
-		while (handle->num_job <= 0)
+		while (handle->num_job <= 0 ){
+			if(!handle->stop_emitter){return;}
+			LOG("# %d Waiting for JOB",handle->num_job);
 			pthread_cond_wait(&handle->cond_emitter, &handle->m_lock);
-	
+		}
 		node = dll_first(handle->job_list);
 		if(node == NULL){
 			pthread_mutex_unlock(&handle->m_lock);
@@ -129,18 +131,17 @@ void static socket_io_emit_thread(socket_io_handler *handle){
 		}
 		io_msg = (socket_io_msg*)jval_v(node->val);
 		handle->num_job--;
-	
+		dll_delete_node(node);
+
 		//pthread_cond_signal(&handle->cond_insert);
 		pthread_mutex_unlock(&handle->m_lock);
 		
 		event_name  = socket_io_get_event_name_from_type(io_msg->type);
-
 		if((event_name != NULL) && (io_msg->msg != NULL)){
 			cellophane_emit(&handle->client, event_name, io_msg->msg, "");
 			free(event_name);
 			free(io_msg->msg);
 		}
-		
 		free(io_msg);
 	}
 }
@@ -150,8 +151,8 @@ int socket_io_close(socket_io_handler *handle){
 	Dllist ptr = NULL;
 	socket_io_msg *io_msg;
 
-	while(handle->num_job != 0 && count < 3){
-		LOG("Waiting for job queue to complete ");
+	while(handle->num_job != 0){ //&& count < 10){
+		LOG("# Jobs %d , Waiting for job queue to complete ", handle->num_job);
 		usleep(1000 * (int)pow((double)count, 2));
 		count++;
 	}
@@ -165,7 +166,7 @@ int socket_io_close(socket_io_handler *handle){
 	handle->client.keep_alive_flag = 0;
 	pthread_join(handle->keepAlive, NULL);
 
-	/*LOG("Closing ");
+	LOG("Closing ");
 	close(handle->client.fd);
 	LOG("Closed") ;
 
@@ -188,7 +189,7 @@ int socket_io_close(socket_io_handler *handle){
 		free(handle->server_add);
 	
 	if(handle->session_id)
-	free(handle->session_id);*/
+	free(handle->session_id);
 }
 
 
@@ -268,7 +269,7 @@ int socket_io_send_register(socket_io_handler *handle, char *filename, size_t si
 
 int socket_io_send_clear(socket_io_handler *handle){
 	
-	json_t *json_obj;
+	json_t *json_obj  = json_object();
 	char *dump;
 
 	if(handle != NULL && handle->session_id == NULL){
@@ -278,7 +279,7 @@ int socket_io_send_clear(socket_io_handler *handle){
 	
 	//NOTE: Need for information on clear message
 	json_object_set(json_obj, "hashId" ,json_string(handle->session_id));
-	dump = json_dumps(json_obj, JSON_INDENT(1));
+	dump = json_dumps(json_obj, JSON_COMPACT);
 	if(dump == NULL){
 		fprintf(stderr, "clear JSON dump failed \n");
 		return SOCK_FAIL;
@@ -294,14 +295,14 @@ int socket_io_send_clear(socket_io_handler *handle){
 	return SOCK_SUCCESS;
 }
 
-int socket_io_push(socket_io_handler *handle, char *host, size_t offset, size_t len){
+int socket_io_send_push(socket_io_handler *handle, char *host, size_t offset, size_t len){
 
 	if(handle != NULL && handle->session_id == NULL){
 		fprintf(stderr, "Session id not found\n");
 		return SOCK_FAIL;
 	}
 	
-	json_t *json_obj;
+	json_t *json_obj = json_object();
 	char *dump;
 
 	//NOTE: Need for information on clear message
@@ -309,12 +310,11 @@ int socket_io_push(socket_io_handler *handle, char *host, size_t offset, size_t 
 	json_object_set(json_obj, "ip" ,json_string(host));
 	json_object_set(json_obj, "offset", json_integer(offset));
 	json_object_set(json_obj, "progress", json_integer(len));
-	dump = json_dumps(json_obj, JSON_INDENT(1));
+	dump = json_dumps(json_obj, JSON_COMPACT);
 	if(dump == NULL){
 		fprintf(stderr, "clear JSON dump failed \n");
 		return SOCK_FAIL;
 	}
-	
 	LOG("Event : PERI_DOWNLOAD_PUSH_DATA, DUMP : %s", dump);
 	
 	socket_io_msg *io_msg = (socket_io_msg*)malloc(sizeof(socket_io_msg));
