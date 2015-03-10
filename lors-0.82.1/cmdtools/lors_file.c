@@ -778,7 +778,6 @@ int lorsDownloadFile(char       *exnode_uri,
                      int        nthreads,
                      int        timeout,
 					 char      *report_host,
-					 char      *session_id,
                      int        opts)
 {
     /* we will want to be able to specify, perthread blocksize, determined
@@ -808,7 +807,7 @@ int lorsDownloadFile(char       *exnode_uri,
 	socket_io_handler handle, *temp_handle = NULL;
     double      t1, t2;
     double      demo_len;
-
+	char       *session_id = "1234ABSCF";
 #if 0
     if ( _lorsInitFileJobQueue(&file_job_queue,cache,pre_buffer,max_internal_buffer) != LORS_SUCCESS ){
         fprintf(stderr,"Failed to initialize file job queue!\n");

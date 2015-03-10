@@ -237,7 +237,7 @@ int main (int argc, char **argv)
                                lbs->port,
                                xndrc.location,xndrc.resolution_file,
                                xndrc.threads, xndrc.timeout, 
-							   report_host, "12345AS", opts); 
+							   report_host, opts); 
          
             if ( ret != LORS_SUCCESS )
             {
