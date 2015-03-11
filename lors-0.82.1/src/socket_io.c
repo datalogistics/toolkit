@@ -6,7 +6,7 @@
 #include <signal.h>
 #include <string.h>
 
-#define DEBUG 1
+//#define DEBUG 1
 
 #ifdef DEBUG 
 #define LOG(format, ...) fprintf(stderr, "DEBUG %s:%d: " format "\n", __FILE__, __LINE__, ##__VA_ARGS__)
@@ -23,7 +23,11 @@ void static socket_io_emit_thread(socket_io_handler *handle);
 int socket_io_init(socket_io_handler *handle, const char *host, const char *session_id ){
 	
 	struct parsed_url *URL;
-	
+	handle->num_job = 0;
+	handle->stop_emitter = 1;
+	handle->job_list = NULL;
+	handle->client.keep_alive_flag = 0;
+
 	if(host == NULL){
 		fprintf(stderr, "Server address is NULL \n");
 		return SOCK_FAIL;
@@ -57,27 +61,27 @@ int socket_io_init(socket_io_handler *handle, const char *host, const char *sess
 		return SOCK_FAIL;
 	}
 	
-	cellophane_set_debug(&handle->client, DEBUG_DETAILED);
+	//cellophane_set_debug(&handle->client, DEBUG_DETAILED);
 	cellophane_io(&handle->client, URL->scheme, URL->host, atoi(URL->port));
 	if(cellophane_io_connect(&handle->client) != 1){
-		fprintf(stderr, "Failed to connect : %s%s:%d", URL->scheme, URL->host, atoi(URL->port));
+		fprintf(stderr, "Failed to connect : %s%s:%d \n", URL->scheme, URL->host, atoi(URL->port));
 		return SOCK_FAIL;
 	}
 	
 	LOG("Connected successfully to %s", handle->server_add);
 
+	LOG("Initialized Queue");
 	pthread_mutex_init(&handle->m_lock, NULL);
 	pthread_cond_init(&handle->cond_emitter, NULL);
 	pthread_cond_init(&handle->cond_insert, NULL);
-	handle->num_job = 0;
-	handle->stop_emitter = 0;
 	handle->job_list = new_dllist();
-	LOG("Starting keepAlive thread");
 
+	LOG("Starting keepAlive thread");
 	handle->client.keep_alive_flag = 1;
 	pthread_create(&handle->keepAlive, NULL, socket_io_keepAlive_thread, (void *)handle);
 
 	LOG("Starting emitter thread");
+	handle->stop_emitter = 0;
 	pthread_create(&handle->emitter, NULL, socket_io_emit_thread, (void *)handle);
 
 	return SOCK_SUCCESS;
@@ -88,7 +92,12 @@ int insert_into_queue(socket_io_handler *handle, socket_io_msg *msg){
 		fprintf(stderr, "NO message to queue\n");
 		return SOCK_FAIL;
 	}
-	
+
+	if(handle->job_list == NULL){
+		fprintf(stderr, "Queue is not initialized\n");
+		return SOCK_FAIL;
+	}
+
 	//LOG("##Insert Lock !!");
 	pthread_mutex_lock(&handle->m_lock);
 	if(handle->num_job >= MAX_JOBS){
@@ -156,7 +165,7 @@ int socket_io_close(socket_io_handler *handle){
 	Dllist ptr = NULL;
 	socket_io_msg *io_msg;
 
-	while(handle->num_job != 0){ //&& count < 10){
+	while(handle->num_job != 0){
 		LOG("# Jobs %d , Waiting for job queue to complete ", handle->num_job);
 		usleep(1000 * (int)pow((double)count, 2));
 		count++;
@@ -208,7 +217,7 @@ char *socket_io_get_event_name_from_type(Event_type type){
 		break;
 		
 	case PERI_DOWNLOAD_PUSH_DATA:
-		event_name = "peri_download_pushData";
+		event_name = "peri_download_pushdata";
 		break;
 		
 	case PERI_DOWNLOAD_CLEAR:
@@ -249,11 +258,11 @@ int socket_io_send_register(socket_io_handler *handle, char *filename, size_t si
 	LOG("totalsize : %lld", size);
 	LOG("Num of conn : %d" ,conn );
 
-	json_object_set(json_obj, "hashId" ,json_string(handle->session_id));
+	json_object_set(json_obj, "sessionId" ,json_string(handle->session_id));
 	json_object_set(json_obj, "filename", json_string(filename));
-	json_object_set(json_obj, "totalSize", json_integer(size));
+	json_object_set(json_obj, "size", json_integer(size));
 	json_object_set(json_obj, "connections", json_integer(conn));
-
+	json_object_set(json_obj, "ts", json_integer(time(NULL)));
 	dump = json_dumps(json_obj, JSON_COMPACT);
 	if(dump == NULL){
 		fprintf(stderr, "Register JSON dump failed \n");
@@ -281,7 +290,8 @@ int socket_io_send_clear(socket_io_handler *handle){
 	}
 	
 	//NOTE: Need for information on clear message
-	json_object_set(json_obj, "hashId" ,json_string(handle->session_id));
+	json_object_set(json_obj, "sessionId" ,json_string(handle->session_id));
+	json_object_set(json_obj, "ts", json_integer(time(NULL)));
 	dump = json_dumps(json_obj, JSON_COMPACT);
 	if(dump == NULL){
 		fprintf(stderr, "clear JSON dump failed \n");
@@ -309,10 +319,11 @@ int socket_io_send_push(socket_io_handler *handle, char *host, size_t offset, si
 	char *dump;
 
 	//NOTE: Need for information on clear message
-	json_object_set(json_obj, "hashId" ,json_string(handle->session_id));
-	json_object_set(json_obj, "ip" ,json_string(host));
+	json_object_set(json_obj, "sessionId" ,json_string(handle->session_id));
+ 	json_object_set(json_obj, "host" ,json_string(host));
 	json_object_set(json_obj, "offset", json_integer(offset));
-	json_object_set(json_obj, "progress", json_integer(len));
+	json_object_set(json_obj, "length", json_integer(len));
+	json_object_set(json_obj, "ts", json_integer(time(NULL)));
 	dump = json_dumps(json_obj, JSON_COMPACT);
 	if(dump == NULL){
 		fprintf(stderr, "clear JSON dump failed \n");

@@ -31,6 +31,9 @@
 /* Define to 1 if you have the `socket' library (-lsocket). */
 /* #undef HAVE_LIBSOCKET */
 
+/* Define to 1 if you have the `uuid' library (-luuid). */
+#define HAVE_LIBUUID 1
+
 /* Define to 1 if you have the `xml2' library (-lxml2). */
 #define HAVE_LIBXML2 1
 

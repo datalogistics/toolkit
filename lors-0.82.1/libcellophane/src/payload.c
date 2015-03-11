@@ -231,9 +231,9 @@ unsigned char * payload_encodePayload(Payload * payload)
 	bzero(encoded_payload,strlen(encoded_payload));
 	memcpy(encoded_payload,auxpayload,size);
 		
-	if(data != NULL){
+	/*if(data != NULL){
 		free(data);
-	}
+		}*/
 
     return encoded_payload;
 

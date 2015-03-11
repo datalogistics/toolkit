@@ -12,6 +12,7 @@
 #include <xndrc.h>
 #include <lors_libe2e.h>
 #include <lors_resolution.h>
+#include <uuid/uuid.h>
 
 #define lorsDemoPrint       fprintf
 
@@ -660,26 +661,26 @@ upload_partial:
     if (copies > 1 && sret != LORS_PARTIAL ){
         lorsAppendSet(xnd,copy_set);
 
-        /*fprintf(stderr, "p1\n");*/
+        fprintf(stderr, "p1\n");
         lorsSetFree(copy_set,0);
     };
-        /*fprintf(stderr, "p2\n");*/
+	fprintf(stderr, "p2\n");
     lorsSetFree(set,0);
     lorsGetExnodeMetadata(xnd, &emd);
     memset(&val, 0, sizeof(val));
     val.s = file_shortname;
-        /*fprintf(stderr, "p3\n");*/
+	fprintf(stderr, "p3\n");
     lorsFreeDepotPool(dpp);
-        /*fprintf(stderr, "p4\n");*/
+	fprintf(stderr, "p4\n");
     if ( lc != NULL ) { free(lc); } 
 
-	/*fprintf(stderr, "p5\n");*/
+	fprintf(stderr, "p5\n");
     free(buf_array[0]);
     free(buf_array[1]);
 
     exnodeSetMetadataValue(emd, "filename", val, STRING, TRUE);
 
-	/*fprintf(stderr, "p6\n");*/
+	fprintf(stderr, "p6\n");
 	if(output_filename != NULL && strstr(output_filename,".uef")){
 		ret = lorsUefSerialize(xnd, output_filename, duration, length);
 	}else if(output_filename != NULL && strstr(output_filename,"http://")){
@@ -693,7 +694,7 @@ upload_partial:
         fprintf(stderr, "Serialize Failed.\n");
         return LORS_FAILURE;
     }
-        /*fprintf(stderr, "p7\n");*/
+	fprintf(stderr, "p7\n");
     lorsExnodeFree(xnd);
     if ( sret == LORS_PARTIAL || cret == LORS_PARTIAL )
     {
@@ -807,7 +808,15 @@ int lorsDownloadFile(char       *exnode_uri,
 	socket_io_handler handle, *temp_handle = NULL;
     double      t1, t2;
     double      demo_len;
-	char       *session_id = "1234ABSCF";
+
+	char       session_id[33];
+	uuid_t     out;
+	int        i;
+
+	uuid_generate(out);
+	for(i = 0; i < 16; i++)
+		sprintf(session_id + (i*2),"%02x", out[i]);
+
 #if 0
     if ( _lorsInitFileJobQueue(&file_job_queue,cache,pre_buffer,max_internal_buffer) != LORS_SUCCESS ){
         fprintf(stderr,"Failed to initialize file job queue!\n");
@@ -1018,7 +1027,11 @@ failed_open:
         if ( dret <= 0 )
         {
             fprintf(stderr, "lorsSetLoad failure. %d\n", dret);
-            /*fprintf(stderr, "How many times to try again??\n");*/
+			if(temp_handle != NULL){
+				socket_io_send_clear(temp_handle);
+				socket_io_close(temp_handle);
+			}
+			/*fprintf(stderr, "How many times to try again??\n");*/
             fprintf(stderr, "End Failure\n");
             return LORS_FAILURE;
         };
@@ -1045,7 +1058,6 @@ failed_open:
     }
 
 	if(temp_handle != NULL){
-		fprintf(stderr, "Closing .. \n");
 		socket_io_send_clear(temp_handle);
 		socket_io_close(temp_handle);
 	}

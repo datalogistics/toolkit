@@ -188,7 +188,8 @@ void cellophane_print_log(WsHandler * ws_handler, enum cellophane_log_type logty
 			//printf(WARCOL format, ctime(&now) ,__VA_ARGS__);
 			break;
 		}
-		default:{
+
+		case LOG_INFO:{
 			sprintf(colored_format,"%s%s  [INF]  %s%s\n",INFCOL,buffer,format,CLRCOL);
 			vfprintf(stderr,colored_format, args);
 			break;
@@ -296,7 +297,7 @@ int cellophane_connect(WsHandler * ws_handler) {
     cellophane_trigger_default_events(ws_handler, info);
 
     portno = ws_handler->serverPort;
-	cellophane_print_log(ws_handler,LOG_INFO,DEBUG_NONE,"Creating socket");
+	cellophane_print_log(ws_handler,LOG_INFO,DEBUG_NORMAL,"Creating socket");
     ws_handler->fd = socket(AF_INET, SOCK_STREAM, 0);
     if (ws_handler->fd < 0)	{
 		cellophane_print_log(ws_handler,LOG_ERROR,DEBUG_NONE,"ERROR opening socket");
@@ -337,7 +338,7 @@ int cellophane_connect(WsHandler * ws_handler) {
 			ws_handler->serverPort,
 			key);
     n = send(ws_handler->fd,out,out_len, 0);
-	cellophane_print_log(ws_handler,LOG_INFO,DEBUG_NONE,"Sending HTTP req(%d/%d) : \n%s", n, strlen(out), out);
+	cellophane_print_log(ws_handler,LOG_INFO,DEBUG_DIAGNOSTIC,"Sending HTTP req(%d/%d) : \n%s", n, strlen(out), out);
     if (n < 0){
 		cellophane_print_log(ws_handler,LOG_ERROR,DEBUG_NONE,"ERROR writing to socket");
 		ws_handler->fd_alive = 0;
