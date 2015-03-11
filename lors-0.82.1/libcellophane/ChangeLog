@@ -1,0 +1,15 @@
+Lors:  
+
+ * version 0.82.0 ( 06/09/2003 )
+	* Added AES encryption to lors_upload
+    * Added reading from stdin to lors_upload
+    * Added --balance option to lors_augment for minimum depth preservation.
+        * Enforced unique depots if any are available.
+    * Added --resume option to lors_download for continuation of failed downloads
+    * Removed --with-demo from configure.  This is now dynamic via -D for all commands.
+    * Fixed lbone_getDepot bug from datatype size.
+    * Improved thread cancelation code in lorsSetLoad() (memory leak fixed)
+    * Modified initial timeout to lorsSetStore based on minimum bandwidth.
+    * Extended static timeouts for allocate and manage operations to 20 sec.
+
+    * Includes IBP 1.3.0.2 with DNS caching.
