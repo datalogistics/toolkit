@@ -883,6 +883,7 @@ int    lorsSetInit(LorsSet **set,
  *                          (length/blocksize + 1 * copies) can be used,
  * @param timeout    Return after @c timeout seconds, even if operation is
  *                      incomplete.
+ * @param handle     socket_io handle to report progress to report host
  * @param opts              <ul>
  *                              <li>@c LORS_RETURN_ON_ANY_ERROR
  *                              <li>@c LORS_RETRY_UNTIL_TIMEOUT
@@ -899,6 +900,7 @@ int    lorsSetStore (LorsSet        *set,
                      LorsConditionStruct *lc,
                      int             nthreads,
                      int             timeout,
+					 socket_io_handler *handle,
                      int             opts);
 
 longlong lorsSetFindMaxlength(LorsSet *set);
@@ -1005,7 +1007,7 @@ long    lorsSetLoad (LorsSet     *set,
  * @param   thds_per_job            This is a measure of redundancy.
  * @param   progress_n              When @c progress_n is greater than 0, and
  *                              @c thds_per_job is greater than 1
- * @param   handle            socket io handle to report status to visualization
+ * @param   handle            socket io handle to report status to report host
  * @param   opts              <ul>
  *                              <li>@c LORS_RETURN_ON_ANY_ERROR
  *                              <li>@c LORS_RETRY_UNTIL_TIMEOUT

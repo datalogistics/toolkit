@@ -56,6 +56,7 @@ int main (int argc, char **argv)
     int         type_set = 0;
     int         fragments=0;
     char        *rcfile=NULL;
+	char        *report_host=NULL;
 
     poptContext optCon;   /* context for parsing command-line options */
 
@@ -131,6 +132,8 @@ int main (int argc, char **argv)
         "You may specify an alternate source for the upload DepotList.", "<filename>"},
   { "demo",  'D', POPT_ARG_NONE, 0, LORS_ARG_DEMO, 
         "Add the messages understood by the LoRS View visualization.", NULL},
+  { "visualize-progress",  'X', POPT_ARG_STRING, &report_host, VISUALIZE_PROGRESS, 
+     	"Http link to visualizer with port e.g. http://dlt.incntre.iu.edu:8000 .", NULL},
         POPT_AUTOHELP
         { NULL, 0, 0, NULL, 0 }
     };
@@ -383,7 +386,7 @@ in_while:
                              xndrc.location, xndrc.maxdepots, xndrc.storage_type, 
                              xndrc.duration, xndrc.max_buffersize, 
                              xndrc.resolution_file, xndrc.threads, 
-                             xndrc.timeout, 0); 
+							 xndrc.timeout, report_host, 0); 
             if ( ret != LORS_SUCCESS && ret != LORS_PARTIAL )
             {
                 if ( ret == LORS_LBONE_FAILED && xndrc.lboneList[try1] != NULL )

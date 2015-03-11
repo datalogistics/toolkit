@@ -131,7 +131,7 @@ int main (int argc, char **argv)
             perror("error6"); exit(EXIT_FAILURE);  
         }
 
-        ret = lorsSetStore(se, dp, buffer, se->max_length, size, NULL, 6, 20, 0);
+        ret = lorsSetStore(se, dp, buffer, se->max_length, size, NULL, 6, 20, NULL, 0);
 
         if ( ret != LORS_SUCCESS ) {  perror("error7"); exit(EXIT_FAILURE);  }
 
