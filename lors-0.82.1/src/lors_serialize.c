@@ -502,6 +502,8 @@ int lorsPostUnis(LorsExnode *exnode,
     ExnodeValue     val;
     ExnodeType      type;
 	int             fd = 0;
+	json_t         *json_ret;
+	json_error_t    json_err;
 
 	if(url == NULL){
 		fprintf(stderr, "Url not found \n");
@@ -545,7 +547,32 @@ int lorsPostUnis(LorsExnode *exnode,
     }
 	
 	ret = curl_post_json_string(url, buf, len, &response, &response_len);
+	//fprintf(stdout, "JSON Respons : %s \n", response);
+	json_ret = json_loads(response, 0, &json_err);
+	if(json_ret == NULL){
+		fprintf(stderr, "Could not decode JSON: %d: %s\n", json_err.line, json_err.text);
+		ret = LORS_FAILURE;
+		goto bail;
+	}
+	
+	json_ret = json_object_get(json_ret,"selfRef");
+	if(json_ret == NULL){
+		fprintf(stderr, "SelfRef not found in JSON response \n");
+		ret = LORS_FAILURE;
+		goto bail;
+	}
+	
+    fprintf(stderr, "\n\n****************** Self Reference UNIS link  ******************* \n");
+	fprintf(stderr, "*\n");
+	fprintf(stderr, "*   %s\n", json_string_value(json_ret));
+	fprintf(stderr, "*\n");
+	fprintf(stderr, "*****************************************************************\n\n\n");
+		
+ bail:	
 	// doing clean up stuff before
+	if(response != NULL){
+		free(response);
+	}
 	free(buf);
 	exnodeDestroyExnode(exnode->exnode);
     exnode->exnode = NULL;

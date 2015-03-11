@@ -198,7 +198,6 @@ void cellophane_print_log(WsHandler * ws_handler, enum cellophane_log_type logty
     }
 
     va_end(args);
-
 }
 
 
