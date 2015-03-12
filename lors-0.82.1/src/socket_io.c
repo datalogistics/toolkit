@@ -61,7 +61,7 @@ int socket_io_init(socket_io_handler *handle, const char *host, const char *sess
 		return SOCK_FAIL;
 	}
 	
-	//cellophane_set_debug(&handle->client, DEBUG_DETAILED);
+	cellophane_set_debug(&handle->client, DEBUG_DETAILED);
 	cellophane_io(&handle->client, URL->scheme, URL->host, atoi(URL->port));
 	if(cellophane_io_connect(&handle->client) != 1){
 		fprintf(stderr, "Failed to connect : %s%s:%d \n", URL->scheme, URL->host, atoi(URL->port));

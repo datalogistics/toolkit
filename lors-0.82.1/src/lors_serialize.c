@@ -178,7 +178,11 @@ int    lorsUrleDeserialize (LorsExnode ** exnode,
     
     filetype = "uef";
     ret =  lorsDeserialize(exnode, buf, size, filetype);
-    
+	
+	if(ret != EXNODE_SUCCESS){
+		fprintf(stderr, "JSON deserialization failed \n");
+		return LORS_FAILURE;
+	}
     free(buf);
     
     return LORS_SUCCESS;
