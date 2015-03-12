@@ -13,6 +13,7 @@
 #include <curl/curl.h>
 #include <string.h>
 
+
 #define D_LORS_NONE    0x0000
 #define D_LORS_TERSE   0x0001
 #define D_LORS_ERR_MSG 0x0002 
@@ -93,6 +94,7 @@ int _lorsCalcTimeout(longlong length);
 IBP_depot lors_strtodepot(char *hostname);
 int curl_get_json_string(char *url, char **buf, longlong *size);
 int curl_post_json_string(char *url, char *buf, longlong size, char **response, longlong *len);
+void get_uuid(char *buff);
 
 #ifdef __GNU__ 
 #define LOCATION() set_location(__FILE__, __FUNCTION__, __LINE__, pthread_self())

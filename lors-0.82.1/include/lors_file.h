@@ -68,7 +68,8 @@ int lorsUploadFile( char      *filename,
                    ulong_t max_internal_buffer,
                    char      *resolution_file,
                    int        nthreads,
-                   int        timeout, 
+                   int        timeout,
+					char      *report_host, 
                    int        opts);
 
 int lorsDownloadFile(char       *exnode_filename, 
@@ -88,6 +89,7 @@ int lorsDownloadFile(char       *exnode_filename,
                      char       *resolution_file,
                      int        nthreads,
                      int        timeout, 
+ 					 char      *report_host,
                      int        opts);
 
 int lorsRefreshFile(char *filename, 

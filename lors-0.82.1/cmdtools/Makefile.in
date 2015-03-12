@@ -56,7 +56,8 @@ bin_PROGRAMS = lors_upload$(EXEEXT) lors_download$(EXEEXT) \
 	lors_ls$(EXEEXT) lors_augment$(EXEEXT) lors_refresh$(EXEEXT) \
 	lors_test$(EXEEXT) lors_trim$(EXEEXT) lors_launch$(EXEEXT) \
 	lbone_resolution$(EXEEXT) lbone_test$(EXEEXT) \
-	lors_route$(EXEEXT) lors_e2etest$(EXEEXT) lors_modify$(EXEEXT)
+	lors_route$(EXEEXT) lors_e2etest$(EXEEXT) lors_modify$(EXEEXT) \
+	socket_io_test$(EXEEXT)
 subdir = cmdtools
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -123,6 +124,9 @@ am_lors_upload_OBJECTS = lors_upload.$(OBJEXT) lors_file.$(OBJEXT) \
 	lors_libe2e.$(OBJEXT) parse_xndrc.$(OBJEXT)
 lors_upload_OBJECTS = $(am_lors_upload_OBJECTS)
 lors_upload_DEPENDENCIES = $(am__DEPENDENCIES_2)
+am_socket_io_test_OBJECTS = socket_io_test.$(OBJEXT)
+socket_io_test_OBJECTS = $(am_socket_io_test_OBJECTS)
+socket_io_test_DEPENDENCIES = $(am__DEPENDENCIES_2)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -137,14 +141,14 @@ SOURCES = $(lbone_resolution_SOURCES) $(lbone_test_SOURCES) \
 	$(lors_ls_SOURCES) $(lors_modify_SOURCES) \
 	$(lors_refresh_SOURCES) $(lors_route_SOURCES) \
 	$(lors_test_SOURCES) $(lors_trim_SOURCES) \
-	$(lors_upload_SOURCES)
+	$(lors_upload_SOURCES) $(socket_io_test_SOURCES)
 DIST_SOURCES = $(lbone_resolution_SOURCES) $(lbone_test_SOURCES) \
 	$(lors_augment_SOURCES) $(lors_download_SOURCES) \
 	$(lors_e2etest_SOURCES) $(lors_launch_SOURCES) \
 	$(lors_ls_SOURCES) $(lors_modify_SOURCES) \
 	$(lors_refresh_SOURCES) $(lors_route_SOURCES) \
 	$(lors_test_SOURCES) $(lors_trim_SOURCES) \
-	$(lors_upload_SOURCES)
+	$(lors_upload_SOURCES) $(socket_io_test_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -306,6 +310,9 @@ JANSSON_INC = @LORS_JANSSON_DIR@/include
 JANSSON_LIB = @LORS_JANSSON_DIR@/lib/ -ljansson
 LIBCURL_INC = @LORS_LIBCURL_DIR@/include
 LIBCURL_LIB = @LORS_LIBCURL_DIR@/lib/ -lcurl
+CELOPHANEDIR = @LORS_LIBCELLOPHANE_DIR@
+CELLOPHANEINC = $(CELOPHANEDIR)/include
+CELLOPHANELIB = $(CELOPHANEDIR)/lib 
 POPT_INC = @LORS_POPT_DIR@/include
 POPT_LIB = -L@LORS_POPT_DIR@/lib -lpopt
 ZLIB_INC = @LORS_ZLIB_DIR@/include
@@ -313,9 +320,9 @@ ZLIB_LIB = -L@LORS_ZLIB_DIR@/lib -lz
 E2EINC = @E2EDIR@
 E2ELIB = @E2EDIR@/libend2end.a $(E2EDIR)/md5/libmd5.a $(E2EDIR)/des/libdes.a $(E2EDIR)/aes/libaes.a
 LORSLIB = ../src/liblors.a
-AM_CPPFLAGS = -I../include -I$(XML2_INC) -I$(XNDINC) -I$(LBNINC) -I$(IBPINC) -I$(E2EINC) -I$(POPT_INC) -I$(ZLIB_INC)  -I$(JANSSON_INC) -I$(LIBCURL_INC)
+AM_CPPFLAGS = -I../include -I$(XML2_INC) -I$(XNDINC) -I$(LBNINC) -I$(IBPINC) -I$(E2EINC) -I$(POPT_INC) -I$(ZLIB_INC)  -I$(JANSSON_INC) -I$(LIBCURL_INC) -I$(CELLOPHANEINC)
 AM_CFLAGS = -g -D@OSDEF@ @EXTRA_CFLAGS@
-LDADD = $(LORSLIB) $(XNDLIB) $(LBNLIB) $(FDRLIB) $(IBPLIB) -L$(XML2_LIB) $(POPT_LIB) -lpthread -lxml2 $(E2ELIB) $(ZLIB_LIB) -L$(JANSSON_LIB) -L$(LIBCURL_LIB) @LIBS@  
+LDADD = $(LORSLIB) $(XNDLIB) $(LBNLIB) $(FDRLIB) $(IBPLIB) -L$(XML2_LIB) $(POPT_LIB) -lpthread -lxml2 $(E2ELIB) $(ZLIB_LIB) -L$(JANSSON_LIB) -L$(LIBCURL_LIB) -L$(CELLOPHANELIB) -lcellophane @LIBS@  
 lors_upload_SOURCES = lors_upload.c lors_file.c lors_libe2e.c parse_xndrc.c
 lors_upload_LDADD = -lpopt $(LDADD)
 lors_download_SOURCES = lors_download.c lors_file.c parse_xndrc.c lors_libe2e.c
@@ -342,6 +349,8 @@ lors_modify_SOURCES = lors_modify.c lors_file.c lors_libe2e.c  parse_xndrc.c
 lors_modify_LDADD = -lpopt $(LDADD)
 lors_launch_SOURCES = lors_launch.c
 lors_launch_LDADD = $(LBNLIB)
+socket_io_test_SOURCES = socket_io_test.c
+socket_io_test_LDADD = $(LDADD)
 all: all-am
 
 .SUFFIXES:
@@ -455,6 +464,9 @@ lors_trim$(EXEEXT): $(lors_trim_OBJECTS) $(lors_trim_DEPENDENCIES) $(EXTRA_lors_
 lors_upload$(EXEEXT): $(lors_upload_OBJECTS) $(lors_upload_DEPENDENCIES) $(EXTRA_lors_upload_DEPENDENCIES) 
 	@rm -f lors_upload$(EXEEXT)
 	$(LINK) $(lors_upload_OBJECTS) $(lors_upload_LDADD) $(LIBS)
+socket_io_test$(EXEEXT): $(socket_io_test_OBJECTS) $(socket_io_test_DEPENDENCIES) $(EXTRA_socket_io_test_DEPENDENCIES) 
+	@rm -f socket_io_test$(EXEEXT)
+	$(LINK) $(socket_io_test_OBJECTS) $(socket_io_test_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -478,6 +490,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lors_trim.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lors_upload.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parse_xndrc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/socket_io_test.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

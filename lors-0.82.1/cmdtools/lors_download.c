@@ -51,6 +51,7 @@ int main (int argc, char **argv)
     int         progress = 5;
     XndRc       xndrc;
     int         opts = 0;
+	char       *report_host = NULL;
 
     poptContext optCon;   /* context for parsing command-line options */
     struct poptOption optionsTable[] = {
@@ -95,6 +96,8 @@ int main (int argc, char **argv)
         "Specify a length other than the logical extent of the exNode.", NULL},
   { "demo",  'D', POPT_ARG_NONE, 0, LORS_ARG_DEMO, 
         "Add the messages understood by the LoRS View visualization.", NULL},
+  { "visualize-progress",  'X', POPT_ARG_STRING, &report_host, VISUALIZE_PROGRESS, 
+        "Http link to visualizer with port e.g. http://dlt.incntre.iu.edu:8000 .", NULL},
         POPT_AUTOHELP
         { NULL, 0, 0, NULL, 0 }
     };
@@ -233,7 +236,8 @@ int main (int argc, char **argv)
                                lbs->host,
                                lbs->port,
                                xndrc.location,xndrc.resolution_file,
-                               xndrc.threads, xndrc.timeout, opts); 
+                               xndrc.threads, xndrc.timeout, 
+							   report_host, opts); 
          
             if ( ret != LORS_SUCCESS )
             {

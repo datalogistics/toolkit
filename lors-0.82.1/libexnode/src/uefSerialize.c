@@ -139,8 +139,8 @@ int uefSerialize(Exnode *exnode, char **buf, int *len, size_t file_size, time_t 
 	
 	//snprintf(timestamp, 100, "%d", (int)time(NULL));
 	json_object_set(exnode_obj, "parent", json_null());
-	json_object_set(exnode_obj, "created", json_string((int)time(NULL)));
-	json_object_set(exnode_obj, "modified", json_string((int)time(NULL)));
+	json_object_set(exnode_obj, "created", json_integer(time(NULL)));
+	json_object_set(exnode_obj, "modified", json_integer(time(NULL)));
 	json_object_set(exnode_obj, "mode", json_string("file"));
 	json_object_set(exnode_obj, "size", json_integer(file_size));
 

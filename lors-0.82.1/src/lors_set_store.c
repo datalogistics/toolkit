@@ -34,6 +34,7 @@ int    lorsSetStore (LorsSet * set,
                      LorsConditionStruct *lc,
                      int nthreads,
                      int timeout,
+					 socket_io_handler *handle,
                      int opts)
 {
     int ndata_block = 0, ndata_mod_block;
@@ -170,7 +171,7 @@ int    lorsSetStore (LorsSet * set,
         job->src = buffer+block_offset;
         job->src_length = list[i];
         job->src_offset = block_offset;
-
+		job->handle = handle;
             /* TODO: the conditioned data will be returned in dst */
         job->dst = NULL;
         job->extra_data = lc;
@@ -279,7 +280,7 @@ int    lorsSetStore (LorsSet * set,
             job_store->src = job->dst;
             job_store->src_length = job->dst_length; 
             job_store->src_offset = 0;
-
+			job_store->handle = handle;
             job_store->dst = lm;
 
             /* add to job pool */
@@ -373,7 +374,7 @@ int lorsSetUpdate(LorsSet       *set,
     int              lret;
     lorsSetInit(&update, set->data_blocksize, 1, 0);
 
-    lret = lorsSetStore(update, dp, buffer, offset, length, NULL, nthreads, timeout, opts);
+    lret = lorsSetStore(update, dp, buffer, offset, length, NULL, nthreads, timeout, NULL, opts);
     if ( lret != LORS_SUCCESS ) return lret;
 
     lret = lorsSetTrim(set, offset, length, nthreads, timeout, opts|LORS_TRIM_ALL);
@@ -701,8 +702,15 @@ next_depot:
                 goto bail;
             }
         } else { 
+
+			// report status to report host 
+			if(job->handle != NULL){
+				socket_io_send_push(job->handle, ldepot->depot->host, lm->exnode_offset+written, (job->src_length-written));
+			}
+
             written += ibp_ret;
             lm->seek_offset += ibp_ret;
+			
             lorsDebugPrint(D_LORS_VERBOSE, "lm->seek_offset %d, ibp_ret. %d\n", 
                     lm->seek_offset, ibp_ret);
             ret = LORS_SUCCESS ;
