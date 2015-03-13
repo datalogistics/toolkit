@@ -1,9 +1,9 @@
 # Directories...
-$prefix=/home/adorwat/usr
+$prefix=/u/adorwat/usr
 $exec_prefix=${prefix}
 $bindir=${exec_prefix}/bin
 $confdir=${prefix}/etc
-$docdir=/home/adorwat/usr/doc
+$docdir=/u/adorwat/usr/doc
 $mandir=${datarootdir}/man
 $libdir=${exec_prefix}/lib
 $srcdir=../..

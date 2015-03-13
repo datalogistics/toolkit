@@ -21,7 +21,7 @@
 #
 ###########################################################################
 
-prefix=/home/adorwat/usr
+prefix=/u/adorwat/usr
 exec_prefix=${prefix}
 includedir=${prefix}/include
 cppflag_curl_staticlib=
@@ -71,7 +71,7 @@ while test $# -gt 0; do
         ;;
 
     --ca)
-        echo ""/etc/ssl/certs/ca-certificates.crt""
+        echo ""/etc/pki/tls/certs/ca-bundle.crt""
         ;;
 
     --cc)
@@ -83,13 +83,13 @@ while test $# -gt 0; do
         ;;
 
     --feature|--features)
-        for feature in SSL IPv6 UnixSockets libz IDN NTLM NTLM_WB TLS-SRP ""; do
+        for feature in SSL IPv6 UnixSockets libz NTLM NTLM_WB ""; do
             test -n "$feature" && echo "$feature"
         done
         ;;
 
     --protocols)
-        for protocol in DICT FILE FTP FTPS GOPHER HTTP HTTPS IMAP IMAPS LDAP LDAPS POP3 POP3S RTMP RTSP SCP SFTP SMB SMBS SMTP SMTPS TELNET TFTP; do
+        for protocol in DICT FILE FTP FTPS GOPHER HTTP HTTPS IMAP IMAPS POP3 POP3S RTSP SMB SMBS SMTP SMTPS TELNET TFTP; do
             echo "$protocol"
         done
         ;;
@@ -148,7 +148,7 @@ while test $# -gt 0; do
            CURLLIBDIR=""
         fi
         if test "Xno" = "Xyes"; then
-          echo ${CURLLIBDIR}-lcurl -lidn -lrtmp -lssh2 -lssl -lcrypto -lssl -lcrypto -lldap -lz -lrt
+          echo ${CURLLIBDIR}-lcurl -lssl -lcrypto -lssl -lcrypto -lz
         else
           echo ${CURLLIBDIR}-lcurl
         fi
@@ -156,7 +156,7 @@ while test $# -gt 0; do
 
     --static-libs)
         if test "Xyes" != "Xno" ; then
-          echo ${exec_prefix}/lib/libcurl.a  -lidn -lrtmp -lssh2 -lssl -lcrypto -lssl -lcrypto -lldap -lz -lrt
+          echo ${exec_prefix}/lib/libcurl.a  -lssl -lcrypto -lssl -lcrypto -lz
         else
           echo "curl was built with static libraries disabled" >&2
           exit 1
@@ -164,7 +164,7 @@ while test $# -gt 0; do
         ;;
 
     --configure)
-        echo " '--prefix=/home/adorwat/usr'"
+        echo " '--prefix=/u/adorwat/usr'"
         ;;
 
     *)

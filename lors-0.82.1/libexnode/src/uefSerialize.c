@@ -138,7 +138,9 @@ int uefSerialize(Exnode *exnode, char **buf, int *len, size_t file_size, time_t 
 	}
 	
 	//snprintf(timestamp, 100, "%d", (int)time(NULL));
-	json_object_set(exnode_obj, "parent", json_null());
+	//json_object_set(exnode_obj, "parent", json_null());
+	// Put all data on Dump folder
+	json_object_set(exnode_obj, "parent", json_string("5502fa68e779894eaab36515"));
 	json_object_set(exnode_obj, "created", json_integer(time(NULL)));
 	json_object_set(exnode_obj, "modified", json_integer(time(NULL)));
 	json_object_set(exnode_obj, "mode", json_string("file"));
@@ -176,7 +178,7 @@ int uefDeserializeMetadata(ExnodeMetadata *md, const char *key, const json_t *va
 	if(type == JSON_STRING){
 		name = getMapping(key);
 		if(name == NULL){
-			fprintf(stdout, "UEF => Exnode mapping for %s not found", key);
+			fprintf(stdout, "UEF => Exnode mapping for %s not found \n", key);
 			return (EXNODE_BADPARSE);
 		}
 		ex_value.s=strdup(json_string_value(value));
@@ -185,7 +187,7 @@ int uefDeserializeMetadata(ExnodeMetadata *md, const char *key, const json_t *va
 	}else if(type == JSON_INTEGER){
 		name = getMapping(key);
 		if(name == NULL){
-			fprintf(stdout, "UEF => Exnode mapping for %s not found", key);
+			fprintf(stdout, "UEF => Exnode mapping for %s not found\n", key);
 			return (EXNODE_BADPARSE);
 		}
 		ex_value.i = (long long)json_integer_value(value);
@@ -193,7 +195,7 @@ int uefDeserializeMetadata(ExnodeMetadata *md, const char *key, const json_t *va
 	}else if(type == JSON_REAL){
 		name = getMapping(key);
 		if(name == NULL){
-			fprintf(stdout, "UEF => Exnode mapping for %s not found", key);
+			fprintf(stdout, "UEF => Exnode mapping for %s not found \n", key);
 			return (EXNODE_BADPARSE);
 		}
 		ex_value.d = (double)json_real_value(value);
@@ -227,10 +229,10 @@ int uefDeserializeMapping(Exnode *exnode, json_t *extent)
 		if(strcmp(key,"$schema")==0){
 			temp = json_string_value(value);
 			// we are only suppoprting IBP storage 
-			if(temp == NULL || strcmp(temp, ibp_schema) != 0){
+			/*if(temp == NULL || strcmp(temp, ibp_schema) != 0){
 				exnodeDestroyMapping(map);
-				return(EXNODE_SUCCESS);
-			}
+				return(EXNODE_FAILURE);
+				}*/
 		}else if(strcmp(key,"offset") == 0){
 			err=uefDeserializeMetadata(map->metadata, key, value);
 			if(err != EXNODE_SUCCESS){
@@ -306,25 +308,25 @@ int uefDeserialize(char *buf, int len, Exnode **exnode)
 		return(err);
 	}
 
-	json_ret = json_loads(buf, 0, &json_err);
+	json_ret = json_loads(buf, JSON_DISABLE_EOF_CHECK, &json_err);
 	if(json_ret == NULL){
 		fprintf(stderr, "Could not decode JSON: %d: %s\n", json_err.line, json_err.text);
 		return (EXNODE_BADPARSE);
 	}
 
-	//PRINT(stdout," %s \n",json_dumps(json_ret, JSON_INDENT(4)));
+	PRINT(stdout," %s \n",json_dumps(json_ret, JSON_INDENT(4)));
 
 	if(json_is_array(json_ret)){
 		num_obj = json_array_size(json_ret);
 		if(num_obj <= 0 || num_obj > 1){
-			fprintf(stdout, "JSON contain for than 1 exnode or no exnode !");
+			fprintf(stdout, "JSON contain for than 1 exnode or no exnode !\n");
 			return (EXNODE_BADPARSE);
 		}
 		json_ret = json_array_get(json_ret, 0);
 	}
 	
 	if(!json_is_object(json_ret)){
-		fprintf(stdout, "Unknow JSON type found, expecting JSON object");
+		fprintf(stdout, "Unknow JSON type found, expecting JSON object\n");
 		return (EXNODE_BADPARSE);
 	}
 
@@ -344,15 +346,15 @@ int uefDeserialize(char *buf, int len, Exnode **exnode)
 			mode = json_string_value(value);
 			if(mode != NULL){
 				if(strcmp(mode, "file") != 0){
-					fprintf(stderr, "Can not parse Folder");
+					fprintf(stderr, "Can not parse Folder \n");
 					return (EXNODE_BADPARSE);
 				}
 			}else{
-				fprintf(stderr, "WARNING: Found mode NULL");
+				fprintf(stderr, "WARNING: Found mode NULL \n");
 			}
 		}else if(strcmp(key, "extents") == 0){
 			if(!json_is_array(value)){
-				fprintf(stderr, "Expecting extents araay");
+				fprintf(stderr, "Expecting extents array \n");
 				return (EXNODE_BADPARSE);
 			}
 			json_array_foreach(value, index, json_extent){

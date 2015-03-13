@@ -2,7 +2,7 @@
 /* lib/curl_config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Location of default ca bundle */
-#define CURL_CA_BUNDLE "/etc/ssl/certs/ca-certificates.crt"
+#define CURL_CA_BUNDLE "/etc/pki/tls/certs/ca-bundle.crt"
 
 /* Location of default ca path */
 /* #undef CURL_CA_PATH */
@@ -32,10 +32,10 @@
 /* #undef CURL_DISABLE_IMAP */
 
 /* to disable LDAP */
-/* #undef CURL_DISABLE_LDAP */
+#define CURL_DISABLE_LDAP 1
 
 /* to disable LDAPS */
-/* #undef CURL_DISABLE_LDAPS */
+#define CURL_DISABLE_LDAPS 1
 
 /* to disable --libcurl C code generation option */
 /* #undef CURL_DISABLE_LIBCURL_OPTION */
@@ -95,7 +95,7 @@
 #define GETNAMEINFO_TYPE_ARG46 socklen_t
 
 /* Define to the type of arg 7 for getnameinfo. */
-#define GETNAMEINFO_TYPE_ARG7 unsigned int
+#define GETNAMEINFO_TYPE_ARG7 int
 
 /* Specifies the number of arguments to getservbyport_r */
 #define GETSERVBYPORT_R_ARGS 6
@@ -299,13 +299,13 @@
 /* #undef HAVE_GSSMIT */
 
 /* Define to 1 if you have the `idna_strerror' function. */
-#define HAVE_IDNA_STRERROR 1
+/* #undef HAVE_IDNA_STRERROR */
 
 /* Define to 1 if you have the `idn_free' function. */
-#define HAVE_IDN_FREE 1
+/* #undef HAVE_IDN_FREE */
 
 /* Define to 1 if you have the <idn-free.h> header file. */
-#define HAVE_IDN_FREE_H 1
+/* #undef HAVE_IDN_FREE_H */
 
 /* Define to 1 if you have the <ifaddrs.h> header file. */
 #define HAVE_IFADDRS_H 1
@@ -360,16 +360,16 @@
 /* #undef HAVE_IO_H */
 
 /* Define to 1 if you have the lber.h header file. */
-#define HAVE_LBER_H 1
+/* #undef HAVE_LBER_H */
 
 /* Define to 1 if you have the ldapssl.h header file. */
 /* #undef HAVE_LDAPSSL_H */
 
 /* Define to 1 if you have the ldap.h header file. */
-#define HAVE_LDAP_H 1
+/* #undef HAVE_LDAP_H */
 
 /* Define to 1 if you have the `ldap_init_fd' function. */
-#define HAVE_LDAP_INIT_FD 1
+/* #undef HAVE_LDAP_INIT_FD */
 
 /* Use LDAPS implementation */
 #define HAVE_LDAP_SSL 1
@@ -378,25 +378,25 @@
 /* #undef HAVE_LDAP_SSL_H */
 
 /* Define to 1 if you have the `ldap_url_parse' function. */
-#define HAVE_LDAP_URL_PARSE 1
+/* #undef HAVE_LDAP_URL_PARSE */
 
 /* Define to 1 if you have the <libgen.h> header file. */
 #define HAVE_LIBGEN_H 1
 
 /* Define to 1 if you have the `idn' library (-lidn). */
-#define HAVE_LIBIDN 1
+/* #undef HAVE_LIBIDN */
 
 /* Define to 1 if you have the `resolve' library (-lresolve). */
 /* #undef HAVE_LIBRESOLVE */
 
 /* Define to 1 if you have the <librtmp/rtmp.h> header file. */
-#define HAVE_LIBRTMP_RTMP_H 1
+/* #undef HAVE_LIBRTMP_RTMP_H */
 
 /* Define to 1 if you have the `ssh2' library (-lssh2). */
-#define HAVE_LIBSSH2 1
+/* #undef HAVE_LIBSSH2 */
 
 /* Define to 1 if you have the <libssh2.h> header file. */
-#define HAVE_LIBSSH2_H 1
+/* #undef HAVE_LIBSSH2_H */
 
 /* Define to 1 if you have the `ssl' library (-lssl). */
 #define HAVE_LIBSSL 1
@@ -580,10 +580,10 @@
 /* #undef HAVE_SOCKET_H */
 
 /* if you have the function SRP_Calc_client_key */
-#define HAVE_SSLEAY_SRP 1
+/* #undef HAVE_SSLEAY_SRP */
 
 /* Define to 1 if you have the `SSLv2_client_method' function. */
-/* #undef HAVE_SSLV2_CLIENT_METHOD */
+#define HAVE_SSLV2_CLIENT_METHOD 1
 
 /* Define to 1 if you have the `SSL_get_shutdown' function. */
 #define HAVE_SSL_GET_SHUTDOWN 1
@@ -634,7 +634,7 @@
 /* #undef HAVE_STRNICMP */
 
 /* Define to 1 if you have the <stropts.h> header file. */
-#define HAVE_STROPTS_H 1
+/* #undef HAVE_STROPTS_H */
 
 /* Define to 1 if you have the strstr function. */
 #define HAVE_STRSTR 1
@@ -709,10 +709,10 @@
 #define HAVE_TIME_H 1
 
 /* Define to 1 if you have the <tld.h> header file. */
-#define HAVE_TLD_H 1
+/* #undef HAVE_TLD_H */
 
 /* Define to 1 if you have the `tld_strerror' function. */
-#define HAVE_TLD_STRERROR 1
+/* #undef HAVE_TLD_STRERROR */
 
 /* Define to 1 if you have the `uname' function. */
 #define HAVE_UNAME 1
@@ -917,10 +917,10 @@
 /* #undef USE_GNUTLS_NETTLE */
 
 /* if librtmp is in use */
-#define USE_LIBRTMP 1
+/* #undef USE_LIBRTMP */
 
 /* if libSSH2 is in use */
-#define USE_LIBSSH2 1
+/* #undef USE_LIBSSH2 */
 
 /* If you want to build curl with the built-in manual */
 #define USE_MANUAL 1
@@ -935,7 +935,7 @@
 /* #undef USE_NSS */
 
 /* Use OpenLDAP-specific code */
-#define USE_OPENLDAP 1
+/* #undef USE_OPENLDAP */
 
 /* if OpenSSL is in use */
 #define USE_OPENSSL 1
@@ -953,7 +953,7 @@
 /* #undef USE_THREADS_POSIX */
 
 /* Use TLS-SRP authentication */
-#define USE_TLS_SRP 1
+/* #undef USE_TLS_SRP */
 
 /* Use Unix domain sockets */
 #define USE_UNIX_SOCKETS 1

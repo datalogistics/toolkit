@@ -712,7 +712,7 @@ upload_partial:
         fprintf(stderr, "Serialize Failed.\n");
         return LORS_FAILURE;
     }
-	fprintf(stderr, "p7\n");
+    //fprintf(stderr, "p7\n");
     lorsExnodeFree(xnd);
 
 	if(temp_handle != NULL){

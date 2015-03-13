@@ -304,26 +304,26 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} "/home/adorwat/toolkit/lors-0.82.1/libcurl/missing" --run aclocal-1.14
+ACLOCAL = ${SHELL} "/u/adorwat/toolkit/lors-0.82.1/libcurl/missing" --run aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 AR = /usr/bin/ar
 AS = as
-AUTOCONF = ${SHELL} "/home/adorwat/toolkit/lors-0.82.1/libcurl/missing" --run autoconf
-AUTOHEADER = ${SHELL} "/home/adorwat/toolkit/lors-0.82.1/libcurl/missing" --run autoheader
-AUTOMAKE = ${SHELL} "/home/adorwat/toolkit/lors-0.82.1/libcurl/missing" --run automake-1.14
+AUTOCONF = ${SHELL} "/u/adorwat/toolkit/lors-0.82.1/libcurl/missing" --run autoconf
+AUTOHEADER = ${SHELL} "/u/adorwat/toolkit/lors-0.82.1/libcurl/missing" --run autoheader
+AUTOMAKE = ${SHELL} "/u/adorwat/toolkit/lors-0.82.1/libcurl/missing" --run automake-1.14
 AWK = gawk
 BLANK_AT_MAKETIME = 
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -O2 -Wno-system-headers
 CFLAG_CURL_SYMBOL_HIDING = -fvisibility=hidden
-CONFIGURE_OPTIONS = " '--prefix=/home/adorwat/usr'"
+CONFIGURE_OPTIONS = " '--prefix=/u/adorwat/usr'"
 CPP = gcc -E
 CPPFLAGS = 
 CPPFLAG_CURL_STATICLIB = 
 CURLVERSION = 7.40.0
-CURL_CA_BUNDLE = "/etc/ssl/certs/ca-certificates.crt"
+CURL_CA_BUNDLE = "/etc/pki/tls/certs/ca-bundle.crt"
 CURL_CFLAG_EXTRAS = 
 CURL_DISABLE_DICT = 
 CURL_DISABLE_FILE = 
@@ -331,8 +331,8 @@ CURL_DISABLE_FTP =
 CURL_DISABLE_GOPHER = 
 CURL_DISABLE_HTTP = 
 CURL_DISABLE_IMAP = 
-CURL_DISABLE_LDAP = 
-CURL_DISABLE_LDAPS = 
+CURL_DISABLE_LDAP = 1
+CURL_DISABLE_LDAPS = 1
 CURL_DISABLE_POP3 = 
 CURL_DISABLE_PROXY = 
 CURL_DISABLE_RTSP = 
@@ -341,7 +341,7 @@ CURL_DISABLE_SMTP =
 CURL_DISABLE_TELNET = 
 CURL_DISABLE_TFTP = 
 CURL_LT_SHLIB_VERSIONED_FLAVOUR = 
-CURL_NETWORK_AND_TIME_LIBS = -lrt
+CURL_NETWORK_AND_TIME_LIBS = 
 CURL_NETWORK_LIBS = 
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
@@ -352,17 +352,17 @@ DUMPBIN =
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
-EGREP = /bin/grep -E
+EGREP = /usr/bin/grep -E
 ENABLE_SHARED = yes
 ENABLE_STATIC = yes
 EXEEXT = 
-FGREP = /bin/grep -F
-GREP = /bin/grep
+FGREP = /usr/bin/grep -F
+GREP = /usr/bin/grep
 HAVE_GNUTLS_SRP = 
 HAVE_LDAP_SSL = 1
 HAVE_LIBZ = 1
-HAVE_SSLEAY_SRP = 1
-IDN_ENABLED = 1
+HAVE_SSLEAY_SRP = 
+IDN_ENABLED = 
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
@@ -371,7 +371,7 @@ INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 IPV6_ENABLED = 1
 LD = /usr/bin/ld -m elf_x86_64
 LDFLAGS = 
-LIBCURL_LIBS = -lidn -lrtmp -lssh2 -lssl -lcrypto -lssl -lcrypto -lldap -lz -lrt
+LIBCURL_LIBS = -lssl -lcrypto -lssl -lcrypto -lz
 LIBMETALINK_CPPFLAGS = 
 LIBMETALINK_LDFLAGS = 
 LIBMETALINK_LIBS = 
@@ -384,13 +384,13 @@ LIPO =
 LN_S = ln -s
 LTLIBOBJS = 
 MAINT = #
-MAKEINFO = ${SHELL} "/home/adorwat/toolkit/lors-0.82.1/libcurl/missing" --run makeinfo
+MAKEINFO = ${SHELL} "/u/adorwat/toolkit/lors-0.82.1/libcurl/missing" --run makeinfo
 MANIFEST_TOOL = :
 MANOPT = -man
-MKDIR_P = /bin/mkdir -p
+MKDIR_P = /usr/bin/mkdir -p
 NM = /usr/bin/nm -B
 NMEDIT = 
-NROFF = /usr/bin/nroff
+NROFF = /usr/bin/gnroff
 NSS_LIBS = 
 OBJDUMP = objdump
 OBJEXT = o
@@ -412,24 +412,24 @@ PKGCONFIG = no
 RANDOM_FILE = /dev/urandom
 RANLIB = ranlib
 REQUIRE_LIB_DEPS = no
-SED = /bin/sed
+SED = /usr/bin/sed
 SET_MAKE = 
-SHELL = /bin/bash
+SHELL = /bin/sh
 SSL_ENABLED = 1
 STRIP = strip
-SUPPORT_FEATURES = SSL IPv6 UnixSockets libz IDN NTLM NTLM_WB TLS-SRP
-SUPPORT_PROTOCOLS = DICT FILE FTP FTPS GOPHER HTTP HTTPS IMAP IMAPS LDAP LDAPS POP3 POP3S RTMP RTSP SCP SFTP SMB SMBS SMTP SMTPS TELNET TFTP
+SUPPORT_FEATURES = SSL IPv6 UnixSockets libz NTLM NTLM_WB
+SUPPORT_PROTOCOLS = DICT FILE FTP FTPS GOPHER HTTP HTTPS IMAP IMAPS POP3 POP3S RTSP SMB SMBS SMTP SMTPS TELNET TFTP
 USE_ARES = 
 USE_AXTLS = 
 USE_CYASSL = 
 USE_DARWINSSL = 
 USE_GNUTLS = 
 USE_GNUTLS_NETTLE = 
-USE_LIBRTMP = 1
-USE_LIBSSH2 = 1
+USE_LIBRTMP = 
+USE_LIBSSH2 = 
 USE_NGHTTP2 = 
 USE_NSS = 
-USE_OPENLDAP = 1
+USE_OPENLDAP = 
 USE_POLARSSL = 
 USE_SCHANNEL = 
 USE_SSLEAY = 1
@@ -438,10 +438,10 @@ USE_WINDOWS_SSPI =
 VERSION = -
 VERSIONNUM = 072800
 ZLIB_LIBS = -lz
-abs_builddir = /home/adorwat/toolkit/lors-0.82.1/libcurl/tests/server
-abs_srcdir = /home/adorwat/toolkit/lors-0.82.1/libcurl/tests/server
-abs_top_builddir = /home/adorwat/toolkit/lors-0.82.1/libcurl
-abs_top_srcdir = /home/adorwat/toolkit/lors-0.82.1/libcurl
+abs_builddir = /u/adorwat/toolkit/lors-0.82.1/libcurl/tests/server
+abs_srcdir = /u/adorwat/toolkit/lors-0.82.1/libcurl/tests/server
+abs_top_builddir = /u/adorwat/toolkit/lors-0.82.1/libcurl
+abs_top_srcdir = /u/adorwat/toolkit/lors-0.82.1/libcurl
 ac_ct_AR = 
 ac_ct_CC = gcc
 ac_ct_DUMPBIN = 
@@ -470,7 +470,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/adorwat/toolkit/lors-0.82.1/libcurl/install-sh
+install_sh = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/libcurl/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 libext = a
@@ -480,7 +480,7 @@ mandir = ${datarootdir}/man
 mkdir_p = $(MKDIR_P)
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /home/adorwat/usr
+prefix = /u/adorwat/usr
 program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
@@ -572,44 +572,44 @@ UTIL = \
 getpart_SOURCES = $(CURLX_SRCS) $(CURLX_HDRS) $(USEFUL) \
  testpart.c
 
-getpart_LDADD = -lrt
+getpart_LDADD = 
 getpart_CFLAGS = $(AM_CFLAGS)
 resolve_SOURCES = $(CURLX_SRCS) $(CURLX_HDRS) $(USEFUL) $(UTIL) \
  resolve.c
 
-resolve_LDADD = -lrt
+resolve_LDADD = 
 resolve_CFLAGS = $(AM_CFLAGS)
 rtspd_SOURCES = $(CURLX_SRCS) $(CURLX_HDRS) $(USEFUL) $(UTIL) \
  server_sockaddr.h \
  rtspd.c
 
-rtspd_LDADD = -lrt
+rtspd_LDADD = 
 rtspd_CFLAGS = $(AM_CFLAGS)
 sockfilt_SOURCES = $(CURLX_SRCS) $(CURLX_HDRS) $(USEFUL) $(UTIL) \
  server_sockaddr.h \
  sockfilt.c \
  ../../lib/inet_pton.c
 
-sockfilt_LDADD = -lrt
+sockfilt_LDADD = 
 sockfilt_CFLAGS = $(AM_CFLAGS)
 sws_SOURCES = $(CURLX_SRCS) $(CURLX_HDRS) $(USEFUL) $(UTIL) \
  server_sockaddr.h \
  sws.c \
  ../../lib/inet_pton.c
 
-sws_LDADD = -lrt
+sws_LDADD = 
 sws_CFLAGS = $(AM_CFLAGS)
 tftpd_SOURCES = $(CURLX_SRCS) $(CURLX_HDRS) $(USEFUL) $(UTIL) \
  server_sockaddr.h \
  tftpd.c \
  tftp.h
 
-tftpd_LDADD = -lrt
+tftpd_LDADD = 
 tftpd_CFLAGS = $(AM_CFLAGS)
 fake_ntlm_SOURCES = $(CURLX_SRCS) $(CURLX_HDRS) $(USEFUL) $(UTIL) \
  fake_ntlm.c
 
-fake_ntlm_LDADD = -lrt
+fake_ntlm_LDADD = 
 fake_ntlm_CFLAGS = $(AM_CFLAGS)
 
 # Makefile.inc provides neat definitions
