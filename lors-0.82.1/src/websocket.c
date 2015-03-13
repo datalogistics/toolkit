@@ -116,6 +116,9 @@ int websocket_init(struct libwebsocket_context **context, struct libwebsocket **
 	info.ka_probes = 3;
 	info.ka_interval = 500;
 
+	// set log level to debug so that we dont get notice messages
+	lws_set_log_level(LLL_ERR, NULL);
+
 	// create libwebsockets context
 	*context = libwebsocket_create_context(&info);
     if (context == NULL) {

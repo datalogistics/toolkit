@@ -6,7 +6,7 @@
 #include <signal.h>
 #include <string.h>
 
-#define DEBUG 1
+//#define DEBUG 1
 
 #ifdef DEBUG 
 #define LOG(format, ...) fprintf(stderr, "DEBUG %s:%d: " format "\n", __FILE__, __LINE__, ##__VA_ARGS__)
