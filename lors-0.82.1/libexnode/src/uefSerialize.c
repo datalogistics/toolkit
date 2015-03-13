@@ -17,7 +17,7 @@
 #define DEBUG 1
 
 #ifdef DEBUG
-#define PRINT(args...) printf(args)
+#define PRINT(args...) fprintf(args)
 #else
 #define PRINT(args...)
 #endif
@@ -308,13 +308,13 @@ int uefDeserialize(char *buf, int len, Exnode **exnode)
 		return(err);
 	}
 
-	json_ret = json_loads(buf, JSON_DISABLE_EOF_CHECK, &json_err);
+	json_ret = json_loads(buf, 0 , &json_err);
 	if(json_ret == NULL){
 		fprintf(stderr, "Could not decode JSON: %d: %s\n", json_err.line, json_err.text);
 		return (EXNODE_BADPARSE);
 	}
 
-	PRINT(stdout," %s \n",json_dumps(json_ret, JSON_INDENT(4)));
+	//PRINT(stdout," %s \n",json_dumps(json_ret, JSON_INDENT(4)));
 
 	if(json_is_array(json_ret)){
 		num_obj = json_array_size(json_ret);
