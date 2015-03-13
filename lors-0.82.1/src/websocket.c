@@ -20,10 +20,11 @@ int callback_socket_io(struct libwebsocket_context *context,
 {
 	char              *buff;
 	char              *write_buff;
-	size_t             msgLen;
+	size_t             msgLen = 0;
 	socket_io_msg     *msg = NULL;
 	socket_io_handler *handle = libwebsocket_context_user(context);
-	
+	char              *ping_msg = "2";
+
     switch(reason){
 	case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
 		handle->status = CONN_ERROR;
@@ -43,22 +44,27 @@ int callback_socket_io(struct libwebsocket_context *context,
         LOG( "if u want u can write ");
 		// get msg from queue
 		msg = socket_io_get_msg(handle);
-		if(msg == NULL){
-			LOG( "No message to send, Waiting ..");
-			break;
+		if(msg != NULL){
+			// convert it into protocol msg 
+			socket_io_convert_to_protocol_msg(msg, &buff, &msgLen);
+			if(msgLen){
+				// libwebsocket require extra pre and post buffer to put header and trailar in place
+				write_buff = malloc(msgLen + LWS_SEND_BUFFER_PRE_PADDING + LWS_SEND_BUFFER_POST_PADDING);
+				memcpy((write_buff + LWS_SEND_BUFFER_PRE_PADDING), buff, msgLen);
+				libwebsocket_write(wsi, (write_buff + LWS_SEND_BUFFER_PRE_PADDING), msgLen, LWS_WRITE_TEXT);
+				free(write_buff);
+				free(buff);
+				handle->last_ping = time(NULL);
+			}
+		}else{
+			fprintf(stderr, "Sending Ping packet");
+			write_buff = malloc(strlen(ping_msg) + LWS_SEND_BUFFER_PRE_PADDING + LWS_SEND_BUFFER_POST_PADDING);
+			memcpy((write_buff + LWS_SEND_BUFFER_PRE_PADDING), ping_msg, strlen(ping_msg));
+			libwebsocket_write(wsi, (write_buff + LWS_SEND_BUFFER_PRE_PADDING), strlen(ping_msg), LWS_WRITE_TEXT);
+			free(write_buff);
+			handle->last_ping = time(NULL);
 		}
 		
-		// convert it into protocol msg 
-		socket_io_convert_to_protocol_msg(msg, &buff, &msgLen);
-		if(msgLen){
-			// libwebsocket require extra pre and post buffer to put header and trailar in place
-			write_buff = malloc(msgLen + LWS_SEND_BUFFER_PRE_PADDING + LWS_SEND_BUFFER_POST_PADDING);
-			memcpy((write_buff + LWS_SEND_BUFFER_PRE_PADDING), buff, msgLen);
-			libwebsocket_write(wsi, (write_buff + LWS_SEND_BUFFER_PRE_PADDING), msgLen, LWS_WRITE_TEXT);
-		}
-
-		free(write_buff);
-		free(buff);
         break;
 
     case LWS_CALLBACK_CLOSED:

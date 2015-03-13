@@ -1,4 +1,5 @@
 #include <socket_io.h>
+#include <unistd.h>
 
 int main(int argc, char **argv){
 
@@ -15,7 +16,9 @@ int main(int argc, char **argv){
 	
 	socket_io_init(&handle, argv[1], argv[2]);
 	socket_io_send_register(&handle, "test.c", 1000000, 5);
-	
+
+	//sleep(30);
+
 	offset = 0;
 	for(i=0; i<1000; i++){
 		length = 1000;

@@ -17,7 +17,7 @@
 #define DEBUG 1
 
 #ifdef DEBUG
-#define PRINT(args...) printf(args)
+#define PRINT(args...) fprintf(args)
 #else
 #define PRINT(args...)
 #endif

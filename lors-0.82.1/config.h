@@ -38,7 +38,7 @@
 #define HAVE_LIBWEBSOCKETS 1
 
 /* Define to 1 if you have the `xml2' library (-lxml2). */
-/* #undef HAVE_LIBXML2 */
+#define HAVE_LIBXML2 1
 
 /* Define to 1 if you have the `z' library (-lz). */
 #define HAVE_LIBZ 1

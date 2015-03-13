@@ -15,7 +15,7 @@
 #endif
 		
 #define MAX_JOBS 1000000
-
+#define PING_INTERVAL 25 //In sec
 
 void static socket_io_emit_thread(socket_io_handler *handle);
 char *socket_io_get_event_name_from_type(Event_type type);
@@ -76,7 +76,7 @@ int socket_io_init(socket_io_handler *handle, const char *host, const char *sess
 	}
 
 	LOG("Connected successfully to %s", handle->server_add);
-
+	handle->last_ping = time(NULL);
 	LOG("Initialized Queue");
 	pthread_mutex_init(&handle->m_lock, NULL);
 	handle->job_list = new_dllist();
@@ -91,7 +91,10 @@ void static socket_io_emit_thread(socket_io_handler *handle){
 	
 	while(handle->status == CONN_CONNECTED){
 		libwebsocket_service(handle->context, 50);
-		if(handle->num_job > 0 ){
+		//fprintf(stderr, " Last ping : %lld , current time : %lld , diff : %lld \n ", handle->last_ping, time(NULL), (time(NULL) - handle->last_ping));
+		if(handle->num_job > 0){ 
+			libwebsocket_callback_on_writable( handle->context, handle->wsi);
+		}else if((time(NULL) - handle->last_ping) > PING_INTERVAL){
 			libwebsocket_callback_on_writable( handle->context, handle->wsi);
 		}
 	}
@@ -208,7 +211,7 @@ int socket_io_close(socket_io_handler *handle){
 	Dllist ptr = NULL;
 	socket_io_msg *io_msg;
 
-	while(handle->num_job != 0){
+	while(handle->num_job != 0 && handle->status == CONN_CONNECTED){
 		LOG("# Jobs %d , Waiting for job queue to complete ", handle->num_job);
 		usleep(1000 * (int)pow((double)count, 2));
 		count++;
