@@ -17,17 +17,15 @@
 #define MAX_JOBS 1000000
 
 
-void static socket_io_keepAlive_thread(socket_io_handler *handle);
 void static socket_io_emit_thread(socket_io_handler *handle);
+char *socket_io_get_event_name_from_type(Event_type type);
 
 int socket_io_init(socket_io_handler *handle, const char *host, const char *session_id ){
 	
 	socket_io_handler h;
 	struct parsed_url *URL;
 	handle->num_job = 0;
-	handle->stop_emitter = 1;
 	handle->job_list = NULL;
-	//handle->client.keep_alive_flag = 0;
 	handle->status = CONN_WAITING;
 
 	if(host == NULL){
@@ -68,7 +66,6 @@ int socket_io_init(socket_io_handler *handle, const char *host, const char *sess
 		return SOCK_FAIL;
 	}
 
-
 	while (handle->status == CONN_WAITING) {
         libwebsocket_service(handle->context, 50);
     }
@@ -82,22 +79,24 @@ int socket_io_init(socket_io_handler *handle, const char *host, const char *sess
 
 	LOG("Initialized Queue");
 	pthread_mutex_init(&handle->m_lock, NULL);
-	pthread_cond_init(&handle->cond_emitter, NULL);
-	pthread_cond_init(&handle->cond_insert, NULL);
 	handle->job_list = new_dllist();
 
-	LOG("Starting keepAlive thread");
-	//handle->client.keep_alive_flag = 1;
-	pthread_create(&handle->keepAlive, NULL, socket_io_keepAlive_thread, (void *)handle);
-
 	LOG("Starting emitter thread");
-	handle->stop_emitter = 0;
 	pthread_create(&handle->emitter, NULL, socket_io_emit_thread, (void *)handle);
 
 	return SOCK_SUCCESS;
 }
 
-int insert_into_queue(socket_io_handler *handle, socket_io_msg *msg){
+void static socket_io_emit_thread(socket_io_handler *handle){
+	
+	while(handle->status == CONN_CONNECTED){
+		libwebsocket_service(handle->context, 50);
+		if(handle->num_job > 0 ){
+			libwebsocket_callback_on_writable( handle->context, handle->wsi);
+		}
+	}
+}
+int socket_io_put_msg(socket_io_handler *handle, socket_io_msg *msg){
 	if(msg == NULL){
 		fprintf(stderr, "NO message to queue\n");
 		return SOCK_FAIL;
@@ -108,66 +107,100 @@ int insert_into_queue(socket_io_handler *handle, socket_io_msg *msg){
 		return SOCK_FAIL;
 	}
 
-	//LOG("##Insert Lock !!");
 	pthread_mutex_lock(&handle->m_lock);
 	if(handle->num_job >= MAX_JOBS){
 		fprintf(stderr, "Queue is full, can not append message. Putting it on floor ... \n");
-		pthread_mutex_unlock(&handle->m_lock);
+		free(msg);
 		return SOCK_FAIL;
 	}
-	//while (handle->num_job >= MAX_JOBS)
-	//pthread_cond_wait(&handle->cond_insert, &handle->m_lock);
 
 	dll_append(handle->job_list, new_jval_v(msg));
 	handle->num_job++;
 	
-	pthread_cond_signal(&handle->cond_emitter);
 	pthread_mutex_unlock(&handle->m_lock);
-	
 	LOG("Message appended successfully !");
-	return SOCK_SUCCESS;
 
+	return SOCK_SUCCESS;
 }
 
-void static socket_io_emit_thread(socket_io_handler *handle){
+socket_io_msg* socket_io_get_msg(socket_io_handler *handle){
 
 	Dllist node = NULL;
-	socket_io_msg *io_msg;
-	char *event_name;
+	socket_io_msg *io_msg = NULL;
 	
-	while(!handle->stop_emitter){
-		node = NULL;
-		io_msg = NULL;
-		event_name = NULL;
-		
-		//LOG("##Emit lock ");
-		pthread_mutex_lock(&handle->m_lock);
-		//LOG("##Emit locked ");
-		while (handle->num_job <= 0 ){
-			if(handle->stop_emitter){return;}
-			LOG("# %d Waiting for JOB",handle->num_job);
-			pthread_cond_wait(&handle->cond_emitter, &handle->m_lock);
-		}
+	if(handle == NULL){
+		fprintf(stderr, "Socket handle is NULL\n ");
+		return NULL;
+	}
+
+	pthread_mutex_lock(&handle->m_lock);
+	
+	if( handle->num_job > 0 ){
 		node = dll_first(handle->job_list);
 		if(node == NULL){
 			pthread_mutex_unlock(&handle->m_lock);
-			continue;
+			return NULL;
 		}
 		io_msg = (socket_io_msg*)jval_v(node->val);
 		handle->num_job--;
 		dll_delete_node(node);
-
-		//pthread_cond_signal(&handle->cond_insert);
-		pthread_mutex_unlock(&handle->m_lock);
-		//LOG("##Emit Unlock");
-		event_name  = socket_io_get_event_name_from_type(io_msg->type);
-		if((event_name != NULL) && (io_msg->msg != NULL)){
-			//cellophane_emit(&handle->client, event_name, io_msg->msg, "");
-			free(event_name);
-			free(io_msg->msg);
-		}
-		free(io_msg);
 	}
+
+	pthread_mutex_unlock(&handle->m_lock);
+	
+	return io_msg;
+}
+
+void socket_io_convert_to_protocol_msg(socket_io_msg *msg, char **buff, size_t *len){
+
+	char *event_name;
+	int msgLen;
+
+	if(msg == NULL && msg->msg == NULL){
+		fprintf(stderr, "Message is NULL \n");
+		buff = NULL;
+		*len = 0;
+		return;
+	}
+	
+	event_name  = socket_io_get_event_name_from_type(msg->type);
+	
+	if(event_name == NULL){
+		fprintf(stderr, "Event Name is not valid \n");
+		buff = NULL;
+		*len = 0;
+		return;
+	}
+
+	switch(msg->m_type){
+	case SOCK_JSON:
+		msgLen = 8 + ((strlen(event_name) + strlen(msg->msg)) * sizeof(char));
+		*buff = malloc(msgLen);
+		snprintf(*buff, msgLen, "42[\"%s\",%s]", event_name, msg->msg);
+		*len = msgLen - 1;  // end char is not part of buffer
+		break;
+		
+	case SOCK_STRING:
+		msgLen = 10 + ((strlen(event_name) + strlen(msg->msg)) * sizeof(char));
+		*buff = malloc(msgLen);
+		snprintf(*buff, msgLen, "42[\"%s\",\"%s\"]", event_name, msg->msg);
+		*len = msgLen - 1; // end char is not part of buffer
+		break;
+
+	case SOCK_BINARY:
+		fprintf(stderr, "No binary support yet  \n");
+		buff = NULL;
+		break;
+
+	default:
+		fprintf(stderr, "Message Type is not valid \n");
+		buff = NULL;
+		*len = 0;
+	}
+	free(msg->msg);
+	free(msg);
+	free(event_name);
+
 }
 
 int socket_io_close(socket_io_handler *handle){
@@ -182,19 +215,11 @@ int socket_io_close(socket_io_handler *handle){
 	}
 	
 	LOG("Stopping emitter");
-	handle->stop_emitter = 1;
-	pthread_cond_signal(&handle->cond_emitter);
+	handle->status = CONN_DISCONNECTED;
 	pthread_join(handle->emitter, NULL);
 
-	LOG("Stopping keepAlive");
-	//handle->client.keep_alive_flag = 0;
-	pthread_join(handle->keepAlive, NULL);
-
 	LOG("Closing ");
-	//close(handle->client.fd);
 	
-	//handle->client.fd_alive = 0;
-
 	if(handle->num_job != 0){
 		dll_traverse(ptr, handle->job_list){
 			io_msg = (socket_io_msg*)jval_v(ptr->val);
@@ -213,6 +238,8 @@ int socket_io_close(socket_io_handler *handle){
 	
 	if(handle->session_id)
 		free(handle->session_id);
+
+	websocket_close(handle->context);
 }
 
 
@@ -240,11 +267,6 @@ char *socket_io_get_event_name_from_type(Event_type type){
 
 	return strdup(event_name);
 }
-
-void static socket_io_keepAlive_thread(socket_io_handler *handle){
-	//cellophane_keepAlive(&handle->client);
-}
-
 
 int socket_io_send_register(socket_io_handler *handle, char *filename, size_t size, int conn){
 	
@@ -283,9 +305,10 @@ int socket_io_send_register(socket_io_handler *handle, char *filename, size_t si
 	
 	socket_io_msg *io_msg = (socket_io_msg*)malloc(sizeof(socket_io_msg));
 	io_msg->type = PERI_DOWNLOAD_REGISTER;
+	io_msg->m_type = SOCK_JSON;
 	io_msg->msg = dump;
-	
-	insert_into_queue(handle, io_msg);
+
+	socket_io_put_msg(handle, io_msg);
 	return SOCK_SUCCESS;
 }
 
@@ -311,10 +334,11 @@ int socket_io_send_clear(socket_io_handler *handle){
 	LOG("Event : PERI_DOWNLOAD_CLEAR, DUMP : %s", dump);
 	
 	socket_io_msg *io_msg = (socket_io_msg*)malloc(sizeof(socket_io_msg));
+	io_msg->m_type = SOCK_JSON;
 	io_msg->type = PERI_DOWNLOAD_CLEAR;
 	io_msg->msg = dump;
 	
-	insert_into_queue(handle, io_msg);
+	socket_io_put_msg(handle, io_msg);
 	return SOCK_SUCCESS;
 }
 
@@ -339,13 +363,15 @@ int socket_io_send_push(socket_io_handler *handle, char *host, size_t offset, si
 		fprintf(stderr, "clear JSON dump failed \n");
 		return SOCK_FAIL;
 	}
+
 	LOG("Event : PERI_DOWNLOAD_PUSH_DATA, DUMP : %s", dump);
 	
 	socket_io_msg *io_msg = (socket_io_msg*)malloc(sizeof(socket_io_msg));
+	io_msg->m_type = SOCK_JSON;
 	io_msg->type = PERI_DOWNLOAD_PUSH_DATA;
 	io_msg->msg = dump;
 	
-	insert_into_queue(handle, io_msg);
+	socket_io_put_msg(handle, io_msg);
 	return SOCK_SUCCESS;
 }
 

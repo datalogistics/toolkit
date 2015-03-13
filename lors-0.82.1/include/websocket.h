@@ -8,6 +8,7 @@
 #define WEBSOCKET_FAIL 1
 
 int websocket_init(struct libwebsocket_context **context, struct libwebsocket **wsi_dumb, char *host, char *path, int port, void *handle);
+int websocket_close(struct libwebsocket_context *context);
 
 
 

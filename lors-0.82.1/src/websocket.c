@@ -2,6 +2,14 @@
 #include <socket_io.h>
 #include <string.h>
 
+//#define DEBUG 
+
+#ifdef DEBUG 
+#define LOG(format, ...) fprintf(stderr, "[LOG]" format "\n", ##__VA_ARGS__)
+#else
+#define LOG(format, ...) 
+#endif
+
 #define ERROR(format, ...) fprintf(stderr, format "\n", ##__VA_ARGS__)
 
 
@@ -10,44 +18,64 @@ int callback_socket_io(struct libwebsocket_context *context,
 					   enum libwebsocket_callback_reasons reason, void *user,
 					   void *in, size_t len)
 {
+	char              *buff;
+	char              *write_buff;
+	size_t             msgLen;
+	socket_io_msg     *msg = NULL;
 	socket_io_handler *handle = libwebsocket_context_user(context);
-
+	
     switch(reason){
 	case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
 		handle->status = CONN_ERROR;
-		fprintf(stderr, "connection error \n");
+		LOG("connection error ");
 		break;
 
     case LWS_CALLBACK_CLIENT_ESTABLISHED:
 		handle->status = CONN_CONNECTED;
-        fprintf(stderr, "Connection Established \n");
-
+        LOG( "Connection Established ");
         break;
 
     case LWS_CALLBACK_CLIENT_RECEIVE:
-        fprintf(stderr, "There is something to recieve\n");
+        LOG( "There is something to recieve");
         break;
 
     case LWS_CALLBACK_CLIENT_WRITEABLE:
-        fprintf(stderr, "if u want u can write \n");
+        LOG( "if u want u can write ");
+		// get msg from queue
+		msg = socket_io_get_msg(handle);
+		if(msg == NULL){
+			LOG( "No message to send, Waiting ..");
+			break;
+		}
+		
+		// convert it into protocol msg 
+		socket_io_convert_to_protocol_msg(msg, &buff, &msgLen);
+		if(msgLen){
+			// libwebsocket require extra pre and post buffer to put header and trailar in place
+			write_buff = malloc(msgLen + LWS_SEND_BUFFER_PRE_PADDING + LWS_SEND_BUFFER_POST_PADDING);
+			memcpy((write_buff + LWS_SEND_BUFFER_PRE_PADDING), buff, msgLen);
+			libwebsocket_write(wsi, (write_buff + LWS_SEND_BUFFER_PRE_PADDING), msgLen, LWS_WRITE_TEXT);
+		}
+
+		free(write_buff);
+		free(buff);
         break;
 
     case LWS_CALLBACK_CLOSED:
 		handle->status = CONN_CLOSE;
-        fprintf(stderr, "connection closed\n");
+        LOG( "connection closed");
         break;
     }
     return 0;
 }
 
 static struct libwebsocket_protocols protocols[] = {
-    /* first protocol must always be HTTP handler */
     {
-        "socket_io",   // name
+        "socket_io",        // name
         callback_socket_io, // callback
-        0              // per_session_data_size
-		},
-	{ NULL, NULL, 0, 0 } /* end */
+        0                   // per_session_data_size
+	},
+	{ NULL, NULL, 0, 0 }    // end marker
 };
 
 
@@ -84,6 +112,9 @@ int websocket_init(struct libwebsocket_context **context, struct libwebsocket **
     info.uid = -1;
     info.options = opts;
 	info.user = handle;
+	info.ka_time = 25000;
+	info.ka_probes = 3;
+	info.ka_interval = 500;
 
 	// create libwebsockets context
 	*context = libwebsocket_create_context(&info);
@@ -98,7 +129,11 @@ int websocket_init(struct libwebsocket_context **context, struct libwebsocket **
 		ERROR("libwebsocket connect failed");
 		return WEBSOCKET_FAIL;
 	}
-
 	
+	return WEBSOCKET_SUCCESS;
+}
+
+int websocket_close(struct libwebsocket_context *context){
+	libwebsocket_context_destroy(context);
 	return WEBSOCKET_SUCCESS;
 }
