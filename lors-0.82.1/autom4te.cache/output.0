@@ -636,9 +636,8 @@ LORS_BUILD_LIBXND
 LORS_LBONE_DIR
 LORS_LBONE_SRC_DIR
 LORS_BUILD_LBONE
-LORS_LIBCELLOPHANE_SRC_DIR
-LORS_LIBCELLOPHANE_DIR
-LORS_BUILD_LIBCELLOPHANE
+LIBWEBSOCKETS_LIB
+LIBWEBSOCKETS_INC
 LORS_LIBCURL_SRC_DIR
 LORS_LIBCURL_DIR
 LORS_BUILD_LIBCURL
@@ -764,7 +763,7 @@ with_zlib
 with_libxml2
 with_libjansson
 with_libcurl
-with_libcellophane
+with_libwebsockets
 with_lbone
 with_libexnode
 '
@@ -1405,7 +1404,7 @@ Optional Packages:
 --with-libxml2=path         path to libxml2default=/usr
 --with-libjansson=path         path to libjanssondefault=/usr/local
 --with-libcurl=path         path to libcurldefault=/usr/local
---with-libcellophane=path         path to libcellophanedefault=/usr/local
+--with-libwebsockets=path   path to libwebsockets
 --with-lbone=path    path to lbone package
 --with-libexnode=path      path to libexnode
 
@@ -4572,6 +4571,8 @@ _ACEOF
 
   LIBS="-luuid $LIBS"
 
+else
+  as_fn_error $? "\"Can not find libuuid\"" "$LINENO" 5
 fi
 
 
@@ -5421,38 +5422,77 @@ fi
 
 
 
-@%:@ Check whether --with-libcellophane was given.
-if test "${with_libcellophane+set}" = set; then :
-  withval=$with_libcellophane; LORS_LIBCELLOPHANE_DIR="$with_libcellophane"
+@%:@ Check whether --with-libwebsockets was given.
+if test "${with_libwebsockets+set}" = set; then :
+  withval=$with_libwebsockets; 
 else
-  LORS_LIBCELLOPHANE_DIR="/usr/local"
+  with_libwebsockets=no
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for \"${LORS_LIBCELLOPHANE_DIR}/include/cellophane_io.h\"" >&5
-$as_echo_n "checking for \"${LORS_LIBCELLOPHANE_DIR}/include/cellophane_io.h\"... " >&6; }
-if test -r "${LORS_LIBCELLOPHANE_DIR}/include/cellophane_io.h"; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
-$as_echo "found" >&6; }
-    LORS_BUILD_LIBCELLOPHANE="no"
+if test "$with_libwebsockets" == "no"; then
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libwebsocket_create_context in -lwebsockets" >&5
+$as_echo_n "checking for libwebsocket_create_context in -lwebsockets... " >&6; }
+if ${ac_cv_lib_websockets_libwebsocket_create_context+:} false; then :
+  $as_echo_n "(cached) " >&6
 else
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lwebsockets  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char libwebsocket_create_context ();
+int
+main ()
+{
+return libwebsocket_create_context ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_websockets_libwebsocket_create_context=yes
+else
+  ac_cv_lib_websockets_libwebsocket_create_context=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_websockets_libwebsocket_create_context" >&5
+$as_echo "$ac_cv_lib_websockets_libwebsocket_create_context" >&6; }
+if test "x$ac_cv_lib_websockets_libwebsocket_create_context" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+@%:@define HAVE_LIBWEBSOCKETS 1
+_ACEOF
+
+  LIBS="-lwebsockets $LIBS"
+
+else
+  as_fn_error $? "Can not buiild without libwebsockets" "$LINENO" 5
+fi
+
+else
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libwebsockets" >&5
+$as_echo_n "checking for libwebsockets... " >&6; }
+   if test -f "$with_libwebsockets/libwebscokets.h"; then
+   	   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	   LIBWEBSOCKETS_INC="-I$with_libwebsockets/include"
+
+	   LIBWEBSOCKETS_LIB="-L$with_libwebsockets/lib -lwebsockets"
+
+   else
+	   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for \"${PREFIX}/libcellophane/include/cellophane_io.h\"" >&5
-$as_echo_n "checking for \"${PREFIX}/libcellophane/include/cellophane_io.h\"... " >&6; }
-if test -r "${PREFIX}/libcellophane/include/cellophane_io.h"; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
-$as_echo "found" >&6; }
-    LORS_BUILD_LIBCELLOPHANE="yes"
-                          LORS_LIBCELLOPHANE_SRC_DIR="${PREFIX}/libcellophane"
-                          LORS_LIBCELLOPHANE_DIR="${INS_DIR}"
-else
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-    as_fn_error $? "\"Can not find libcellophane package\"" "$LINENO" 5
+	   as_fn_error $? "Can not buiild without libwebsockets" "$LINENO" 5
+   fi
 fi
-fi
-
-
 
 
 

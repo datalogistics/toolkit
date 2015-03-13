@@ -4,9 +4,17 @@
 #define SOCK_SUCCESS 1
 #define SOCK_FAIL  0
 
-#include <cellophane_io.h>
+#include <websocket.h>
 #include <dllist.h>
 #include <jansson.h>
+
+typedef enum _Conn_status{
+	CONN_CONNECTED,
+	CONN_DISCONNECTED,
+	CONN_ERROR,
+	CONN_CLOSE,
+	CONN_WAITING
+} Conn_status;
 
 typedef enum _Event_type{
 	PERI_DOWNLOAD_REGISTER,
@@ -15,7 +23,9 @@ typedef enum _Event_type{
 } Event_type;
 
 typedef struct _socket_io_handler{
-	WsHandler client;
+	struct libwebsocket_context *context;
+	struct libwebsocket *wsi;
+	Conn_status status;
 	char *session_id;
 	char *server_add;
 	pthread_t emitter;

@@ -203,20 +203,23 @@ AC_SUBST(LORS_LIBCURL_DIR)
 AC_SUBST(LORS_LIBCURL_SRC_DIR)
 
 
-dnl check and setup path of libcellophane package 
-AC_ARG_WITH(libcellophane,[--with-libcellophane=path         path to libcellophane[default=/usr/local]],
-            LORS_LIBCELLOPHANE_DIR="$with_libcellophane",
-            LORS_LIBCELLOPHANE_DIR="/usr/local")
-AC_FIND_FILE("${LORS_LIBCELLOPHANE_DIR}/include/cellophane_io.h",
-            LORS_BUILD_LIBCELLOPHANE="no",
-            AC_FIND_FILE("${PREFIX}/libcellophane/include/cellophane_io.h",
-                          LORS_BUILD_LIBCELLOPHANE="yes"
-                          LORS_LIBCELLOPHANE_SRC_DIR="${PREFIX}/libcellophane"
-                          LORS_LIBCELLOPHANE_DIR="${INS_DIR}",
-                          AC_MSG_ERROR("Can not find libcellophane package")))
-AC_SUBST(LORS_BUILD_LIBCELLOPHANE)
-AC_SUBST(LORS_LIBCELLOPHANE_DIR)
-AC_SUBST(LORS_LIBCELLOPHANE_SRC_DIR)
+dnl check for libwebscokets package
+AC_ARG_WITH(libwebsockets, [--with-libwebsockets=path   path to libwebsockets], ,
+            with_libwebsockets=no)
+if test "$with_libwebsockets" == "no"; then
+   AC_CHECK_LIB([websockets], [libwebsocket_create_context], ,AC_MSG_ERROR([Can not buiild without libwebsockets]))
+else
+   AC_MSG_CHECKING( for libwebsockets)
+   if test -f "$with_libwebsockets/libwebscokets.h"; then
+   	   AC_MSG_RESULT(yes)
+	   AC_SUBST(LIBWEBSOCKETS_INC, "-I$with_libwebsockets/include")
+	   AC_SUBST(LIBWEBSOCKETS_LIB, "-L$with_libwebsockets/lib -lwebsockets")
+   else
+	   AC_MSG_RESULT(no)
+	   AC_MSG_ERROR([Can not buiild without libwebsockets])
+   fi
+fi
+
 
 dnl check and setup path of lbone package
 AC_ARG_WITH(lbone,[--with-lbone=path    path to lbone package],

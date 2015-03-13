@@ -103,7 +103,7 @@ am_liblors_a_OBJECTS = lors_exnode.$(OBJEXT) lors_serialize.$(OBJEXT) \
 	lors_set_refresh.$(OBJEXT) lors_set_stat.$(OBJEXT) \
 	lors_set_store.$(OBJEXT) lors_set_trim.$(OBJEXT) \
 	lors_set_alloc.$(OBJEXT) lors_resolution.$(OBJEXT) \
-	socket_io.$(OBJEXT) url.$(OBJEXT)
+	socket_io.$(OBJEXT) url.$(OBJEXT) websocket.$(OBJEXT)
 liblors_a_OBJECTS = $(am_liblors_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -155,11 +155,12 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
+LIBWEBSOCKETS_INC = @LIBWEBSOCKETS_INC@
+LIBWEBSOCKETS_LIB = @LIBWEBSOCKETS_LIB@
 LN_S = @LN_S@
 LORS_BUILD_JANSSON = @LORS_BUILD_JANSSON@
 LORS_BUILD_LBONE = @LORS_BUILD_LBONE@
 LORS_BUILD_LIBAES = @LORS_BUILD_LIBAES@
-LORS_BUILD_LIBCELLOPHANE = @LORS_BUILD_LIBCELLOPHANE@
 LORS_BUILD_LIBCURL = @LORS_BUILD_LIBCURL@
 LORS_BUILD_LIBXND = @LORS_BUILD_LIBXND@
 LORS_BUILD_POPT = @LORS_BUILD_POPT@
@@ -171,8 +172,6 @@ LORS_LBONE_DIR = @LORS_LBONE_DIR@
 LORS_LBONE_SRC_DIR = @LORS_LBONE_SRC_DIR@
 LORS_LIBAES_DIR = @LORS_LIBAES_DIR@
 LORS_LIBAES_SRC_DIR = @LORS_LIBAES_SRC_DIR@
-LORS_LIBCELLOPHANE_DIR = @LORS_LIBCELLOPHANE_DIR@
-LORS_LIBCELLOPHANE_SRC_DIR = @LORS_LIBCELLOPHANE_SRC_DIR@
 LORS_LIBCURL_DIR = @LORS_LIBCURL_DIR@
 LORS_LIBCURL_SRC_DIR = @LORS_LIBCURL_SRC_DIR@
 LORS_LIBXND_DIR = @LORS_LIBXND_DIR@
@@ -270,9 +269,6 @@ IBPINC = $(IBPDIR)/include
 IBPLIB = $(IBPDIR)/lib/IBPClientLib.a
 XNDINC = @LORS_LIBXND_DIR@/include/libexnode/
 XNDLIB = @LORS_LIBXND_DIR@/src/libexnode.a
-CELOPHANEDIR = @LORS_LIBCELLOPHANE_DIR@
-CELLOPHANEINC = $(CELOPHANEDIR)/include
-CELLOPHANELIB = $(CELOPHANEDIR)/lib 
 XNDXMLINC = @LORS_XML2_DIR@/include/libxml2
 POPT_INC = @LORS_POPT_DIR@/include
 POPT_LIB = "-L@LORS_POPT_DIR@/lib -lpopt"
@@ -283,10 +279,10 @@ E2ELIB = @E2EDIR@/libend2end.a $(E2EDIR)/md5/libmd5.a $(E2EDIR)/des/libdes.a
 CURL_INC = @LORS_LIBCURL_DIR@/include
 CURL_LIB = "-L@LORS_LIBCURL_DIR@/lib -lcurl"
 AM_CFLAGS = -g -D@OSDEF@  @EXTRA_CFLAGS@
-AM_CPPFLAGS = -I@GCC_INC_DIR@ -I../include -I$(XNDXMLINC) -I$(XNDINC) -I$(LBNINC) -I$(IBPINC) -I$(E2EINC) -I$(POPT_INC) -I$(ZLIB_INC)  -I$(CURL_INC) -I$(CELLOPHANEINC)
-ldadd = $(XNDLIB) $(LBNLIB) $(FDRLIB) $(IBPLIB) -L@XNDXMLDIR@/lib @LIBS@ $(ZLIB_LIB) $(POPT_LIB) -lpthread  $(CURL_LIB) -L$(CELLOPHANELIB) -lcellophane
+AM_CPPFLAGS = -I@GCC_INC_DIR@ -I../include -I$(XNDXMLINC) -I$(XNDINC) -I$(LBNINC) -I$(IBPINC) -I$(E2EINC) -I$(POPT_INC) -I$(ZLIB_INC)  -I$(CURL_INC) @LIBWEBSOCKETS_INC@
+ldadd = $(XNDLIB) $(LBNLIB) $(FDRLIB) $(IBPLIB) -L@XNDXMLDIR@/lib @LIBS@ $(ZLIB_LIB) $(POPT_LIB) -lpthread  $(CURL_LIB)  @LIBWEBSOCKETS_LIB@
 #$(E2ELIB)
-liblors_a_SOURCES = lors_exnode.c lors_serialize.c lors_metadata.c lors_depotpool.c lors_util.c lors_job.c lors_set_copy.c lors_set_load.c lors_set_merge.c lors_set_misc.c lors_set_query.c lors_set_refresh.c lors_set_stat.c lors_set_store.c lors_set_trim.c lors_set_alloc.c lors_resolution.c socket_io.c url.c
+liblors_a_SOURCES = lors_exnode.c lors_serialize.c lors_metadata.c lors_depotpool.c lors_util.c lors_job.c lors_set_copy.c lors_set_load.c lors_set_merge.c lors_set_misc.c lors_set_query.c lors_set_refresh.c lors_set_stat.c lors_set_store.c lors_set_trim.c lors_set_alloc.c lors_resolution.c socket_io.c url.c websocket.c
 all: all-am
 
 .SUFFIXES:
@@ -382,6 +378,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lors_util.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/socket_io.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/url.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/websocket.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

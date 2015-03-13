@@ -6,7 +6,7 @@
 #include <signal.h>
 #include <string.h>
 
-//#define DEBUG 1
+#define DEBUG 1
 
 #ifdef DEBUG 
 #define LOG(format, ...) fprintf(stderr, "DEBUG %s:%d: " format "\n", __FILE__, __LINE__, ##__VA_ARGS__)
@@ -22,11 +22,13 @@ void static socket_io_emit_thread(socket_io_handler *handle);
 
 int socket_io_init(socket_io_handler *handle, const char *host, const char *session_id ){
 	
+	socket_io_handler h;
 	struct parsed_url *URL;
 	handle->num_job = 0;
 	handle->stop_emitter = 1;
 	handle->job_list = NULL;
-	handle->client.keep_alive_flag = 0;
+	//handle->client.keep_alive_flag = 0;
+	handle->status = CONN_WAITING;
 
 	if(host == NULL){
 		fprintf(stderr, "Server address is NULL \n");
@@ -61,13 +63,21 @@ int socket_io_init(socket_io_handler *handle, const char *host, const char *sess
 		return SOCK_FAIL;
 	}
 	
-	cellophane_set_debug(&handle->client, DEBUG_DETAILED);
-	cellophane_io(&handle->client, URL->scheme, URL->host, atoi(URL->port));
-	if(cellophane_io_connect(&handle->client) != 1){
-		fprintf(stderr, "Failed to connect : %s%s:%d \n", URL->scheme, URL->host, atoi(URL->port));
+	if(websocket_init(&handle->context, &handle->wsi, URL->host, "/socket.io/?transport=websocket", atoi(URL->port), (void *) handle) != WEBSOCKET_SUCCESS){
+		fprintf(stderr, "Failed to Init  : %s%s:%d \n", URL->scheme, URL->host, atoi(URL->port));
 		return SOCK_FAIL;
 	}
+
+
+	while (handle->status == CONN_WAITING) {
+        libwebsocket_service(handle->context, 50);
+    }
 	
+	if(handle->status != CONN_CONNECTED){
+		fprintf(stderr, "Failed to connect  : %s%s:%d \n", URL->scheme, URL->host, atoi(URL->port));
+		return SOCK_FAIL;
+	}
+
 	LOG("Connected successfully to %s", handle->server_add);
 
 	LOG("Initialized Queue");
@@ -77,7 +87,7 @@ int socket_io_init(socket_io_handler *handle, const char *host, const char *sess
 	handle->job_list = new_dllist();
 
 	LOG("Starting keepAlive thread");
-	handle->client.keep_alive_flag = 1;
+	//handle->client.keep_alive_flag = 1;
 	pthread_create(&handle->keepAlive, NULL, socket_io_keepAlive_thread, (void *)handle);
 
 	LOG("Starting emitter thread");
@@ -107,7 +117,7 @@ int insert_into_queue(socket_io_handler *handle, socket_io_msg *msg){
 	}
 	//while (handle->num_job >= MAX_JOBS)
 	//pthread_cond_wait(&handle->cond_insert, &handle->m_lock);
-	
+
 	dll_append(handle->job_list, new_jval_v(msg));
 	handle->num_job++;
 	
@@ -152,7 +162,7 @@ void static socket_io_emit_thread(socket_io_handler *handle){
 		//LOG("##Emit Unlock");
 		event_name  = socket_io_get_event_name_from_type(io_msg->type);
 		if((event_name != NULL) && (io_msg->msg != NULL)){
-			cellophane_emit(&handle->client, event_name, io_msg->msg, "");
+			//cellophane_emit(&handle->client, event_name, io_msg->msg, "");
 			free(event_name);
 			free(io_msg->msg);
 		}
@@ -177,13 +187,13 @@ int socket_io_close(socket_io_handler *handle){
 	pthread_join(handle->emitter, NULL);
 
 	LOG("Stopping keepAlive");
-	handle->client.keep_alive_flag = 0;
+	//handle->client.keep_alive_flag = 0;
 	pthread_join(handle->keepAlive, NULL);
 
 	LOG("Closing ");
-	close(handle->client.fd);
+	//close(handle->client.fd);
 	
-	handle->client.fd_alive = 0;
+	//handle->client.fd_alive = 0;
 
 	if(handle->num_job != 0){
 		dll_traverse(ptr, handle->job_list){
@@ -232,7 +242,7 @@ char *socket_io_get_event_name_from_type(Event_type type){
 }
 
 void static socket_io_keepAlive_thread(socket_io_handler *handle){
-	cellophane_keepAlive(&handle->client);
+	//cellophane_keepAlive(&handle->client);
 }
 
 

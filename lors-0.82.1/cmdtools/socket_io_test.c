@@ -14,7 +14,7 @@ int main(int argc, char **argv){
 	socket_io_handler handle;
 	
 	socket_io_init(&handle, argv[1], argv[2]);
-	socket_io_send_register(&handle, "test.c", 1000000, 5);
+	/*	socket_io_send_register(&handle, "test.c", 1000000, 5);
 	
 	offset = 0;
 	for(i=0; i<1000; i++){
@@ -24,6 +24,6 @@ int main(int argc, char **argv){
 	}
 
 	socket_io_send_clear(&handle);
-	socket_io_close(&handle);
+	socket_io_close(&handle);*/
 	
 }

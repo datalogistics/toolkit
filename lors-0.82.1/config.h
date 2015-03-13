@@ -34,6 +34,9 @@
 /* Define to 1 if you have the `uuid' library (-luuid). */
 #define HAVE_LIBUUID 1
 
+/* Define to 1 if you have the `websockets' library (-lwebsockets). */
+#define HAVE_LIBWEBSOCKETS 1
+
 /* Define to 1 if you have the `xml2' library (-lxml2). */
 #define HAVE_LIBXML2 1
 
