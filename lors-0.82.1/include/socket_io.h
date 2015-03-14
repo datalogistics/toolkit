@@ -7,6 +7,7 @@
 #include <websocket.h>
 #include <dllist.h>
 #include <jansson.h>
+#include <time.h>
 
 typedef enum _Conn_status{
 	CONN_CONNECTED,
@@ -32,6 +33,7 @@ typedef struct _socket_io_handler{
 	pthread_mutex_t m_lock;
 	Dllist job_list;
 	int num_job;
+	time_t last_ping;
 } socket_io_handler;
 
 typedef enum _Msg_type{
