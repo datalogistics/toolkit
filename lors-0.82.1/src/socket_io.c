@@ -15,7 +15,7 @@
 #endif
 		
 #define MAX_JOBS 1000000
-#define PING_INTERVAL 25 //In sec
+
 
 void static socket_io_emit_thread(socket_io_handler *handle);
 char *socket_io_get_event_name_from_type(Event_type type);
@@ -94,7 +94,9 @@ void static socket_io_emit_thread(socket_io_handler *handle){
 		//fprintf(stderr, " Last ping : %lld , current time : %lld , diff : %lld \n ", handle->last_ping, time(NULL), (time(NULL) - handle->last_ping));
 		if(handle->num_job > 0){ 
 			libwebsocket_callback_on_writable( handle->context, handle->wsi);
-		}else if((time(NULL) - handle->last_ping) > PING_INTERVAL){
+		}
+
+		if((time(NULL) - handle->last_ping) > PING_INTERVAL){
 			libwebsocket_callback_on_writable( handle->context, handle->wsi);
 		}
 	}

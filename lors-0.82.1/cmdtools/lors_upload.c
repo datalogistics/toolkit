@@ -4,8 +4,9 @@
 #include <popt.h>
 #include <string.h>
 #include <signal.h>
-
+#include <uuid/uuid.h>
 #include <xndrc.h>
+
 void sigpipe_handle(int d)
 {
     fprintf(stderr, "You've got sigpipe: %d\n", d);

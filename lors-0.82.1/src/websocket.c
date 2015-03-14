@@ -56,8 +56,9 @@ int callback_socket_io(struct libwebsocket_context *context,
 				free(buff);
 				handle->last_ping = time(NULL);
 			}
-		}else{
-			fprintf(stderr, "Sending Ping packet");
+		}
+		if((time(NULL) - handle->last_ping) > PING_INTERVAL){
+			fprintf(stderr, "Sending Ping packet\n");
 			write_buff = malloc(strlen(ping_msg) + LWS_SEND_BUFFER_PRE_PADDING + LWS_SEND_BUFFER_POST_PADDING);
 			memcpy((write_buff + LWS_SEND_BUFFER_PRE_PADDING), ping_msg, strlen(ping_msg));
 			libwebsocket_write(wsi, (write_buff + LWS_SEND_BUFFER_PRE_PADDING), strlen(ping_msg), LWS_WRITE_TEXT);

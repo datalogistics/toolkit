@@ -4,6 +4,8 @@
 #define SOCK_SUCCESS 1
 #define SOCK_FAIL  0
 
+#define PING_INTERVAL 25 //In sec
+
 #include <websocket.h>
 #include <dllist.h>
 #include <jansson.h>
