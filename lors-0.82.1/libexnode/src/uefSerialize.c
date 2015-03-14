@@ -14,7 +14,7 @@
 #include "exnode.h"
 #include <time.h>
 
-#define DEBUG 1
+//#define DEBUG 1
 
 #ifdef DEBUG
 #define PRINT(args...) fprintf(args)
