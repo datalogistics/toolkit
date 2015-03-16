@@ -1,4 +1,0 @@
-USER anonymous
-PASS ftp@example.com
-PWD
-CWD path

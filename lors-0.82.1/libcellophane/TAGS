@@ -1,2451 +1,0 @@
-
-config.h,1037
-#define HAVE_BZERO 5,176
-#define HAVE_DLFCN_H 8,255
-#define HAVE_GETHOSTBYNAME 11,339
-#define HAVE_INTTYPES_H 14,429
-#define HAVE_LIBCURL 17,515
-#define HAVE_MALLOC 24,735
-#define HAVE_MEMORY_H 27,816
-#define HAVE_MEMSET 30,894
-#define HAVE_NETDB_H 33,974
-#define HAVE_NETINET_IN_H 36,1060
-#define HAVE_REALLOC 40,1191
-#define HAVE_SELECT 43,1268
-#define HAVE_SOCKET 46,1344
-#define HAVE_STDINT_H 49,1425
-#define HAVE_STDLIB_H 52,1508
-#define HAVE_STRDUP 55,1586
-#define HAVE_STRINGS_H 58,1668
-#define HAVE_STRING_H 61,1752
-#define HAVE_STRSTR 64,1830
-#define HAVE_SYS_SOCKET_H 67,1915
-#define HAVE_SYS_STAT_H 70,2004
-#define HAVE_SYS_TYPES_H 73,2092
-#define HAVE_UNISTD_H 76,2178
-#define HAVE_WCHAR_H 79,2260
-#define LT_OBJDIR 83,2368
-#define PACKAGE 86,2418
-#define PACKAGE_BUGREPORT 89,2530
-#define PACKAGE_NAME 92,2626
-#define PACKAGE_STRING 95,2723
-#define PACKAGE_TARNAME 98,2834
-#define PACKAGE_URL 101,2923
-#define PACKAGE_VERSION 104,2992
-#define STDC_HEADERS 107,3086
-#define VERSION 110,3142
-
-config/install-sh,903
-scriptversion=4,62
-nl=44,1910
-  doit_exec=53,2081
-chmodprog=62,2248
-chownprog=63,2277
-cmpprog=64,2306
-cpprog=65,2329
-mkdirprog=66,2349
-mvprog=67,2378
-rmprog=68,2398
-stripprog=69,2418
-posix_glob=71,2448
-posix_mkdir=82,2614
-    -c)c133,3893
-    -C) copy_on_change=135,3905
-    -d) dir_arg=137,3936
-    -g) chgrpcmd=139,3960
-    -m) mode=144,4041
-	shift;163,4411
-    -T) no_target_directory=165,4421
-	break;170,4523
-	exit 173,4575
-    *)  break;175,4586
-    dst_arg=192,5054
-  do_exit=211,5485
-    *755) cp_umask=222,5841
-	u_plus_rw=226,5913
-	u_plus_rw=233,6068
-    dst=249,6319
-    dst=267,6809
-      dstdir=276,7074
-      dstdir_status=308,7703
-	umask=319,7960
-	  .*0[02][02] | .[02][02] | .[02]) mkdir_umask=323,8068
-	    mkdir_umask=326,8133
-	  *) mkdir_umask=330,8260
-	  mkdir_mode=336,8431
-	    tmpdir=348,8687
-	      then posix_mkdir=370,9512
-	esac;378,9738
-
-config/config.guess,3302
-timestamp=7,238
-       echo "$timestamp" ; exit 71,2548
-       echo "$version" ; exit 73,2604
-       echo "$usage"; exit 75,2662
-       shift;77,2730
-       shift; break 77,2730
-       break 79,2783
-       exit 82,2854
-       break 84,2879
-set_cc_for_build=105,3446
-: ${$108,3646
- { tmp=109,3665
- { test -n "$RANDOM" && tmp=110,3773
- { tmp=111,3858
- { echo "$me: cannot create a temporary directory in $TMPDIR" >&2 ; exit 112,3971
-dummy=113,4052
-tmpfiles=114,4071
-case $CC_FOR_BUILD,115,4120
-case $CC_FOR_BUILD,$HOST_CC,115,4120
-case $CC_FOR_BUILD,$HOST_CC,$CC in115,4120
- ,,)    echo "int x;" > $dummy.c c116,4155
-	     CC_FOR_BUILD=119,4278
-	     CC_FOR_BUILD="$c"; break 119,4278
-	  fi 120,4311
-	done 121,4319
-	  CC_FOR_BUILD=123,4364
-	fi124,4400
- ,,*)   CC_FOR_BUILD=126,4408
- ,*,*)  CC_FOR_BUILD=127,4436
-esac 128,4469
-esac ; set_cc_for_build=128,4469
-	PATH=133,4664
-UNAME_MACHINE=136,4703
-	    arm*) machine=160,5826
-	    sh3el) machine=161,5860
-	    sh3eb) machine=162,5895
-	    sh5el) machine=163,5929
-	    *) machine=164,5966
-	    *) machine=${UNAME_MACHINE_ARCH}-unknown unknown164,5966
-		os=182,6490
-		release=192,6798
-		release=195,6828
-	exit 202,7090
-	UNAME_MACHINE_ARCH=204,7118
-	exit 206,7226
-	exit 209,7309
-	exit 212,7394
-	exit 215,7471
-	exit 218,7552
-		UNAME_RELEASE=222,7612
-		UNAME_RELEASE=225,7680
-	ALPHA_CPU_TYPE=232,8000
-		UNAME_MACHINE=237,8201
-		UNAME_MACHINE=239,8255
-		UNAME_MACHINE=241,8302
-		UNAME_MACHINE=243,8355
-		UNAME_MACHINE=245,8410
-		UNAME_MACHINE=247,8466
-		UNAME_MACHINE=249,8518
-		UNAME_MACHINE=251,8571
-		UNAME_MACHINE=253,8627
-		UNAME_MACHINE=255,8683
-		UNAME_MACHINE=257,8739
-		UNAME_MACHINE=259,8799
-		UNAME_MACHINE=261,8850
-		UNAME_MACHINE=263,8903
-	exitcode=272,9376
-	exit 280,9645
-	exit 283,9706
-	exit 286,9772
-	exit 289,9848
-	exit 292,9924
-	exit 295,9978
-	exit 298,10024
-	exit 301,10074
-	exit 304,10170
-	exit 307,10239
-	exit 310,10327
-	exit 318,10588
-	exit 321,10645
-	exit 324,10700
-	    sparc) echo sparc-icl-nx7;nx7327,10792
-	    sparc) echo sparc-icl-nx7; exit 327,10792
-	esac 328,10832
-	exit 331,10940
-	exit 334,11039
-	exit 337,11161
-	exit 340,11259
-	SUN_ARCH=343,11336
-	    if (echo '#ifdef __amd64'; echo IS_64BIT_ARCH;348,11585
-		(CCOPTS=349,11656
-	exit 356,11849
-	exit 362,12130
-		UNAME_RELEASE=366,12208
-	exit 371,12376
-	exit 374,12443
-	UNAME_RELEASE=376,12473
-		echo sparc-sun-sunos${sunos$383,12691
-	exit 386,12741
-	exit 389,12812
-	exit 400,13411
-	exit 403,13521
-	exit 406,13633
-	exit 409,13740
-	exit 412,13847
-	exit 415,13940
-	exit 418,14012
-	exit 421,14090
-	exit 424,14146
-	exit 427,14215
-	exit 430,14283
-	exit 433,14373
-	int main 439,14543
-		#define _HPUX_SOURCE615,19374
-	#undef CPU939,28584
-	#undef ${$940,28596
-	#undef ${$941,28621
-#define __ARCHITECTURE__ 1371,40899
-$CC_FOR_BUILD -o $dummy $dummy.c 2>/dev/null && SYSTEM_NAME=1451,42562
-test -d /usr/apollo && { echo ${ISP}-apollo-${$1456,42718
-test -d /usr/apollo && { echo ${ISP}-apollo-${SYSTYPE}; exit;1456,42718
-	exit 1474,43089
-	exit 1477,43129
-	exit 1480,43167
-This script,1487,43236
-This script, last modified $timestamp,1487,43236
-If the version you run 1495,43600
-UNAME_RELEASE 1518,44547
-UNAME_SYSTEM 1519,44580
-UNAME_VERSION 1520,44612
-
-config/ltmain.sh,4411
-PROGRAM=81,3888
-  NULLCMD=90,4097
-BIN_SH=98,4349
-lt_user_locale=110,4639
-: ${$140,5436
-: ${$141,5453
-: ${$142,5472
-: ${$143,5488
-: ${$144,5504
-: ${$145,5541
-EXIT_SUCCESS=148,5590
-func_basename 178,6387
-func_dirname_and_basename 196,7152
-func_stripname 215,7873
-pathcar=225,8224
-func_mktempdir 557,18652
-func_quote_for_eval 594,19803
-func_quote_for_expand 621,20718
-func_show_eval 649,21541
-func_show_eval_locale 673,22168
-func_tr_sh 699,22850
-func_version 714,23113
-func_usage 737,23454
-func_help 755,23805
-    ret=778,24357
-func_missing_arg 787,24529
-func_split_short_opt 799,24792
-func_split_long_opt 812,25270
-exit_cmd=821,25589
-func_append_quoted 853,26282
-func_arith 861,26497
-func_len 869,26671
-func_lo2o 876,26842
-func_xform 883,27003
-func_fatal_configuration 892,27291
-func_config 902,27545
-func_features 920,28011
-func_enable_tag 941,28522
-func_check_version_match 981,29601
-  shift;1017,30861
-  shift; set dummy --mode clean ${1+"$@"}; shift1017,30861
-  shift;1020,30951
-  shift; set dummy --mode compile ${1+"$@"}; shift1020,30951
-  shift;1023,31043
-  shift; set dummy --mode execute ${1+"$@"}; shift1023,31043
-  shift;1026,31127
-  shift; set dummy --mode finish ${1+"$@"}; shift1026,31127
-  shift;1029,31218
-  shift; set dummy --mode install ${1+"$@"}; shift1029,31218
-  shift;1032,31289
-  shift; set dummy --mode link ${1+"$@"}; shift1032,31289
-  shift;1035,31397
-  shift; set dummy --mode uninstall ${1+"$@"}; shift1035,31397
-opt_debug=1042,31482
-func_lalib_p 1231,35633
-func_lalib_unsafe_p 1245,36187
-func_ltwrapper_script_p 1265,36663
-func_ltwrapper_executable_p 1274,36895
-func_ltwrapper_scriptname 1288,37276
-func_ltwrapper_p 1299,37695
-func_execute_cmds 1309,37976
-func_source 1328,38504
-func_mode_help 2297,68244
-      s/^Usage:.*--mode=mode2510,75987
-func_mode_finish 2650,79446
-func_mode_install 2769,82875
-func_generate_dlsyms 3236,95442
-func_win32_libid 3542,105547
-func_cygming_dll_for_implib 3594,107004
-func_cygming_dll_for_implib_fallback_core 3611,107559
-    /:[	 ]*file format pe[pe3624,107995
-func_cygming_gnu_implib_p 3665,109377
-func_cygming_ms_implib_p 3677,109851
-func_cygming_dll_for_implib_fallback 3696,110532
-func_extract_an_archive 3713,111030
-func_extract_archives 3739,111838
-func_emit_wrapper 3836,115163
-func_emit_cwrapperexe_src 4138,123902
-# define _CRT_SECURE_NO_DEPRECATE 4154,124361
-# define setmode 4194,125199
-# define stat 4195,125225
-# define chmod 4196,125248
-# define getcwd 4197,125272
-# define putenv 4198,125297
-# define S_IXUSR 4199,125322
-#  define _INTPTR_T_DEFINED4201,125375
-#  define intptr_t 4202,125403
-# define setmode 4205,125461
-# define stat 4206,125487
-# define chmod 4207,125510
-# define getcwd 4208,125534
-# define putenv 4209,125559
-# define HAVE_SETENV4211,125610
-# define FOPEN_WB 4212,125631
-# define LT_PATHMAX 4217,125726
-# define LT_PATHMAX 4219,125781
-# define LT_PATHMAX 4221,125818
-# define S_IXOTH 4225,125867
-# define S_IXGRP 4228,125909
-# define DIR_SEPARATOR 4233,125997
-# define PATH_SEPARATOR 4234,126024
-# define HAVE_DOS_BASED_FILE_SYSTEM4239,126152
-# define FOPEN_WB 4240,126188
-#  define DIR_SEPARATOR_2 4242,126236
-#  define PATH_SEPARATOR_2 4245,126301
-# define IS_DIR_SEPARATOR(4250,126372
-# define IS_DIR_SEPARATOR(4252,126454
-# define IS_PATH_SEPARATOR(4257,126597
-# define IS_PATH_SEPARATOR(4259,126682
-# define FOPEN_WB 4263,126788
-# define _O_BINARY 4266,126835
-#define XMALLOC(4269,126864
-#define XFREE(4270,126938
-#define LTWRAPPER_OPTION_PREFIX 4344,129113
-xmalloc 4551,135201
-xstrdup 4561,135347
-base_name 4568,135481
-check_executable 4585,135822
-make_executable 4602,136150
-find_executable 4624,136682
-chase_symlinks 4729,139328
-strendzap 4788,140604
-lt_debugprintf 4808,140895
-lt_error_core 4821,141185
-lt_fatal 4834,141502
-nonnull 4843,141712
-nonempty 4849,141788
-lt_setenv 4855,141870
-lt_extend_str 4878,142433
-lt_update_exe_path 4905,143043
-lt_update_lib_path 4926,143686
-#define SHELL_SPECIAL_CHARS 4968,145295
-#define SHELL_SPACE_CHARS 4969,145455
-prepare_spawn 4971,145617
-EOF5057,147301
-void lt_dump_script 5062,147345
-func_win32_import_lib_p 5083,147691
-func_mode_link 5093,147875
-func_mode_uninstall 9448,277788
-  help=9621,282357
-build_libtool_libs=9648,283335
-build_old_libs=`case $build_libtool_libs in yes) echo no;; *) echo yes;9653,283469
-
-config/missing,761
-scriptversion=4,75
-run=33,1288
-  configure_ac=40,1493
-    run=59,2003
-    exit 104,3445
-program=110,3509
-    fi133,4262
-    touch aclocal.m4m4146,4656
-    touch configure155,4933
-    files=164,5228
-    test -z "$files" && files=165,5310
-      *:*) touch_files=169,5409
-      *) touch_files=171,5508
-    touch $touch_files174,5572
-	   while read f; do touch "$f"; done185,5953
-    file=196,6268
-    fi208,6594
-        eval LASTARG=219,6932
-	    SRCFILE=222,6984
-	    SRCFILE=226,7104
-	    fi229,7216
-    fi238,7365
-        eval LASTARG=249,7695
-	    SRCFILE=252,7747
-	    fi255,7860
-    fi261,7958
-    file=271,8246
-    fi279,8500
-    file=291,9016
-      infile=295,9213
-      test -z "$file" && file=303,9433
-    exit 319,10102
-
-config/depcomp,1198
-scriptversion=4,82
-     exit 32,1277
-Run PROGRAMS ARGS to compile a file,38,1378
-tab=61,1993
-depfile=72,2257
-tmpdepfile=74,2368
-  gccflag=84,2807
-   dashmflag=90,2940
-   cygpath_u=99,3216
-   cygpath_u=107,3472
-   gccflag=113,3632
-  stat=136,4337
-    gccflag=156,5009
-  alpha=167,5209
-  exit 193,6558
-  stat=202,6693
-  if test -f "$tmpdepfile"; then  # yes,210,6804
-  exit 241,8032
-  dir=250,8370
-    tmpdepfile1=254,8559
-  stat=313,10338
-  dir=345,11307
-    tmpdepfile1=349,11496
-   dir=389,12515
-      tmpdepfile1=407,13542
-    showIncludes=442,14524
-  exit 483,15617
-  IFS=504,16106
-      shift512,16190
-      shift # $arg517,16266
-  test -z "$dashmflag" && dashmflag=522,16311
-  exit 540,17148
-  cleared=554,17361
-      cleared=560,17445
-      eat=563,17504
-      set fnord "$@" "$arg"; shift 568,17571
-      eat=572,17762
-    -*|$object)$object573,17779
-      set fnord "$@" "$arg"; shift 576,17811
-  obj_suffix=579,17865
-  rm -f "$tmpdepfile" "$tmpdepfile".bakbak590,18490
-  IFS=607,18852
-      shift615,18936
-      shift # $arg620,19012
-  IFS=649,19713
-      shift657,19799
-	shift662,19884
-	shift667,19932
-  exit 685,20537
-  exit 694,20618
-
-config/config.sub,10425
-timestamp=7,240
-       echo "$timestamp" ; exit 90,3514
-       echo "$version" ; exit 92,3570
-       echo "$usage"; exit 94,3628
-       shift;96,3696
-       shift; break 96,3696
-       break 98,3749
-       exit 101,3816
-       exit 106,3915
-       break 109,3939
-    exit 115,4021
-    exit 118,4085
-maybe_os=123,4244
-    os=134,4677
-    basic_machine=138,4786
-    else os=; fi141,4905
-	-sun*os*os150,5200
-		os=160,5740
-		os=164,5783
-		os=167,5839
-	-scout)scout170,5869
-		os=173,5890
-		os=177,5941
-		os=181,5993
-		os=185,6042
-		os=188,6069
-		os=192,6147
-		os=196,6227
-		os=200,6316
-		basic_machine=205,6486
-		basic_machine=209,6604
-		os=212,6669
-		basic_machine=216,6749
-		os=219,6813
-		basic_machine=223,6892
-		basic_machine=226,6940
-		os=229,7009
-		os=232,7040
-		os=235,7068
-		basic_machine=238,7094
-		os=241,7170
-		os=244,7230
-		basic_machine=247,7268
-		basic_machine=320,9479
-		basic_machine=323,9530
-		basic_machine=326,9573
-		basic_machine=329,9615
-		basic_machine=332,9709
-	m88110 | m680[12346]0 | m683?2 | m68360 | m5200 | v70 | w65 | z8k)335,9764
-		basic_machine=338,9843
-		basic_machine=342,9905
-		basic_machine=345,9946
-		basic_machine=349,10012
-		basic_machine=353,10059
-	  basic_machine=360,10258
-		exit 365,10437
-		basic_machine=443,13080
-		basic_machine=448,13254
-		basic_machine=452,13360
-		basic_machine=455,13398
-		basic_machine=458,13439
-		basic_machine=462,13488
-		basic_machine=465,13535
-		basic_machine=469,13598
-		basic_machine=472,13652
-		basic_machine=475,13692
-		basic_machine=479,13741
-		basic_machine=482,13782
-		basic_machine=485,13861
-		basic_machine=489,13922
-		basic_machine=492,13977
-		basic_machine=496,14044
-		basic_machine=500,14101
-		basic_machine=504,14159
-		basic_machine=508,14209
-		basic_machine=512,14255
-		basic_machine=516,14307
-		basic_machine=520,14365
-		basic_machine=524,14424
-		basic_machine=528,14516
-		basic_machine=532,14568
-		basic_machine=535,14647
-		basic_machine=538,14725
-		basic_machine=541,14800
-		basic_machine=545,14851
-		basic_machine=549,14908
-		basic_machine=553,14961
-		basic_machine=557,15015
-		basic_machine=561,15070
-		basic_machine=565,15125
-		basic_machine=569,15180
-		basic_machine=573,15232
-		basic_machine=577,15296
-		basic_machine=581,15354
-		basic_machine=584,15418
-		basic_machine=587,15477
-		basic_machine=590,15514
-		basic_machine=594,15573
-		basic_machine=597,15679
-		basic_machine=600,15733
-		basic_machine=604,15801
-		basic_machine=609,15935
-		basic_machine=612,15980
-		basic_machine=616,16035
-		basic_machine=620,16084
-		basic_machine=624,16148
-		basic_machine=628,16213
-		basic_machine=632,16267
-		basic_machine=636,16317
-		basic_machine=640,16383
-		basic_machine=643,16456
-		basic_machine=647,16510
-		basic_machine=650,16552
-		basic_machine=653,16591
-		basic_machine=657,16642
-		basic_machine=661,16700
-		basic_machine=665,16762
-		basic_machine=669,16819
-		basic_machine=673,16876
-		basic_machine=677,16930
-		basic_machine=681,16985
-		basic_machine=684,17025
-		basic_machine=688,17076
-		basic_machine=692,17150
-		basic_machine=695,17214
-		basic_machine=698,17263
-		basic_machine=701,17326
-		basic_machine=704,17394
-		basic_machine=708,17481
-		basic_machine=712,17632
-		basic_machine=715,17702
-		basic_machine=718,17768
-		os=721,17812
-		basic_machine=724,17843
-		basic_machine=728,17893
-		basic_machine=732,17957
-		basic_machine=735,17997
-		basic_machine=739,18076
-		basic_machine=743,18152
-		basic_machine=747,18230
-		basic_machine=751,18312
-		basic_machine=755,18373
-		basic_machine=759,18434
-			os=764,18502
-		esac766,18521
-		basic_machine=769,18547
-		basic_machine=773,18600
-		basic_machine=777,18660
-		basic_machine=781,18754
-		basic_machine=784,18803
-		basic_machine=788,18854
-		basic_machine=792,18910
-		basic_machine=795,18959
-		basic_machine=799,19014
-		basic_machine=803,19075
-		basic_machine=806,19158
-		basic_machine=810,19212
-		basic_machine=813,19291
-		basic_machine=816,19379
-		basic_machine=820,19433
-		basic_machine=824,19492
-		basic_machine=828,19541
-		basic_machine=831,19614
-		basic_machine=835,19660
-		basic_machine=839,19707
-		basic_machine=843,19762
-		basic_machine=847,19816
-		basic_machine=851,19875
-		basic_machine=855,19958
-		basic_machine=859,20013
-		basic_machine=863,20083
-		basic_machine=867,20136
-		basic_machine=871,20194
-		      os=876,20272
-		      os=879,20309
-		esac881,20337
-		basic_machine=884,20358
-		basic_machine=888,20414
-		basic_machine=892,20469
-		basic_machine=896,20522
-		basic_machine=900,20579
-		basic_machine=904,20634
-		basic_machine=907,20678
-		basic_machine=910,20723
-		basic_machine=913,20768
-		basic_machine=916,20820
-		basic_machine=920,20890
-		basic_machine=923,20932
-		basic_machine=927,20999
-		basic_machine=931,21054
-		basic_machine=935,21110
-		basic_machine=939,21171
-		basic_machine=943,21222
-		basic_machine=947,21279
-		basic_machine=951,21365
-		basic_machine=954,21402
-		basic_machine=957,21450
-		basic_machine=960,21490
-		basic_machine=963,21528
-		basic_machine=966,21638
-		basic_machine=969,21712
-		basic_machine=972,21788
-		basic_machine=975,21828
-		basic_machine=978,21911
-		basic_machine=981,22021
-		basic_machine=984,22144
-		basic_machine=987,22225
-		basic_machine=990,22298
-	power)	basic_machine=992,22328
-	ppc | ppcbe)	basic_machine=994,22365
-		basic_machine=997,22432
-		basic_machine=1000,22553
-		basic_machine=1003,22620
-	ppc64)	basic_machine=1005,22693
-	ppc64-*) basic_machine=1007,22738
-		basic_machine=1010,22877
-		basic_machine=1013,22950
-		basic_machine=1016,23031
-		basic_machine=1019,23068
-		basic_machine=1023,23120
-		basic_machine=1027,23169
-		basic_machine=1031,23224
-		basic_machine=1034,23274
-		basic_machine=1037,23320
-		basic_machine=1040,23368
-		basic_machine=1043,23409
-		basic_machine=1047,23455
-		basic_machine=1050,23505
-		basic_machine=1053,23555
-		basic_machine=1057,23606
-		basic_machine=1061,23658
-		basic_machine=1064,23697
-		basic_machine=1068,23747
-		basic_machine=1071,23789
-		basic_machine=1074,23851
-		basic_machine=1078,23907
-		basic_machine=1082,23957
-		basic_machine=1085,24000
-		basic_machine=1088,24043
-		basic_machine=1092,24113
-		basic_machine=1095,24187
-		basic_machine=1098,24229
-		basic_machine=1102,24284
-		basic_machine=1106,24339
-		basic_machine=1110,24392
-		basic_machine=1114,24445
-		basic_machine=1118,24499
-		basic_machine=1122,24554
-		basic_machine=1126,24616
-		basic_machine=1129,24653
-		basic_machine=1132,24716
-		basic_machine=1135,24752
-		basic_machine=1139,24806
-		basic_machine=1143,24858
-		basic_machine=1147,24912
-		basic_machine=1151,24963
-		basic_machine=1155,25030
-		basic_machine=1158,25077
-		basic_machine=1161,25125
-		basic_machine=1165,25188
-		basic_machine=1168,25224
-		basic_machine=1172,25274
-		basic_machine=1176,25323
-		basic_machine=1180,25381
-		basic_machine=1184,25429
-		basic_machine=1188,25475
-		basic_machine=1192,25529
-		basic_machine=1195,25576
-		basic_machine=1199,25632
-		basic_machine=1203,25689
-		basic_machine=1207,25740
-		basic_machine=1211,25789
-		basic_machine=1215,25846
-		basic_machine=1219,25904
-		basic_machine=1222,25969
-		basic_machine=1225,26041
-		basic_machine=1229,26097
-		basic_machine=1233,26153
-		basic_machine=1237,26203
-		basic_machine=1244,26398
-		basic_machine=1247,26443
-		basic_machine=1250,26484
-		basic_machine=1253,26524
-		basic_machine=1256,26561
-		basic_machine=1259,26602
-		basic_machine=1262,26640
-		basic_machine=1266,26729
-		basic_machine=1269,26772
-		basic_machine=1272,26811
-		basic_machine=1275,26911
-		basic_machine=1278,26993
-		basic_machine=1281,27032
-		basic_machine=1284,27075
-		basic_machine=1287,27123
-		basic_machine=1290,27184
-		basic_machine=1293,27234
-	*-unknown)unknown1295,27269
-		exit 1300,27436
-		basic_machine=1307,27550
-		basic_machine=1310,27633
-		os=1328,28039
-		os=1331,28101
-		os=1334,28130
-		os=1337,28160
-		os=1340,28195
-	      | -skyos* | -haiku* | -rdos* | -toppers* | -drops* | -es*es1371,29964
-			os=1379,30177
-		esac1381,30197
-	-nto-qnx*qnx1383,30209
-		os=1386,30234
-	      | -macos* | -mpw* | -magic* | -mmixware* | -mon960* | -lnews*lnews1390,30419
-		os=1393,30502
-		os=1396,30565
-		os=1399,30601
-		os=1402,30663
-		os=1405,30725
-		os=1408,30787
-		os=1411,30820
-		os=1414,30847
-		os=1417,30876
-		os=1420,30903
-		os=1423,30927
-		os=1426,30952
-		os=1429,30976
-		os=1432,31002
-		os=1435,31033
-		os=1438,31063
-		os=1441,31095
-		os=1444,31120
-		os=1447,31149
-		os=1450,31178
-		os=1454,31247
-		os=1457,31303
-		os=1460,31328
-		os=1463,31354
-		os=1466,31379
-		os=1469,31404
-		os=1472,31429
-		os=1475,31456
-	-sysv*sysv1478,31506
-		os=1481,31528
-		os=1484,31554
-		os=1487,31578
-		os=1490,31641
-		os=1493,31666
-		os=1496,31691
-		os=1499,31716
-		os=1502,31743
-	-nacl*nacl1504,31760
-	-none)none1506,31774
-		os=1510,31839
-		os=1529,32565
-		os=1532,32588
-		os=1535,32613
-		os=1538,32647
-		os=1541,32676
-		os=1544,32710
-		os=1547,32738
-		os=1550,32764
-		os=1553,32791
-		os=1556,32817
-		os=1560,32885
-		os=1563,32913
-		os=1566,32945
-		os=1569,32980
-		os=1572,33009
-		os=1575,33044
-		os=1578,33075
-		os=1581,33099
-		os=1584,33128
-		os=1587,33153
-		os=1590,33177
-		os=1593,33254
-		os=1596,33289
-		os=1599,33318
-		os=1602,33344
-		os=1605,33369
-		os=1608,33394
-		os=1611,33422
-		os=1614,33452
-		os=1617,33478
-		os=1620,33503
-		os=1623,33531
-		os=1626,33610
-		os=1629,33634
-		os=1632,33660
-		os=1635,33688
-		os=1638,33717
-		os=1641,33746
-		os=1644,33772
-		os=1647,33804
-		os=1650,33828
-		os=1653,33851
-		os=1656,33877
-		os=1659,33901
-		os=1662,33932
-		os=1665,33962
-		os=1668,33988
-		os=1671,34011
-		os=1674,34039
-		os=1677,34069
-		os=1680,34117
-		os=1683,34144
-		os=1686,34169
-		os=1689,34195
-		os=1692,34223
-		os=1695,34243
-vendor=1702,34397
-				vendor=1710,34510
-				vendor=1713,34548
-				vendor=1716,34581
-				vendor=1719,34613
-				vendor=1722,34646
-				vendor=1725,34678
-				vendor=1728,34715
-				vendor=1731,34749
-				vendor=1734,34781
-				vendor=1737,34817
-				vendor=1740,34859
-				vendor=1743,34893
-				vendor=1746,34925
-				vendor=1749,34961
-				vendor=1752,35019
-				vendor=1755,35051
-				vendor=1758,35085
-				vendor=1761,35131
-				vendor=1764,35203
-				vendor=1767,35237
-		basic_machine=1770,35270
-
-config/ltsugar.m4,167
-       [m4_if([$2], [], [], [[$2]_]_25,847
-       [m4_pushdef([_Lt_sep], [m4_define([_Lt_sep], m4_defn([lt_car]))])]]dnldnl69,2495
-		]m4_dquote(m4_dquote72,2638
-
-config/ltversion.m4,18
-m4_define(15,425
-
-config/ltoptions.m4,18
-m4_define(19,621
-
-config/libtool.m4,194
-      subroutine foo5327,182936
-      subroutine foo5330,182993
-      subroutine foo6948,255639
-      subroutine foo6956,255788
-      subroutine t7207,263502
-      subroutine t7339,267502
-
-examples/example_server.js,25
-function handler(17,321
-
-examples/example_client.c,55
-void on_notofication_callback(10,112
-int main(15,275
-
-examples/Makefile~,8
-CC=1,0
-
-examples/Makefile,8
-CC=1,0
-
-.libs/libcellophane.so.0.0.0,1143
-±[ˇˇâ¬Fç¥?ìqò˝1ÚEãx!˙1Ú⁄Bçú&æ◊\ââ˛¡¬˙1∆!÷1∆ÛAãp0¡√”Dç§0"êkâ–1¯!ÿ1¯âﬂD‡1◊¡¿ÿ!«1◊A˛Aãx8A¡∆A∆Dç¨:éCy¶â¬1⁄D!Ú1⁄A’AãP<A¡≈EıDç§!¥IDâÛ1√D!Î1√A‹Açúb%ˆEãx,A¡ƒEÏDâ‡D1ËD!D1Ë√Aã@¡√D„Fç¥0@≥@¿âÿD1‡D!ËD1‡DGç¥/QZ^&Eãx¡¿	ÿAâ≈A1›E!ÂA1›EıFç¥%™«∂ÈA¡≈A≈EâÏA1ƒA!‹A1ƒEÙEç¥]/÷EãxA¡ƒEÏDâ„D1Î!√D1ÎDÛDç¥SD¡√D„âÿD1‡D!ËD1‡DFç¥*ÅÊ°ÿ¡¿	ÿAâ≈A1›E!ÂA1›EıGç¥'»˚”ÁEãx$A¡≈A≈EâÏA1ƒA!‹A1ƒEÙEç¥ÊÕ·!EãxA¡ƒEÏDâ„D1Î!√D1ÎDÛDç¥÷7√¡√D„âÿD1‡D!ËD1‡DGç¥/á’ÙEãx ¡¿	ÿAâ≈A1›E!ÂA1›EıGç¥'ÌZEEãx4A¡≈A≈EâÏA1ƒA!‹A1ƒEÙEç¥È„©EãxA¡ƒEÏDâ„D1Î!√D1ÎDÛEç¥¯£Ô¸Eãx¡√D„âÿD1‡D!ËD1‡DGç¥+Ÿog¡¿	ÿAâ≈A1›E!ÂA1›EıFç¥&äL*çA¡≈A≈EâÏA1ƒA!‹AçúB9˙ˇEãx A1ƒEÙâ\$‰A¡ƒEÏEâÊE1ÓDâÛ1√\$‰AçÑÅAçÑ14,20397
-˜◊ÿ	«1ﬂDﬂEãX¡«DﬂEãX¡«15,21594
-˜◊ÿ	«1ﬂDﬂEãX¡««Cç¨39†ì¸Aâ€çú√Y[eA˜”â∆A	˚˜÷A1√AÎAãhA¡√A˚D	ﬁ1˛ﬁAçúíÃèâ¯¡∆˜–çº9}ÙÔˇDﬁDâŸEã`	˜—D1ÿGçú—]ÑÖEãx,ÿAãXAã15,21594
-	¡çî‡Ê,˛1Ò˘â˜¡¡˜◊¡	œ1«DﬂDçú3O~®oâ∆¡«˜÷â»œ˜–AãX$	˛1ŒçåC£DﬁEãX4¡∆˛	1¯–â˙AçA16,21726
-ç4Aã@Aã@18,21902
-ç4Aã@t$ËIÉ¿@çîª“◊*â¯çº;ë”ÜÎ˜–	1»–¡¿ç0â»˜–	–A—1¯¡¿–A¬HÉl$@Ö§¯ˇˇHã|$¯ãl$ÏLâ¿Dã\$ËâoDâWDâOoDâWDâ18,21902
-
-.libs/cellophane_io.o,91
-Ç:hNNNNêÜ_÷u!uQêuìuìu	êrvÛgÜ0IgK0IgK0IgK0IgKhIgËujêgg.Çlül116,51846
-
-.libs/md5.o,1170
-±[ˇˇâ¬Fç¥?ìqò˝1ÚEãx!˙1Ú⁄Bçú&æ◊\ââ˛¡¬˙1∆!÷1∆ÛAãp0¡√”Dç§0"êkâ–1¯!ÿ1¯âﬂD‡1◊¡¿ÿ!«1◊A˛Aãx8A¡∆A∆Dç¨:éCy¶â¬1⁄D!Ú1⁄A’AãP<A¡≈EıDç§!¥IDâÛ1√D!Î1√A‹Açúb%ˆEãx,A¡ƒEÏDâ‡D1ËD!D1Ë√Aã@¡√D„Fç¥0@≥@¿âÿD1‡D!ËD1‡DGç¥/QZ^&Eãx¡¿	ÿAâ≈A1›E!ÂA1›EıFç¥%™«∂ÈA¡≈A≈EâÏA1ƒA!‹A1ƒEÙEç¥]/÷EãxA¡ƒEÏDâ„D1Î!√D1ÎDÛDç¥SD¡√D„âÿD1‡D!ËD1‡DFç¥*ÅÊ°ÿ¡¿	ÿAâ≈A1›E!ÂA1›EıGç¥'»˚”ÁEãx$A¡≈A≈EâÏA1ƒA!‹A1ƒEÙEç¥ÊÕ·!EãxA¡ƒEÏDâ„D1Î!√D1ÎDÛDç¥÷7√¡√D„âÿD1‡D!ËD1‡DGç¥/á’ÙEãx ¡¿	ÿAâ≈A1›E!ÂA1›EıGç¥'ÌZEEãx4A¡≈A≈EâÏA1ƒA!‹A1ƒEÙEç¥È„©EãxA¡ƒEÏDâ„D1Î!√D1ÎDÛEç¥¯£Ô¸Eãx¡√D„âÿD1‡D!ËD1‡DGç¥+Ÿog¡¿	ÿAâ≈A1›E!ÂA1›EıFç¥&äL*çA¡≈A≈EâÏA1ƒA!‹AçúB9˙ˇEãx A1ƒEÙâ\$‰A¡ƒEÏEâÊE1ÓDâÛ1√\$‰AçÑÅAçÑ2,413
-˜◊ÿ	«1ﬂDﬂEãX¡«DﬂEãX¡«3,1610
-˜◊ÿ	«1ﬂDﬂEãX¡««Cç¨39†ì¸Aâ€çú√Y[eA˜”â∆A	˚˜÷A1√AÎAãhA¡√A˚D	ﬁ1˛ﬁAçúíÃèâ¯¡∆˜–çº9}ÙÔˇDﬁDâŸEã`	˜—D1ÿGçú—]ÑÖEãx,ÿAãXAã3,1610
-	¡çî‡Ê,˛1Ò˘â˜¡¡˜◊¡	œ1«DﬂDçú3O~®oâ∆¡«˜÷â»œ˜–AãX$	˛1ŒçåC£DﬁEãX4¡∆˛	1¯–â˙AçA4,1742
-ç4Aã@Aã@6,1918
-ç4Aã@t$ËIÉ¿@çîª“◊*â¯çº;ë”ÜÎ˜–	1»–¡¿ç0â»˜–	–A—1¯¡¿–A¬HÉl$@Ö§¯ˇˇHã|$¯ãl$ÏLâ¿Dã\$ËâoDâWDâOoDâWDâ6,1918
-.vf>,/=g/g:i-=g/;=;?†<oÇo53,10179
-
-.libs/libcellophane.so.0,1143
-±[ˇˇâ¬Fç¥?ìqò˝1ÚEãx!˙1Ú⁄Bçú&æ◊\ââ˛¡¬˙1∆!÷1∆ÛAãp0¡√”Dç§0"êkâ–1¯!ÿ1¯âﬂD‡1◊¡¿ÿ!«1◊A˛Aãx8A¡∆A∆Dç¨:éCy¶â¬1⁄D!Ú1⁄A’AãP<A¡≈EıDç§!¥IDâÛ1√D!Î1√A‹Açúb%ˆEãx,A¡ƒEÏDâ‡D1ËD!D1Ë√Aã@¡√D„Fç¥0@≥@¿âÿD1‡D!ËD1‡DGç¥/QZ^&Eãx¡¿	ÿAâ≈A1›E!ÂA1›EıFç¥%™«∂ÈA¡≈A≈EâÏA1ƒA!‹A1ƒEÙEç¥]/÷EãxA¡ƒEÏDâ„D1Î!√D1ÎDÛDç¥SD¡√D„âÿD1‡D!ËD1‡DFç¥*ÅÊ°ÿ¡¿	ÿAâ≈A1›E!ÂA1›EıGç¥'»˚”ÁEãx$A¡≈A≈EâÏA1ƒA!‹A1ƒEÙEç¥ÊÕ·!EãxA¡ƒEÏDâ„D1Î!√D1ÎDÛDç¥÷7√¡√D„âÿD1‡D!ËD1‡DGç¥/á’ÙEãx ¡¿	ÿAâ≈A1›E!ÂA1›EıGç¥'ÌZEEãx4A¡≈A≈EâÏA1ƒA!‹A1ƒEÙEç¥È„©EãxA¡ƒEÏDâ„D1Î!√D1ÎDÛEç¥¯£Ô¸Eãx¡√D„âÿD1‡D!ËD1‡DGç¥+Ÿog¡¿	ÿAâ≈A1›E!ÂA1›EıFç¥&äL*çA¡≈A≈EâÏA1ƒA!‹AçúB9˙ˇEãx A1ƒEÙâ\$‰A¡ƒEÏEâÊE1ÓDâÛ1√\$‰AçÑÅAçÑ14,20397
-˜◊ÿ	«1ﬂDﬂEãX¡«DﬂEãX¡«15,21594
-˜◊ÿ	«1ﬂDﬂEãX¡««Cç¨39†ì¸Aâ€çú√Y[eA˜”â∆A	˚˜÷A1√AÎAãhA¡√A˚D	ﬁ1˛ﬁAçúíÃèâ¯¡∆˜–çº9}ÙÔˇDﬁDâŸEã`	˜—D1ÿGçú—]ÑÖEãx,ÿAãXAã15,21594
-	¡çî‡Ê,˛1Ò˘â˜¡¡˜◊¡	œ1«DﬂDçú3O~®oâ∆¡«˜÷â»œ˜–AãX$	˛1ŒçåC£DﬁEãX4¡∆˛	1¯–â˙AçA16,21726
-ç4Aã@Aã@18,21902
-ç4Aã@t$ËIÉ¿@çîª“◊*â¯çº;ë”ÜÎ˜–	1»–¡¿ç0â»˜–	–A—1¯¡¿–A¬HÉl$@Ö§¯ˇˇHã|$¯ãl$ÏLâ¿Dã\$ËâoDâWDâOoDâWDâ18,21902
-
-.libs/libcellophane.lai,14
-dlname=8,218
-
-.libs/libcellophane.la,14
-dlname=8,218
-
-.libs/libcellophane.a,102
-Host:Host19,11767
-Upgrade:Upgrade20,11780
-Connection:Connection21,11800
-Origin:Origin24,11871
-
-.libs/libcellophane.so,1143
-±[ˇˇâ¬Fç¥?ìqò˝1ÚEãx!˙1Ú⁄Bçú&æ◊\ââ˛¡¬˙1∆!÷1∆ÛAãp0¡√”Dç§0"êkâ–1¯!ÿ1¯âﬂD‡1◊¡¿ÿ!«1◊A˛Aãx8A¡∆A∆Dç¨:éCy¶â¬1⁄D!Ú1⁄A’AãP<A¡≈EıDç§!¥IDâÛ1√D!Î1√A‹Açúb%ˆEãx,A¡ƒEÏDâ‡D1ËD!D1Ë√Aã@¡√D„Fç¥0@≥@¿âÿD1‡D!ËD1‡DGç¥/QZ^&Eãx¡¿	ÿAâ≈A1›E!ÂA1›EıFç¥%™«∂ÈA¡≈A≈EâÏA1ƒA!‹A1ƒEÙEç¥]/÷EãxA¡ƒEÏDâ„D1Î!√D1ÎDÛDç¥SD¡√D„âÿD1‡D!ËD1‡DFç¥*ÅÊ°ÿ¡¿	ÿAâ≈A1›E!ÂA1›EıGç¥'»˚”ÁEãx$A¡≈A≈EâÏA1ƒA!‹A1ƒEÙEç¥ÊÕ·!EãxA¡ƒEÏDâ„D1Î!√D1ÎDÛDç¥÷7√¡√D„âÿD1‡D!ËD1‡DGç¥/á’ÙEãx ¡¿	ÿAâ≈A1›E!ÂA1›EıGç¥'ÌZEEãx4A¡≈A≈EâÏA1ƒA!‹A1ƒEÙEç¥È„©EãxA¡ƒEÏDâ„D1Î!√D1ÎDÛEç¥¯£Ô¸Eãx¡√D„âÿD1‡D!ËD1‡DGç¥+Ÿog¡¿	ÿAâ≈A1›E!ÂA1›EıFç¥&äL*çA¡≈A≈EâÏA1ƒA!‹AçúB9˙ˇEãx A1ƒEÙâ\$‰A¡ƒEÏEâÊE1ÓDâÛ1√\$‰AçÑÅAçÑ14,20397
-˜◊ÿ	«1ﬂDﬂEãX¡«DﬂEãX¡«15,21594
-˜◊ÿ	«1ﬂDﬂEãX¡««Cç¨39†ì¸Aâ€çú√Y[eA˜”â∆A	˚˜÷A1√AÎAãhA¡√A˚D	ﬁ1˛ﬁAçúíÃèâ¯¡∆˜–çº9}ÙÔˇDﬁDâŸEã`	˜—D1ÿGçú—]ÑÖEãx,ÿAãXAã15,21594
-	¡çî‡Ê,˛1Ò˘â˜¡¡˜◊¡	œ1«DﬂDçú3O~®oâ∆¡«˜÷â»œ˜–AãX$	˛1ŒçåC£DﬁEãX4¡∆˛	1¯–â˙AçA16,21726
-ç4Aã@Aã@18,21902
-ç4Aã@t$ËIÉ¿@çîª“◊*â¯çº;ë”ÜÎ˜–	1»–¡¿ç0â»˜–	–A—1¯¡¿–A¬HÉl$@Ö§¯ˇˇHã|$¯ãl$ÏLâ¿Dã\$ËâoDâWDâOoDâWDâ18,21902
-
-libtool,4178
-available_tags=38,1666
-  NULLCMD=519,17259
-BIN_SH=527,17511
-lt_user_locale=539,17801
-: ${$569,18598
-: ${$570,18615
-: ${$571,18634
-: ${$572,18650
-: ${$573,18666
-: ${$574,18703
-EXIT_SUCCESS=577,18752
-sed_quote_subst='s/\([`"$\$825,27113
-double_quote_subst=828,27208
-func_verbose 872,28504
-func_echo_all 884,28801
-func_error 891,28914
-func_warning 898,29080
-func_fatal_error 908,29308
-func_fatal_help 917,29499
-help=922,29576
-func_mkdir_p 935,29893
-func_resolve_sysroot 1763,51100
-func_replace_sysroot 1777,51482
-func_infer_tag 1797,52030
-func_write_libtool_object 1857,54218
-func_convert_core_file_wine_to_w32 1905,55525
-func_convert_core_path_wine_to_w32 1937,57058
-func_cygpath 1977,58717
-func_convert_core_msys_to_w32 1997,59269
-func_convert_file_check 2011,59754
-func_convert_path_check 2029,60382
-func_convert_path_front_back_pathsep 2053,61195
-func_to_host_file 2080,61914
-func_to_tool_file 2092,62242
-func_convert_file_noop 2110,62571
-func_convert_file_msys_to_w32 2121,62880
-func_convert_file_cygwin_to_w32 2137,63332
-func_convert_file_nix_to_w32 2154,63884
-func_convert_file_msys_to_cygwin 2170,64371
-func_convert_file_nix_to_cygwin 2188,64963
-to_host_path_cmd=2227,66550
-func_to_host_path 2241,66919
-func_convert_path_noop 2252,67106
-func_convert_path_msys_to_w32 2263,67410
-func_convert_path_cygwin_to_w32 2286,68249
-func_convert_path_nix_to_w32 2306,68927
-func_convert_path_msys_to_cygwin 2327,69646
-func_convert_path_nix_to_cygwin 2350,70471
-func_mode_compile 2372,71261
-func_mode_help 2719,80508
-      s/^Usage:.*--mode=mode2932,88251
-func_mode_finish 3072,91699
-func_mode_install 3191,95095
-func_generate_dlsyms 3658,107552
-func_win32_libid 3964,117646
-func_cygming_dll_for_implib 4016,119103
-func_cygming_dll_for_implib_fallback_core 4033,119658
-    /:[	 ]*file format pe[pe4046,120094
-func_cygming_gnu_implib_p 4087,121476
-func_cygming_ms_implib_p 4099,121950
-func_cygming_dll_for_implib_fallback 4118,122631
-func_extract_an_archive 4135,123129
-func_extract_archives 4161,123937
-func_emit_wrapper 4258,127262
-func_emit_cwrapperexe_src 4560,136001
-# define _CRT_SECURE_NO_DEPRECATE 4576,136460
-# define setmode 4616,137298
-# define stat 4617,137324
-# define chmod 4618,137347
-# define getcwd 4619,137371
-# define putenv 4620,137396
-# define S_IXUSR 4621,137421
-#  define _INTPTR_T_DEFINED4623,137474
-#  define intptr_t 4624,137502
-# define setmode 4627,137560
-# define stat 4628,137586
-# define chmod 4629,137609
-# define getcwd 4630,137633
-# define putenv 4631,137658
-# define HAVE_SETENV4633,137709
-# define FOPEN_WB 4634,137730
-# define LT_PATHMAX 4639,137825
-# define LT_PATHMAX 4641,137880
-# define LT_PATHMAX 4643,137917
-# define S_IXOTH 4647,137966
-# define S_IXGRP 4650,138008
-# define DIR_SEPARATOR 4655,138096
-# define PATH_SEPARATOR 4656,138123
-# define HAVE_DOS_BASED_FILE_SYSTEM4661,138251
-# define FOPEN_WB 4662,138287
-#  define DIR_SEPARATOR_2 4664,138335
-#  define PATH_SEPARATOR_2 4667,138400
-# define IS_DIR_SEPARATOR(4672,138471
-# define IS_DIR_SEPARATOR(4674,138553
-# define IS_PATH_SEPARATOR(4679,138696
-# define IS_PATH_SEPARATOR(4681,138781
-# define FOPEN_WB 4685,138887
-# define _O_BINARY 4688,138934
-#define XMALLOC(4691,138963
-#define XFREE(4692,139037
-#define LTWRAPPER_OPTION_PREFIX 4766,141212
-xmalloc 4973,147300
-xstrdup 4983,147446
-base_name 4990,147580
-check_executable 5007,147921
-make_executable 5024,148249
-find_executable 5046,148781
-chase_symlinks 5151,151427
-strendzap 5210,152703
-lt_debugprintf 5230,152994
-lt_error_core 5243,153284
-lt_fatal 5256,153601
-nonnull 5265,153811
-nonempty 5271,153887
-lt_setenv 5277,153969
-lt_extend_str 5300,154532
-lt_update_exe_path 5327,155142
-lt_update_lib_path 5348,155785
-#define SHELL_SPECIAL_CHARS 5390,157394
-#define SHELL_SPACE_CHARS 5391,157554
-prepare_spawn 5393,157716
-EOF5479,159400
-void lt_dump_script 5484,159444
-func_win32_import_lib_p 5505,159790
-func_mode_link 5515,159974
-func_mode_uninstall 9870,287522
-  help=10043,291926
-build_libtool_libs=10070,292904
-build_old_libs=`case $build_libtool_libs in yes) echo no;; *) echo yes;10075,293038
-
-config.h.in,1068
-#undef HAVE_BZERO4,117
-#undef HAVE_DLFCN_H7,193
-#undef HAVE_GETHOSTBYNAME10,274
-#undef HAVE_INTTYPES_H13,361
-#undef HAVE_LIBCURL16,444
-#undef HAVE_LIBJANSSON19,530
-#undef HAVE_MALLOC23,655
-#undef HAVE_MEMORY_H26,733
-#undef HAVE_MEMSET29,808
-#undef HAVE_NETDB_H32,885
-#undef HAVE_NETINET_IN_H35,968
-#undef HAVE_REALLOC39,1096
-#undef HAVE_SELECT42,1170
-#undef HAVE_SOCKET45,1243
-#undef HAVE_STDINT_H48,1321
-#undef HAVE_STDLIB_H51,1401
-#undef HAVE_STRDUP54,1476
-#undef HAVE_STRINGS_H57,1555
-#undef HAVE_STRING_H60,1636
-#undef HAVE_STRSTR63,1711
-#undef HAVE_SYS_SOCKET_H66,1793
-#undef HAVE_SYS_STAT_H69,1879
-#undef HAVE_SYS_TYPES_H72,1964
-#undef HAVE_UNISTD_H75,2047
-#undef HAVE_WCHAR_H78,2126
-#undef LT_OBJDIR82,2231
-#undef PACKAGE85,2271
-#undef PACKAGE_BUGREPORT88,2366
-#undef PACKAGE_NAME91,2439
-#undef PACKAGE_STRING94,2519
-#undef PACKAGE_TARNAME97,2601
-#undef PACKAGE_URL100,2673
-#undef PACKAGE_VERSION103,2738
-#undef STDC_HEADERS106,2817
-#undef VERSION109,2870
-#undef malloc112,2957
-#undef realloc115,3044
-#undef size_t118,3125
-
-README.md,21
-cellophane.ioio1,0
-
-autom4te.cache/output.0,36
-   function prototypes 3496,105803
-
-autom4te.cache/traces.0,2047
-m4trace:/usr/share/aclocal/argz.m4:12: -1- AC_DEFUN(1,0
-	     lt_os_minor=44,1576
-	     lt_os_micro=45,1601
-	       lt_cv_sys_argz_works=51,1827
-	 *) lt_cv_sys_argz_works=55,1886
-	 esac]esac56,1919
-m4trace:/usr/share/aclocal/argz.m4:79: -1- AC_DEFUN(65,2192
-lt_cl_help=122,4399
-      echo "$lt_cl_version"; exit 149,5255
-      echo "$lt_cl_help"; exit 151,5319
-      debug=153,5381
-      lt_cl_silent=155,5442
-    -*) AC_MSG_ERROR(157,5467
-AC_MSG_NOTICE(176,5841
-     lt_sysroot=240,8924
-      ac_prog=685,24905
-	ac_prog=687,25028
-    ac_prog=693,25194
-    with_gnu_ld=697,25284
-  AC_MSG_CHECKING(701,25359
-  AC_MSG_RESULT(732,26269
-  NM=796,28657
-    AC_CHECK_TOOLS(802,28827
-    NM=814,29097
-  AC_CHECK_LIB(852,30896
-dnl If neither LT_CONFIG_LTDL_DIR,959,36330
-dnl was called yet,960,36403
-    AC_MSG_ERROR(971,36813
-    AC_MSG_ERROR(984,37142
- AC_DEFINE(1205,44737
-  m4_pattern_allow(1223,45627
-  m4_pattern_allow(1228,45872
-  m4_pattern_allow(1241,46705
-  sys_dlsearch_path=1255,47609
-      sys_dlsearch_path=1258,47714
-	  LIBADD_DLOPEN=1283,48758
-  LT_DLLOADERS=1330,50465
-  LT_DLLOADERS=1334,50655
-AC_CHECK_LIB(1338,50744
-    LT_DLPREOPEN=1349,51077
-	AC_CACHE_CHECK(1408,53664
-  AC_DEFINE(1422,54075
-  $1_TRUE=1598,65697
-    am__obj=1678,68972
-    am__minus_obj=1679,69009
-      fi1692,69412
-      am__obj=1698,69683
-      am__minus_obj=1699,69718
-    none) break 1701,69748
-          grep 'not supported' conftest.err) >/dev/null 2>&1; then 1720,70751
-        am_cv_$1_dependencies_compiler_type=1721,70826
-  am_depcomp=1745,71679
-m4trace:/usr/share/aclocal-1.11/init.m4:26: -1- AC_DEFUN(1810,74435
-  AC_SUBST(1819,74902
-    AC_MSG_ERROR(1822,75061
-    CYGPATH_W=1829,75275
-AM_MISSING_PROG(1857,76232
-AM_MISSING_PROG(1859,76323
-    install_sh=1910,78315
-    install_sh=1912,78375
-     am__include=1951,79509
-AC_SUBST(1957,79594
-m4trace:/usr/share/aclocal-1.11/missing.m4:24: -1- AC_DEFUN(1965,79852
-    MISSING=1970,80081
-    MISSING=1972,80137
-  am_missing_run=1977,80258
-
-autom4te.cache/traces.2,1782
-m4trace:/usr/share/aclocal/argz.m4:12: -1- AC_DEFUN(1,0
-	     lt_os_minor=44,1576
-	     lt_os_micro=45,1601
-	       lt_cv_sys_argz_works=51,1827
-	 *) lt_cv_sys_argz_works=55,1886
-	 esac]esac56,1919
-m4trace:/usr/share/aclocal/argz.m4:79: -1- AC_DEFUN(65,2192
-dnl If neither LT_CONFIG_LTDL_DIR,138,5685
-dnl was called yet,139,5758
-    AC_MSG_ERROR(150,6168
-    AC_MSG_ERROR(163,6497
- AC_DEFINE(384,14092
-  m4_pattern_allow(402,14982
-  m4_pattern_allow(407,15227
-  m4_pattern_allow(420,16060
-  sys_dlsearch_path=434,16964
-      sys_dlsearch_path=437,17069
-	  LIBADD_DLOPEN=462,18113
-  LT_DLLOADERS=509,19820
-  LT_DLLOADERS=513,20010
-AC_CHECK_LIB(517,20099
-    LT_DLPREOPEN=528,20432
-	AC_CACHE_CHECK(587,23019
-  AC_DEFINE(601,23430
-  $1_TRUE=633,25165
-    am__obj=713,28440
-    am__minus_obj=714,28477
-      fi727,28880
-      am__obj=733,29151
-      am__minus_obj=734,29186
-    none) break 736,29216
-          grep 'not supported' conftest.err) >/dev/null 2>&1; then 755,30219
-        am_cv_$1_dependencies_compiler_type=756,30294
-  am_depcomp=780,31147
-m4trace:/usr/share/aclocal-1.11/init.m4:26: -1- AC_DEFUN(845,33903
-  AC_SUBST(854,34370
-    AC_MSG_ERROR(857,34529
-    CYGPATH_W=864,34743
-AM_MISSING_PROG(892,35700
-AM_MISSING_PROG(894,35791
-    install_sh=945,37783
-    install_sh=947,37843
-     am__include=986,38977
-AC_SUBST(992,39062
-m4trace:/usr/share/aclocal-1.11/missing.m4:24: -1- AC_DEFUN(1000,39320
-    MISSING=1005,39549
-    MISSING=1007,39605
-  am_missing_run=1012,39726
-      ac_prog=1839,69927
-	ac_prog=1841,70050
-    ac_prog=1847,70216
-    with_gnu_ld=1851,70306
-  AC_MSG_CHECKING(1855,70381
-  AC_MSG_RESULT(1886,71291
-  NM=1950,73619
-    AC_CHECK_TOOLS(1956,73789
-    NM=1968,74059
-  AC_CHECK_LIB(2006,75798
-
-autom4te.cache/output.1,36
-   function prototypes 3496,105769
-
-autom4te.cache/traces.1,44
-m4trace:aclocal.m4:972: -1- m4_include(1,0
-
-autom4te.cache/output.2,36
-   function prototypes 3496,105769
-
-autom4te.cache/requests,16
-@request 5,155
-
-Makefile.am~,21
-lib_LTLIBRARIES 1,0
-
-md5.o,1170
-±[ˇˇâ¬Fç¥?ìqò˝1ÚEãx!˙1Ú⁄Bçú&æ◊\ââ˛¡¬˙1∆!÷1∆ÛAãp0¡√”Dç§0"êkâ–1¯!ÿ1¯âﬂD‡1◊¡¿ÿ!«1◊A˛Aãx8A¡∆A∆Dç¨:éCy¶â¬1⁄D!Ú1⁄A’AãP<A¡≈EıDç§!¥IDâÛ1√D!Î1√A‹Açúb%ˆEãx,A¡ƒEÏDâ‡D1ËD!D1Ë√Aã@¡√D„Fç¥0@≥@¿âÿD1‡D!ËD1‡DGç¥/QZ^&Eãx¡¿	ÿAâ≈A1›E!ÂA1›EıFç¥%™«∂ÈA¡≈A≈EâÏA1ƒA!‹A1ƒEÙEç¥]/÷EãxA¡ƒEÏDâ„D1Î!√D1ÎDÛDç¥SD¡√D„âÿD1‡D!ËD1‡DFç¥*ÅÊ°ÿ¡¿	ÿAâ≈A1›E!ÂA1›EıGç¥'»˚”ÁEãx$A¡≈A≈EâÏA1ƒA!‹A1ƒEÙEç¥ÊÕ·!EãxA¡ƒEÏDâ„D1Î!√D1ÎDÛDç¥÷7√¡√D„âÿD1‡D!ËD1‡DGç¥/á’ÙEãx ¡¿	ÿAâ≈A1›E!ÂA1›EıGç¥'ÌZEEãx4A¡≈A≈EâÏA1ƒA!‹A1ƒEÙEç¥È„©EãxA¡ƒEÏDâ„D1Î!√D1ÎDÛEç¥¯£Ô¸Eãx¡√D„âÿD1‡D!ËD1‡DGç¥+Ÿog¡¿	ÿAâ≈A1›E!ÂA1›EıFç¥&äL*çA¡≈A≈EâÏA1ƒA!‹AçúB9˙ˇEãx A1ƒEÙâ\$‰A¡ƒEÏEâÊE1ÓDâÛ1√\$‰AçÑÅAçÑ2,413
-˜◊ÿ	«1ﬂDﬂEãX¡«DﬂEãX¡«3,1610
-˜◊ÿ	«1ﬂDﬂEãX¡««Cç¨39†ì¸Aâ€çú√Y[eA˜”â∆A	˚˜÷A1√AÎAãhA¡√A˚D	ﬁ1˛ﬁAçúíÃèâ¯¡∆˜–çº9}ÙÔˇDﬁDâŸEã`	˜—D1ÿGçú—]ÑÖEãx,ÿAãXAã3,1610
-	¡çî‡Ê,˛1Ò˘â˜¡¡˜◊¡	œ1«DﬂDçú3O~®oâ∆¡«˜÷â»œ˜–AãX$	˛1ŒçåC£DﬁEãX4¡∆˛	1¯–â˙AçA4,1742
-ç4Aã@Aã@6,1918
-ç4Aã@t$ËIÉ¿@çîª“◊*â¯çº;ë”ÜÎ˜–	1»–¡¿ç0â»˜–	–A—1¯¡¿–A¬HÉl$@Ö§¯ˇˇHã|$¯ãl$ÏLâ¿Dã\$ËâoDâWDâOoDâWDâ6,1918
-.vf>,/=g/g:i-=g/;=;?†<oÇo53,10179
-
-Makefile.in,2724
-VPATH 18,669
-pkgdatadir 36,1132
-am__vpath_adj 75,2617
-am__nobase_list 85,2988
-am__base_list 92,3393
-am__installdirs 101,3743
-RECURSIVE_CLEAN_TARGETS 133,5148
-  else 149,5802
-am__relativize 150,5815
-  sed_first=152,5850
-  sed_rest=153,5889
-  sed_last=154,5918
-  sed_butlast=155,5956
-    first=157,6020
-        dir2=160,6148
-        dir0=161,6211
-        first2=163,6281
-          dir2=165,6385
-          dir2=167,6456
-        fi;168,6486
-        dir0=169,6500
-      fi;170,6535
-    fi;171,6547
-    dir1=172,6557
-  done;173,6607
-  reldir=174,6617
-	      $(319,10230
-	    list2=366,11773
-	  else 367,11801
-	  else :; fi;367,11801
-	done;368,11818
-	  $(MKDIR_P) "$(DESTDIR)$(libdir)" || exit 371,11900
-	  $(373,12087
-	  $(380,12353
-	  dir=388,12724
-libcellophane.la: $(393,12893
-	  case $$f in 466,17842
-	    *k*) failcom=468,17883
-	  esac;469,17916
-	done;470,17927
-	dot_seen=471,17936
-	target=472,17952
-	    dot_seen=476,18118
-	    local_target=477,18139
-	    local_target=479,18184
-	  fi;480,18216
-	  || eval $$failcom;482,18293
-	done;483,18317
-	  $(485,18363
-	  case $$f in 491,18526
-	    *k*) failcom=493,18567
-	  esac;494,18600
-	done;495,18611
-	dot_seen=496,18620
-	  distclean-* | maintainer-clean-*) list=498,18652
-	  *) list=499,18717
-	esac;500,18746
-	rev=501,18755
-	  if test "$$subdir" = "."; then 502,18791
-	    rev=503,18835
-	  fi;504,18864
-	done;505,18873
-	rev=506,18882
-	target=507,18900
-	    local_target=511,19046
-	    local_target=513,19091
-	  fi;514,19123
-	  || eval $$failcom;516,19200
-	list=519,19266
-	list=523,19418
-ID: $(527,19555
-	    if test -f "$$i"; then echo $$i;530,19689
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i;$$i530,19689
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi;530,19689
-TAGS: tags-recursive $(537,19914
-	  include_option=542,20106
-	  empty_fix=543,20143
-	  include_option=545,20169
-	  empty_fix=546,20200
-	fi;547,20217
-	list=548,20224
-	  if test "$$subdir" = .; then 549,20271
-	  fi;552,20407
-	done;553,20416
-	list=554,20425
-	unique=555,20492
-	    if test -f "$$i"; then echo $$i;556,20523
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i;$$i556,20523
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi;556,20523
-	shift;560,20716
-	if test -z "$(ETAGS_ARGS)$$*$$unique"; then 561,20726
-	  test -n "$$unique" || unique=562,20781
-	    $(564,20857
-	    if test -f "$$i"; then echo $$i;576,21261
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i;$$i576,21261
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi;576,21261
-	  || $(581,21489
-	  dist_files=`for file in $$list; do echo $$file;598,22002
-
-config.h.in~,1068
-#undef HAVE_BZERO4,117
-#undef HAVE_DLFCN_H7,193
-#undef HAVE_GETHOSTBYNAME10,274
-#undef HAVE_INTTYPES_H13,361
-#undef HAVE_LIBCURL16,444
-#undef HAVE_LIBJANSSON19,530
-#undef HAVE_MALLOC23,655
-#undef HAVE_MEMORY_H26,733
-#undef HAVE_MEMSET29,808
-#undef HAVE_NETDB_H32,885
-#undef HAVE_NETINET_IN_H35,968
-#undef HAVE_REALLOC39,1096
-#undef HAVE_SELECT42,1170
-#undef HAVE_SOCKET45,1243
-#undef HAVE_STDINT_H48,1321
-#undef HAVE_STDLIB_H51,1401
-#undef HAVE_STRDUP54,1476
-#undef HAVE_STRINGS_H57,1555
-#undef HAVE_STRING_H60,1636
-#undef HAVE_STRSTR63,1711
-#undef HAVE_SYS_SOCKET_H66,1793
-#undef HAVE_SYS_STAT_H69,1879
-#undef HAVE_SYS_TYPES_H72,1964
-#undef HAVE_UNISTD_H75,2047
-#undef HAVE_WCHAR_H78,2126
-#undef LT_OBJDIR82,2231
-#undef PACKAGE85,2271
-#undef PACKAGE_BUGREPORT88,2366
-#undef PACKAGE_NAME91,2439
-#undef PACKAGE_STRING94,2519
-#undef PACKAGE_TARNAME97,2601
-#undef PACKAGE_URL100,2673
-#undef PACKAGE_VERSION103,2738
-#undef STDC_HEADERS106,2817
-#undef VERSION109,2870
-#undef malloc112,2957
-#undef realloc115,3044
-#undef size_t118,3125
-
-Makefile.am,13
-SUBDIRS 1,0
-
-configure.ac,126
-AC_PREREQ(4,131
-   AC_CHECK_LIB(34,935
-   	   AC_MSG_RESULT(38,1120
-   AC_CHECK_LIB(51,1493
-   	   AC_MSG_RESULT(55,1684
-
-.git/config,30
-	repositoryformatversion 2,7
-
-.git/hooks/update.sample,78
-refname=28,930
-allowunannotated=46,1316
-zero=63,1897
-	newrev_type=65,1978
-
-.git/hooks/pre-rebase.sample,16
-publish=18,587
-
-.git/hooks/prepare-commit-msg.sample,16
-  merge,24,859
-
-.git/description,24
-Unnamed repository;1,0
-
-.git/objects/ac/0ecd10b462d4809e5ab0b0c213915e57a7d5d3,96
-x+)JMU02∑d040031Q–JMU02∑d040031Q1,0
-x+)JMU02∑d040031Q–Kœ,…LœÀ/Je¯€qƒm˘¢ßí“úM¬|◊œä~=~1,0
-
-.git/objects/95/8bdc8131fa6a4d88f3f2cabdc3dbae5e7e31d7,17
-xuR_ãxuR_1,0
-
-.git/objects/77/c019ca7817985d6cd9bfd9a701a1eca49d9b71,240
-x+)JMU02∑d040031Q–JMU02∑d040031Q1,0
-x+)JMU02∑d040031Q–Kœ,…LœÀ/Je¯€qƒm˘¢ßí“úM¬|◊œä~=~1,0
-x+)JMU02∑d040031Q–Kœ,…LœÀ/Je¯€qƒm˘¢ßí“úM¬|◊œä~=UÂ„ÈÏÍÏ p˝#´Ù¶’ô±mâv&ñbﬂÕıΩ@ï¯&fß¶eÊ§2¨:Ω·ßŸ’Ø~ªÆMxe:eSh˙„®ö WG_WÌCWR;<€ñËﬁÒh‹h1,0
-
-.git/objects/c7/3a38c42551ed1ad87eee7ff3c32a5dbdc4d3d4,185
-xx1,0
-xÕ]ms7íæœ˛ÔÏê“Ë’/… ∂Íô≤µë%ù$«õµSS9î&Ê€rF∂«ˇ˝ûhzÜCôÚ:UÀJL4∫›çF£Å9åœÕ˝ÕçÓˇ◊⁄“≥d∫…`0û\vF…j:6+&KáìAbKáìA1,0
-˜®ôç»¨ª… †]ÉwqøIﬁgÒIGçP¯{e˚]íL‚Œ≥9∑@¨!3,1225
-
-.git/objects/c7/9e54844dc337d5369ff7c8e749b8a97992973d,692
-xÕ}˚w€F≤w€F1,0
-xÕ}˚w€F≤Ê˛J˝=ºká§†ßìQlÕ*2ekFØ+…Ò‰ 98	JåHÇóÄl+éˇ˜˚}U›@$%:ŒÏ.œ±E6˙QÔÆÆÆn\íKÛds˝ŸÛˇµ÷Z2-”âÉd|ç‚’~bVL⁄é±IìŒMú±®3Ë«£Ã|úÙ≥xd˙#”A3∂‹M∆wì˛’xd˙#”A3∂‹M∆wì˛1,0
-xÕ}˚w€F≤Ê˛J˝=ºká§†ßìQlÕ*2ekFØ+…Ò‰ 98	JåHÇóÄl+éˇ˜˚}U›@$%:ŒÏ.œ±E6˙QÔÆÆÆn\íKÛds˝ŸÛˇµ÷Z2-”âÉd|ç‚’~bVL⁄é±IìŒMú±®3Ë«£Ã|úÙ≥xd˙#”A3∂‹M∆wì˛’ufªM≥πæÒ‘ÏﬂƒsO‚ﬂL76;ÉÀx‘ˇÕºË£x‘ˇÕºË1,0
-à~à~3,844
-D5,1643
-D,DwDw5,1643
-0ƒo„ Ÿ2—x—%–œYY6,1662
-„¿p∫CNöò	È∏6`ùX±X7,1950
-FÚË˙Nö©ÔB@Ã©Na≠π>«TÄë	ö£,∞ëØÉ$Í¶É‡è•úQ,EmœEm14,3199
-i@4™ÄD∆˘ ïU\\$∫Ñê®™£çÏÚIÃß°P–ËGkmcµıôhîñ˘‡∑cJ‹¡‹nP°›¶aÓj_-ŸnKz∫3h…£™£nKz∫3h…£™16,3442
-ˇ´}z‹x\•#$ì}‡˘Y˚‹õíÈΩb<£∫‘◊µ|nîpƒ|€≤]T9óÄBÿT9óÄB45,8378
-l‹l‹47,8530
-
-.git/objects/b9/323d93132f788660a4058efb1fe898aaf5d219,9
-xx1,0
-
-.git/objects/26/168c9216222908ae75f4aa565e04d42171d2b0,85
-x+)JMU044f040031QHNÕ……/»HÃKçœÃ◊Kf™®‚Ω{Ú˙·);=œxˆ˜èTinä)H¡Õ¨3ó˘ñùdÕ}ÙAÛzAÛ1,0
-
-.git/objects/1f/32d22b23c89787f8b875bbb5685855e2d2c71b,43
-x+)JMU∞∞d040031QH≠HÃ-»IçOŒ…LÕ+—Kf(Kf1,0
-
-.git/objects/23/c64a744b4ad6deea49bfb06e5e8cf4017653cf,240
-x+)JMU02∑d040031Q–JMU02∑d040031Q1,0
-x+)JMU02∑d040031Q–Kœ,…LœÀ/Je¯€qƒm˘¢ßí“úM¬|◊œä~=~1,0
-x+)JMU02∑d040031Q–Kœ,…LœÀ/Je¯€qƒm˘¢ßí“úM¬|◊œä~=UÂ„ÈÏÍÏ p˝#´Ù¶’ô±mâv&ñbﬂÕıΩ@ï¯&fß¶eÊ§2¨:Ω·ßŸ’Ø~ªÆMxe:eSh˙„®ö WG_WÌCWR;<€ñËﬁÒh‹h1,0
-
-.git/objects/72/a562d0a25101a8c380187181d8f6058773d941,552
-xx1,0
-xÕ]mw€∂íﬁØÚØ@µõTíÈ◊º4uÔ∫éú¯^«ˆ⁄NsªINsª1,0
-”ç1å¨;ΩÜJ¢ 0âß©i~Zíﬁ<Åå£ç|Ë¶)¡ÊÅ©gSg3,1199
-∞6C@C11,2931
-∫Ä€˜»Ÿâ˘;§¨MU»§ƒ”¿‚z%Áæ(N>µr,{≠∫∏Ówr-â[:tcÔMÊ¥*K£R.inøÉﬂè ü NÙ&Qcê·q(w¿ÛaMî‡’◊ëû√› ]æ d:Ëò\îÉ˜e‡∏Æ@e‡∏Æ28,7971
-∫Ä€˜»Ÿâ˘;§¨MU»§ƒ”¿‚z%Áæ(N>µr,{≠∫∏Ówr-â[:tcÔMÊ¥*K£R.inøÉﬂè ü NÙ&Qcê·q(w¿ÛaMî‡’◊ëû√› ]æ d:Ëò\îÉ˜e‡∏Æ@ihF°]≈R¨\◊ÚÔY¸˜ÈRº4¢∏Ìºé:!˚\ò}–ÒKîjó∏`%AGì7'£'∏sÉ'yºË7Î‚cÈ>E‚D_≥L•‰óAJC8ç&0êX*cÜíZÿN>‡ÚlºﬂÉ=∞Ω¿Àô˘ÔmÆ0éI/E†Î+˜6<úq1µd…Üç/C%»i‘Áª.^_-g)=xÊó}ıxS1bÆN˙'8Œ«+§~Œ~28,7971
-
-.git/objects/a3/deda57cdbbafc9ac9c1e5d3c47f6ad2ac754e1,12
-¬0E]E2,6
-
-.git/objects/13/198493863d2b8790eacdeff7d620c0f21af66d,738
-xx1,0
-ÖB}>üõáèü¨ˇ«Í“=≥d:Ò`0û\F£x•?6-ìÙáìAlíqÁ*NY‘Ù„Qj>N˚i<2˝ëÈ†[Óå'7”˛≈ej;M≥±∂˛»Ï]≈SsO„ﬂL76€ÉÛx‘ˇÕ<Î£xe¬‚ïHÀ˛˚bı+ùÒpÀB3gó˝ƒ˙Á”hzcµ7çâF/˝M„ßÊf|m:—»L„n?Iß˝ÛÎ46˝‘D£ÓÍxJ|Ãp‹Ì˜–65◊£.I/cì∆”cì∆2,71
-L ∞dØOˆ1M›OÃª ˚Ûõáª≈¥TTˇÑY*ËóZ«‡ jø\Jƒ≥RL }2t}.@¥Õ˘ôA∫ç°äà®jú≠“œlT[¿ÊüŸáb—¨"£íˇs∂Ú J“=¬rûòß%Á°∫í5*ÿëy÷†¢÷·Î˝}≈•_‘_6,2067
-@î•⁄-5jÿã¬9–hfZfΩ>±÷Rñ≈ÔRñ≈17,5304
-@î•⁄-5jÿã¬9–hfZfΩ>±÷Rñ≈ÔWÙÅ™îª°jR†`;˙õôå…ÒîŸ^;'c¸êMœf∑7ﬁ˝dl,uı”K0û·‡[©'÷gov’Pà3Õ≤Ëm èﬂπ›ﬂbwîw17,5304
-<‰ÈÌ_ß_22,6595
-oìÿ‰∫GòrAn•◊ZâU)=‹;]LM¶i∫•êb'ßJÙc$dÙ€(Ç&Ú:u†òΩGÑ#ói±æ¥‹k¬¿YƒkƒyÖ∫›Ù˜yÈˆ≥9)m∫hÂí\Mß∆@uB˙c«dO¨Ω√˚∏ó¯∆ ˙¿÷¿ΩÖÖ¶tK-ßÌπ^€ÿöky}¯Æ›‡`ÃV¯-'ª‡kº`”ÃîZíŸU˘≈|9Lº»ÿp#./îÒo`…Ññ£o`…Ññ29,8574
-
-.git/objects/06/ae39d8a5dcda794d1c7ae85277be137e78fab6,240
-x+)JMU02∑d040031Q–JMU02∑d040031Q1,0
-x+)JMU02∑d040031Q–Kœ,…LœÀ/Je¯€qƒm˘¢ßí“úM¬|◊œä~=~1,0
-x+)JMU02∑d040031Q–Kœ,…LœÀ/Je¯€qƒm˘¢ßí“úM¬|◊œä~=UÂ„ÈÏÍÏ p˝#´Ù¶’ô±mâv&ñbﬂÕıΩ@ï¯&fß¶eÊ§2¨:Ω·ßŸ’Ø~ªÆMxe:eSh˙„®ö WG_WÌCWR;<€ñËﬁÒh‹h1,0
-
-.git/objects/75/ae4ba822d4d09ee6859d4f4ef7ad34e9f741e2,240
-x+)JMU02∑d040031Q–JMU02∑d040031Q1,0
-x+)JMU02∑d040031Q–Kœ,…LœÀ/Je¯€qƒm˘¢ßí“úM¬|◊œä~=~1,0
-x+)JMU02∑d040031Q–Kœ,…LœÀ/Je¯€qƒm˘¢ßí“úM¬|◊œä~=UÂ„ÈÏÍÏ p˝#´Ù¶’ô±mâv&ñbﬂÕıΩ@ï¯&fß¶eÊ§2¨:Ω·ßŸ’Ø~ªÆMxe:eSh˙„®ö WG_WÌCWR;<€ñËﬁÒh‹h1,0
-
-.git/objects/pack/pack-de535c1fb8c0ec6a45b8bcc4547153fdb0ccc76d.idx,122
-K¿HQù‰ôÒ≤ÜútÌm5i>(e;4,1337
-K¿HQù‰ôÒ≤ÜútÌm5i>(e;)sælsæ4,1337
-[°È…Ã62q5}XØpo6SçÉHßöº]˙Z5≥’¯•CM⁄Z5≥’¯•CM5,2211
-
-.git/objects/pack/pack-de535c1fb8c0ec6a45b8bcc4547153fdb0ccc76d.pack,4979
-lˆA$ÿ9ï‹ªhΩQÒ”¶≠“}A•À|º£‚{+€zñÌu%mÇÌÉÛ⁄”â5≥:ÍknMJ¶∏é»Ùà ¸µç>o–o4,273
-ı¡â‘õ.i6êñl∑Iõ3X0Æ´L¶U¶w>‚`ŒßIÚù-Ëù“nÀ‚•LnÀ‚•20,3598
-c°â¬≥5ÖWÖ3Ãp"s≈ıΩÊQà7ÕzøD⁄Òñ|∫N¨!AåV!ÜâOŸO24,4201
-Åùxa∞«Gﬁ∞(∆ÿn˜*	¨]«]∆ÑK2•!≥pÅÙŒÏÑ8∏ı|&ñ1õ.}ì√¿ﬁ˘x¸ÒÏb˝”/π?ˆO«_ˆ±w2Ò-ªa)—C–Hnd…Ú54,14255
-…‚ N√√è8¶ˇÓ¯”Ò¯ÑèO£ù°Á˝·¯¯‚SÁ√Û≥—†0bL…OH™JÜ©¸¶t¢ò\ñ†í„T_PÖ1“Èª0≥o™“aﬁRiÉÉ∂ÙD-˘ap≈«Aôl˜¡õB&¶0XH¬≤˛8úLá&N€N55,14347
-à˚`A˚b1}PP“Y1PP“Y85,20580
-à˚`A˚b1}PP“Y1ç;ﬂ&¡Ïæ∫#Íiõûåò$YÿüuˆVÑ!íØ≥G8f3: ºèDˆ13JNkNx¬!0X‘˚≈ù±¯X‘˚≈ù±85,20580
-à˚`A˚b1}PP“Y1ç;ﬂ&¡Ïæ∫#Íiõûåò$YÿüuˆVÑ!íØ≥G8f3: ºèDˆ13JNkNx¬!0X‘˚≈ù±¯Mÿ3É Tca9£îeÕ…Ì£]H:7¬à≠Ì`Ö√<¡xÚx85,20580
-;◊èˆt‡t86,21050
-˘.,.<∏•ûW÷!q◊û!1PæåÊüNŒÊ0òú√ó¡t:òÃœ˚®ÕG…ÜDX"â°ën`˘|ã¥$ƒÁ”„Oh3x?èÊÁ¿éÊì≥O¶0Ä”¡t>:>¶pz6==ô}hÃI‚EJ√4~.Ç.Ü…!ì¶18«Ü»”s`am¶“&tÉt106,26693
- 8Â·⁄6/eŒcg642õúœ≠5ŸÅ[ ŒÇ“vì•x@ÏÕ±<óòÇÚJK+‚KÛ2K‚sRÛl¨ÅFC@rFbH∫ ±2'?1%⁄ƒ¿“,!ùTïZîØÅê◊…kNvñölÀƒzì[¯Â‹·ÍëçÑÿhhdmÑd"†HH109,28054
- 8Â·⁄6/eŒcg642õúœ≠5ŸÅ[ ŒÇ“vì•x@ÏÕ±<óòÇÚJK+‚KÛ2K‚sRÛl¨ÅFC@rFbH∫ ±2'?1%⁄ƒ¿“,!ùTïZîØÅê◊…kNvñölÀƒzì[¯Â‹·ÍëçÑÿhhdmÑd"†Hƒ]§“§9yøå5•Ü•ôÒPA«¿Õ®qÚêJ#MÊ@B¿®òI ÕÀöØ”Õ£Mb—Mb109,28054
-tÉ¸‰#èÕtÉ¸‰#è111,28729
-Ònº’&¥¢~këP¸iw‡Vdh	K©qqe>%‹Mﬁ~kAºª8∑∞íZ[_º#◊uIY¥©õAdP– ( ó4¯ÕhÎù#nô±Àí®˝ôc[—L∫PÿNgàπ≤úq	‰Z≤’Eª]õlÊjÙlÊj117,29351
-∆°lZK£B^ñ–ÿ+‡(¯Á˝œ(ˆl«ˆebU¨Jò>∫—SOûSO122,29992
-∆°lZK£B^ñ–ÿ+‡(¯Á˝œ(ˆl«ˆebU¨Jò>∫—SOûÒè;∏gD|~äçí∫˚ÇëKíæsê@0&2 €Å9S<¿⁄·øD]D122,29992
-Âîõ©ØFM†q1mCáPÜ~Ì>±Öö?¸Ã€Má¿¨$ÜXEMá¿¨$ÜX211,53503
-Âîõ©ØFM†q1mCáPÜ~Ì>±Öö?¸Ã€Má¿¨$ÜXEç¶$•¯ÃNC;LÀØA·xı^GÁ∫ÿBVf»tE_˚≤ﬁº.ƒ%ÊıS¸ªœ#4Ω|M)M211,53503
-fæ!4Sã*ÿy †˜Ø2LÓ9„)Ω◊@∫O»ÿ√Ù~^ç.æG›>if‹”if‹216,54688
-ß|áÜüª·∫F}∂{JÔöçË>"ï˜¡nÖ+∏vù}^å˙:ı§OÀY4µOÀY4221,55486
-ÉµNÒ`ˆ8iOø-©ÈçäaX√6f–´»H5-∆e}1òº¬Ö&G¯ıåöÍ ¥E6ÂÉ4eΩÿ=◊˜µ˝äWZVIj¯uó2ÈS√€$iÀm´∂fiM^+=póì¨HlÁt·r†˝Û‡îXI˙ˆœq(ÕÕ%¸–≤Oà6cçÑ¡®ÊùFÓí)ç-≥Jk8ê3ﬁ—X!Î‰,¶˘+û¿ë≠ÂÓz'=&ﬂ“ÿ†KŒ±”à9ú\Ã&≈˚h˜zß‡≠+6ˆÙNT6‹)&|_ŸïÔÄsßvﬁê⁄^B9+Ωo4ÀΩVCj¶ı8˜O∑√é_,{≥>∆¡aUïo`_ë€å˚ˇUÕúÔ¶Ã¢L±2hpÕÒ™zrê_Kú"öKW°ƒ OqAY◊Úk{ï∑ÖOƒá2øìü]†ﬂ-!QóÊQó224,56181
-C†ÒÔázNè¢?:üƒÈ1¬ﬂ‰\î˙˜«rRå-,è˛ì‚«`ëê.¸§]W≠~ußd\<`;∫◊{i‚b*’∆h£É÷s?¨<RîÌrL∆XT∞>dQß<!!X:ôD$P÷‚¥—Øå≈zÚ+ºm§†⁄#Òú;ÇvQ°™yD5WZ©bÖÅ% ÒÜ¶ª!ÂJ¬ÉÿÉI`8M /Ò¿0núóñ@∞4*ﬁg\œüg—f|ˇ™õçG◊’·z9O0TœA wwÄ$ÄOm“9Ò≠¿Ny0x™¿Tö»A$cYsRAd∑2QÈ´b^Ç•µólí'«"Ù–-0›.®)±¢Ü,2I5ÒØ&µ}5rÜhrÜ232,58657
-LÏCëÒZ4Mà_oÜ¿LÏCëÒZ4Mà_oÜ234,59968
-LÏCëÒZ4Mà_oÜ¿†⁄≤SÂ≤±≤gü9`r–öÙ;∏ﬁé´•úóêBbÁF«¢ñ∂¡∏îy%†ê„Ôeì€‚Ìèh¯6â”T	Ó˚O˚@¸°Í[ç‰Ã	at+˙*¶‚lﬂ…_t˙j1ª{(Á∑~+L¢Ö>zöq·Í•AŸúN®u}∞™Á”Ê"’wGÈ$ÖÇqïàQ"¥_COv.«ôñNzbâ€¿Ò‹ªÄ`8ç–ËyéÒﬁü¬˚ Èí≈ÈQ„…´˚/ø¥¿Wé@V∆ÄΩ#Fê%OTÑO•!4=˝*ê÷&-≤ˇN¬KÊ¶œfyháÍ‰ﬂ„Ö!+é¨æ`›¢ø{L>TÌŒöì2o}%≈œlÚ>ûæwÜÏM:PÿÁ8=ãÊû;”G€ñuƒ%˘ufÆ˘¡ç~CﬁrnáA;A~·˙gÎåLg¿Ë*‡Í≈sœe%/és∂Õt]ƒqu>>üf˘‰∆TãﬂÑJßÒﬁ≥fÃ$≠–qtÇ¯É†µ7≈|}Û¿˙v	Ù≤éDD234,59968
-L§zx∞YîÑÏL§zx∞YîÑ368,93575
-L§zx∞YîÑÏ∆Ç¬Oj‹Sg]√;⁄≠y/oæÂÃ*≠ÈXÂX368,93575
-L§zx∞YîÑÏ∆Ç¬Oj‹Sg]√;⁄≠y/oæÂÃ*≠ÈXÂ‰±∫öõ·]i•≤æ££a¡))FáòGl4ÃBFáòGl4Ã368,93575
-L§zx∞YîÑÏ∆Ç¬Oj‹Sg]√;⁄≠y/oæÂÃ*≠ÈXÂ‰±∫öõ·]i•≤æ££a¡))FáòGl4ÃBe“”2;Ëë∏¬€ñB≥TB≥368,93575
-¯Za|˝åçÉ‘p‘b≥p‘b370,94467
-Ô™èç{√Ÿ`˚+Éë:¢Ûÿ“M\ÈÃØ”Õro.Db\˝…ZÈÕ´0i€d⁄ÿ≠C≤ÂÃ\È '®u•~Át©¯”qéﬁ3®~⁄£ò^©x©Bë≥xí,J«Öπ@Ú!éuêﬂˇ]‰q¯≠¶ƒ¢t{Äüô`≈ÿ#Ç—5å6´ÄΩ@Z*ô+•Ωüp=π˜E∑z\@π}<‡H>	H¿H377,96663
-T≠cT≠c379,97079
-Á∫ë?ı>•ËüÛ∆cx) ô√»˝L”?ŒÇv7±ûm:‚g˜˝1ce®ˆ£Ó†}rÖ84›≈“ì˙IôπÚÈ&Ìh‘PéPJíÕ Û„ÂnÉ∆„◊ï·!õ¶q≠5‹Ì,˙úï√< xZhê∑j\¨\Oœoq:˚†X X387,98328
-öÀàj√πbÑúuK÷U?é¡j£j388,98464
-_Å—ï…Z]3ì‰.óùMèó@∫Iﬁ¬©ìœp[.˝≥1ˆ∆`¶üÓz¿ö%ı7P∆üp4˙ÑgÃM†YTRª2Â«Ñ`”∞úo√Å¸=tÂìÆhê†”KI>ûhI>û389,98566
->˘æX†˙ ’Ùjj396,99964
-ÍxÏ<; DÓW–’œQ?ußIuß408,102080
-^8f‡∫#.ùFp¡Ïï™5¡~‚c¯π\Ì∑Öü–E~ÔaI+°jvHæØjvHæ420,104437
->E\˙™ÈÑü>–≠ı≠Î«)H◊g¿ÜH◊g¿422,105395
->E\˙™ÈÑü>–≠ı≠Î«)H◊g¿ÜéeVÈìÈ,_5◊‘M`⁄ö6}¥äïgØôÙ»ò:˝¯G7C¿‡G€„õ¿ß®wG7C¿‡G€„õ¿ß®422,105395
-≥Á‡¡’hQ’ºóÔb=çê˘÷^∂ÿôæé»…n	T‡ˇìÿà”_öWx#àW˜–π›'åºË&§æR)ﬁ"®ç◊ì;pi√ä6À⁄,c/-sö≥èW˝.tÓ’”:N ¢pGß!'˚“«¸-‘≠‹∞n	˜ŸöàÙ™ë`î_Õ©≥¸-Cíªx•†ÃÂ}Øå*ü©Ÿ‰}Œ—Í◊ÉèÚ.Î 8mé∏„◊jlT†˘ÊIÜ‡¬ÄE±◊t∫*ñ®˜ù˘ıÃH¬H447,110766
-ìTØêi‹∑^ù.È«IÍÁB¶-yÓ Â€˝√æºÑwÛó|∂WÍx#É˚\8˜©¿∞h/Õs¡“hZèÏÚÙπ÷#∫À‘+ú√ßà‰`dKxW÷#%Ë-ÃG…ó°[Ù˙≈	 ¶€ñ}ö!˙'Ø†Ñ-œÍ‘Õ;¢WÙ˚Ò^rï∑q]hO˙ê~Ø\ gÎ+é*è)Ω^∆õ∂.6≤ ÉÂR∏oOGóÚ3m¨AÔHîÌ&πH;≈÷≈:Ú∞’∞U)§/ºı9ÁvùJ˘ö„-µ¡√coBÎC0®»v;>yõ«bæsDejÁ‡‚-ê8Ï◊OPé8@]U≥w¡üiÀBÍx.h›÷NÄÙˇpè‰?ﬂÄ§iXkÄ/¿Uî≠Ø‘fpûYˇ”éFm°HG÷˚	|Õπî>∆]g¨{cÔæÒ¨TƒÎˇ¡’_˝÷†•  t,I1a'≠Ÿ…F˝–1®F9©o”¸ÉX0Zl}6M_LGO÷á"Œ¢ÆıUvã˝êÚ√pè9ı◊:}Ò1{´∂éd=d461,114172
-”˛„Âê2˚Kúì⁄R¨¥ÒjÜ±[BßJﬂIŒˇ„PËÈ?sé∂¸)Jìk∏]G‰D¥~HH462,114818
-ÌV≠´¿°’ktZ?¡Â((\lqr-%e∂TıÕèé®π≤¢Tı‹‰,]ñc≤•¥ljmÖeNÌÃú¬⁄≈Öcã‘“∏Ò.£ÀÍ∞ZúúÀZn´4∫R’˜ù≈ˇ∂VÕ›7q.NUOÙ+∏yY&n≤Ω¬¬%k„k„476,117741
-Ã=ÊU%∑*∂÷‘"|.gÆVRåFQÂåFQ500,122826
-%;ŒŸâ3ÁiJòrNŒjDàä∫ÙÆº´ieÌ”„ø»0ÉÉ÷B.öJ≠S.˛Nä?\;>OÇ√¸dOÇ√¸508,124640
-Ç†Hm]ÚÅI]ÚÅ510,124839
-Ç†Hm]ÚÅI"Lô•÷ôE®»≠Y∂=µº">.G]G510,124839
-
-.git/objects/0c/0e887dc25f58f25ba9b05c31c373cfc08e6e67,9
-xx1,0
-
-.git/objects/44/13500e98464d505af6f115c0cf94e5df4880d3,87
-x+)JMU044f040031QHNÕ……/»HÃKçœÃ◊Kf8neqHÃKçœÃ◊Kf8ne1,0
-Tinä)PA–Õ¨3ó˘ñùdÕ}ÙAÛzAÛ2,56
-
-.git/objects/b1/ccd2536768f1b9906c4be8d376f68588e5d478,18
-xïéK¬ @]@1,0
-
-.git/objects/df/f4ca3eae03fb35823b7f501c00ce49d0d3c522,29
-xïWYo€8ﬁ◊ËxïWYo€8ﬁ◊1,0
-
-.git/objects/52/787a0dddc9d7c39458b94149cff010e6fdfc2c,426
-xÕ}kw7íˆ~•¬Y;Y1,0
-xÕ}kw7íˆ~•¬Y;$EÍÊKŸ$EÍÊK1,0
-xÕ}kw7íˆ~•¬Y;$EÍÊKŸ÷Æ"S∂ft{%9û¨ù”ßE6%Zºªe[Q¸ﬂ˜y™Änt≥)S∂ÁºÀìX$(‘ÖB°Ä>åœÃ√ıGø<˛èï∆=”0ùh0O.¬Q¥‹õñâ˚√… 2Ò∏s%,Í˙—(1ß˝$ô˛»t–å-∑«ìÎiˇ¸"1µÌ∫Y_]{dv/£©9ä¶—ü¶ô≠¡Y4ÍˇiûıQº<aÒr®eˇ}>˚ÉÂŒx∏i°ô”ã~l˝≥i8Ω6¯⁄õFD£ó|ß—Ss=Ss1,0
-{ÄÍï¯ßÇÿwìÁÄ‹8Œ5Ê‚ûRÕ/X¶ç0óE£Ò"≤àY^f©∫‡‘ùV≤_^pß(]ÈP§Ó#jÙo“£äÕ^p}Ò/ùñY¶ÇY¶15,5161
-“„–‚¸ë*§=äWçX’%A°˚‘‘nxdHZ¿]Êynæk‘ynæk22,6976
-
-aclocal.m4,769
-      [AC_FATAL([Do not call $0, use AM_INIT_AUTOMAKE([$1]).])])dnl42,1807
-m4_define(50,2125
-  $1_TRUE=141,5858
-    am__obj=249,10198
-    am__minus_obj=250,10235
-      fi263,10638
-      am__obj=269,10909
-      am__minus_obj=270,10944
-    none) break 272,10974
-          grep 'not supported' conftest.err) >/dev/null 2>&1; then 291,11977
-        am_cv_$1_dependencies_compiler_type=292,12052
-  am_depcomp=328,12965
-AC_DEFUN(444,17538
-  AC_SUBST(454,17957
-    AC_MSG_ERROR(457,18116
-    CYGPATH_W=464,18330
-AM_MISSING_PROG(492,19287
-AM_MISSING_PROG(494,19378
-    install_sh=575,22301
-    install_sh=577,22361
-     am__include=643,24207
-AC_SUBST(649,24292
-AC_DEFUN(678,25124
-    MISSING=684,25302
-    MISSING=686,25358
-  am_missing_run=691,25479
-
-payload.lo,18
-pic_object=8,203
-
-config.status,2829
-debug=7,201
-DUALCASE=18,408
-  NULLCMD=21,534
-as_nl=36,820
-  as_echo=47,1354
-  as_echo=50,1473
-    as_echo_body=54,1607
-	arg=63,1862
-      esac;64,1905
-    as_echo_n=68,1999
-  PATH_SEPARATOR=76,2189
-  (PATH='/bin;/bin'; FPATH=77,2208
-    (PATH=78,2272
-    (PATH='/bin:/bin'; FPATH=78,2272
-      PATH_SEPARATOR=79,2336
-IFS=89,2623
-  *) as_save_IFS=95,2770
-  *) as_save_IFS=$IFS; IFS=95,2770
-  as_myself=109,3138
-as_fn_set_status 158,4529
-as_fn_exit 166,4695
-as_fn_unset 176,4826
-as_unset=180,4870
-  as_fn_append 193,5324
-    as_val=207,5707
-  as_fn_arith 210,5738
-  as_expr=219,5912
-  as_basename=225,6032
-  as_dirname=231,6157
-as_cr_letters=256,6569
-  xy)  ECHO_C=267,6899
-       ECHO_T=269,6972
-  esac;270,6992
-  ECHO_N=272,7004
-    as_ln_s=284,7268
-    as_ln_s=292,7661
-  as_mkdir_p=351,8905
-as_test_x=365,9173
-    ac_option=462,12144
-    ac_cs_recheck=471,12337
-    $as_echo "$ac_cs_version"; exit 473,12430
-    $as_echo "$ac_cs_config"; exit 475,12522
-    debug=477,12607
-    *\'*) ac_optarg=481,12691
-    ac_need_defaults=485,12869
-    *\'*) ac_optarg=489,12975
-    ac_need_defaults=492,13105
-    $as_echo "$ac_cs_usage"; exit 498,13301
-    ac_cs_silent=501,13458
-     ac_need_defaults=508,13638
-ac_configure_extra_args=514,13691
-  ac_configure_extra_args=518,13759
-  CONFIG_SHELL=525,14060
-AMDEP_TRUE=542,14289
-module_cmds=''recursion640,17751
-ac_aux_dir=722,21539
-    PACKAGE=733,21788
-    "depfiles") CONFIG_COMMANDS=748,22059
-    "libtool") CONFIG_COMMANDS=749,22122
-    "Makefile") CONFIG_FILES=750,22183
-    "include/Makefile") CONFIG_FILES=751,22240
-  tmp=786,23531
-  tmp=790,23619
-ac_tmp=793,23747
-ac_cr=801,23960
-  eval ac_cr=806,24200
-  ac_cs_awk_cr=810,24339
-  line 940,28115
-  for (i = 2; i < nfields;944,28203
-    key 945,28237
-BEGIN 973,29041
-  line 1017,30331
-  } else 1022,30431
-  split(1026,30497
-  :[FHLC]) ac_mode=$ac_tag; continue;1054,31287
-  case $ac_mode$ac_tag in1056,31333
-  :[FH]-) ac_tag=1059,31443
-  :[FH]*) ac_tag=1060,31466
-  ac_save_IFS=1062,31511
-    ac_file_inputs=1073,31652
-	   *) test -f "$srcdir/$ac_f" && ac_f=1084,31995
-      case $ac_f in *\'*) ac_f=1088,32142
-    configure_input=1095,32465
-      configure_input=1099,32611
-       ac_sed_conf_input=1106,32919
-    *) ac_sed_conf_input=1108,33013
-    esac1114,33194
-  ac_dir=1118,33218
-  as_dir=1141,33662
-  ac_builddir=1142,33696
-  ac_dir_suffix=1147,33798
-  *)  ac_top_build_prefix=1152,34070
-  esac 1153,34121
-ac_abs_top_builddir=1155,34136
-    ac_srcdir=1166,34448
-    ac_top_srcdir=1167,34485
-    ac_srcdir=1170,34566
-ac_abs_srcdir=1174,34714
-  *) ac_INSTALL=1185,34878
-  ac_MKDIR_P=1187,34933
-    trap "$RM \"$cfgfile\$cfgfile1440,42513
-GREP=1527,45321
-  COLLECT_NAMES=1879,55721
-ltmain=1887,55788
-func_dirname 1899,56253
-
-configure.ac~,126
-AC_PREREQ(4,131
-   AC_CHECK_LIB(34,935
-   	   AC_MSG_RESULT(38,1120
-   AC_CHECK_LIB(51,1493
-   	   AC_MSG_RESULT(55,1684
-
-cellophane_io.lo,18
-pic_object=8,209
-
-include/md5.h,310
-#define _MD5_H4,68
-typedef unsigned int MD5_u32plus;7,145
-	MD5_u32plus lo,10,197
-	MD5_u32plus lo, hi;10,197
-	MD5_u32plus a,11,218
-	MD5_u32plus a, b,11,218
-	MD5_u32plus a, b, c,11,218
-	MD5_u32plus a, b, c, d;11,218
-	unsigned char buffer[buffer12,243
-	MD5_u32plus block[block13,270
-} MD5_CTX;14,294
-
-include/Makefile.in,1577
-VPATH 18,669
-pkgdatadir 36,1132
-am__vpath_adj_setup 76,2422
-am__vpath_adj 77,2492
-am__nobase_list 87,2863
-am__base_list 94,3268
-am__installdirs 103,3618
-	        && { if test -f $@; then exit 234,6781
-	        && { if test -f $@; then exit 0; else break;234,6781
-	        && { if test -f $@; then exit 0; else break; fi;234,6781
-	      exit 235,6844
-	  esac;236,6862
-	done;237,6873
-	$(239,6949
-	  $(MKDIR_P) "$(DESTDIR)$(includedir)" || exit 270,8064
-	fi;271,8117
-	  if test -f "$$p"; then d=273,8147
-	  if test -f "$$p"; then d=; else d=273,8147
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi;273,8147
-	  $(278,8343
-	files=`for p in $$list; do echo $$p;284,8533
-	dir=285,8600
-	dir='$(DESTDIR)$(includedir)'; $(285,8600
-	    if test -f "$$i"; then echo $$i;290,8799
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i;$$i290,8799
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi;290,8799
-TAGS:  $(297,9024
-	    if test -f "$$i"; then echo $$i;303,9213
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i;$$i303,9213
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi;303,9213
-	shift;307,9406
-	if test -z "$(ETAGS_ARGS)$$*$$unique"; then 308,9416
-	  test -n "$$unique" || unique=309,9471
-	    $(311,9547
-	    if test -f "$$i"; then echo $$i;323,9914
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i;$$i323,9914
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi;323,9914
-	  || $(328,10142
-	  dist_files=`for file in $$list; do echo $$file;343,10588
-
-include/cellophane_io.h,2562
-#define _CELLOPHANE_IO_H_2,26
-#define ERRCOL 10,162
-#define WARCOL 11,188
-#define INFCOL 12,214
-#define FRECOL 13,240
-#define CLRCOL 14,267
-typedef struct _wsevent_info{_wsevent_info17,294
-    void * ws_handler;18,324
-    char * event_name;19,347
-    char * message;20,370
-    void * data;21,390
-}wsevent_info_type;wsevent_info_type22,407
-typedef wsevent_info_type WsEventInfo;25,429
-typedef void (*on_event_callback)on_event_callback27,469
-enum cellophane_debug_level{cellophane_debug_level29,523
-    DEBUG_NONE 30,552
-    DEBUG_MINIMAL 31,572
-    DEBUG_NORMAL 32,595
-    DEBUG_DIAGNOSTIC 33,617
-    DEBUG_DETAILED 34,643
-enum cellophane_log_type{cellophane_log_type37,670
-    LOG_INFO,38,696
-    LOG_ERROR,39,710
-    LOG_WARNING,40,725
-    LOG_FREE41,742
-enum eio_type{eio_type44,759
-	EIO_OPEN 46,775
-    EIO_CLOSE 47,793
-    EIO_PING 48,814
-    EIO_PONG 49,835
-    EIO_MESSAGE 50,856
-    EIO_UPGRADE 51,877
-    EIO_NOOP 52,898
-enum socket_io_type{socket_io_type55,922
-	TYPE_CONNECT 57,944
-    TYPE_DISCONNECT 58,968
-    TYPE_EVENT 59,995
-	TYPE_ACK 60,1026
-	TYPE_ERROR 61,1050
-	TYPE_BINARY_EVENT 62,1074
-    TYPE_BINARY_ACK 63,1098
-typedef struct _wsmessage{_wsmessage66,1128
-    enum socket_io_type s_type;67,1155
-	enum eio_type e_type;68,1187
-    char * raw_message;69,1210
-}wsmessage_type;wsmessage_type71,1235
-typedef wsmessage_type WsMessage;73,1253
-typedef struct _wsevent{_wsevent75,1288
-    char * event_name;76,1313
-    on_event_callback callback_func;77,1336
-}wsevent_type;wsevent_type78,1373
-typedef wsevent_type WsEvent;80,1389
-typedef struct _wssession{_wssession83,1421
-    char * sid;85,1449
-    int connection_timeout;86,1465
-    int heartbeat_timeout;87,1493
-    char** supported_transports;88,1520
-} wssession_type;90,1554
-typedef wssession_type WsSession;92,1573
-typedef struct _wshandler{_wshandler95,1609
-    char * socketIOUrl;97,1637
-    char * serverPath;98,1661
-    char * serverHost;99,1684
-    int serverPort;100,1707
-    WsSession session;101,1727
-    int fd;102,1750
-    int fd_alive;103,1762
-    int keep_alive_flag;104,1780
-    char * buffer;105,1805
-    int lastId;106,1824
-    int read;107,1840
-    int checkSslPeer;108,1854
-    int handshakeTimeout;109,1876
-    time_t heartbeatStamp;110,1902
-    enum cellophane_debug_level debug_level;112,1930
-    WsEvent default_events[default_events114,1976
-    WsEvent events[events115,2008
-    int user_events_len;116,2033
-} wshandler_type;118,2059
-typedef wshandler_type WsHandler;120,2078
-
-include/Makefile.am,21
-include_HEADERS 1,0
-
-include/payload.h,1653
-#define _PAYLOAD_H_2,20
-enum payload_opcodes{payload_opcodes8,82
-    OPCODE_CONTINUE 10,109
-    OPCODE_CONTINUE = 0x0,x010,109
-    OPCODE_TEXT 11,136
-    OPCODE_TEXT = 0x1,x111,136
-    OPCODE_BINARY 12,159
-    OPCODE_BINARY = 0x2,x212,159
-    OPCODE_NON_CONTROL_RESERVED_1 13,184
-    OPCODE_NON_CONTROL_RESERVED_1 = 0x3,x313,184
-    OPCODE_NON_CONTROL_RESERVED_2 14,225
-    OPCODE_NON_CONTROL_RESERVED_2 = 0x4,x414,225
-    OPCODE_NON_CONTROL_RESERVED_3 15,266
-    OPCODE_NON_CONTROL_RESERVED_3 = 0x5,x515,266
-    OPCODE_NON_CONTROL_RESERVED_4 16,307
-    OPCODE_NON_CONTROL_RESERVED_4 = 0x6,x616,307
-    OPCODE_NON_CONTROL_RESERVED_5 17,348
-    OPCODE_NON_CONTROL_RESERVED_5 = 0x7,x717,348
-    OPCODE_CLOSE 18,389
-    OPCODE_CLOSE = 0x8,x818,389
-    OPCODE_PING 19,413
-    OPCODE_PING = 0x9,x919,413
-    OPCODE_PONG 20,436
-    OPCODE_PONG = 0xA,xA20,436
-    OPCODE_CONTROL_RESERVED_1 21,459
-    OPCODE_CONTROL_RESERVED_1 = 0xB,xB21,459
-    OPCODE_CONTROL_RESERVED_2 22,496
-    OPCODE_CONTROL_RESERVED_2 = 0xC,xC22,496
-    OPCODE_CONTROL_RESERVED_3 23,533
-    OPCODE_CONTROL_RESERVED_3 = 0xD,xD23,533
-    OPCODE_CONTROL_RESERVED_4 24,570
-    OPCODE_CONTROL_RESERVED_4 = 0xE,xE24,570
-    OPCODE_CONTROL_RESERVED_5 25,607
-    OPCODE_CONTROL_RESERVED_5 = 0xF,xF25,607
-typedef struct _payload{_payload28,648
-    int fin;30,674
-    int rsv1;31,687
-    int rsv2;32,701
-    int rsv3 33,715
-    int opcode;34,730
-    int mask;35,746
-    unsigned char maskKey[maskKey36,760
-    unsigned char * payload;37,790
-    int enc_payload_size;38,819
-} payload_type;41,847
-typedef payload_type Payload;43,864
-
-include/Makefile,2205
-am__make_dryrun 19,702
-pkgdatadir 36,1148
-am__vpath_adj_setup 76,2489
-am__vpath_adj 77,2559
-am__nobase_list 87,2930
-am__base_list 94,3335
-am__installdirs 103,3685
-AMTAR 109,3956
-AR 110,3976
-AUTOHEADER 112,4082
-AUTOMAKE 113,4184
-AWK 114,4287
-INSTALL_PROGRAM 135,4631
-INSTALL_SCRIPT 136,4660
-INSTALL_STRIP_PROGRAM 137,4688
-MANIFEST_TOOL 151,5101
-am__untar 184,5964
-bindir 185,5993
-build 186,6021
-datarootdir 193,6170
-docdir 194,6200
-dvidir 195,6247
-exec_prefix 196,6266
-host 197,6290
-includedir 203,6416
-infodir 204,6447
-install_sh 205,6477
-libdir 206,6565
-libexecdir 207,6593
-localedir 208,6629
-localstatedir 209,6663
-mandir 210,6693
-mkdir_p 211,6721
-prefix 214,6793
-sbindir 217,6870
-sharedstatedir 218,6900
-srcdir 219,6931
-target_alias 221,6969
-	        && { if test -f $@; then exit 234,7315
-	        && { if test -f $@; then exit 0; else break;234,7315
-	        && { if test -f $@; then exit 0; else break; fi;234,7315
-	      exit 235,7378
-	  esac;236,7396
-	done;237,7407
-	$(239,7483
-	  $(MKDIR_P) "$(DESTDIR)$(includedir)" || exit 270,8598
-	fi;271,8651
-	  if test -f "$$p"; then d=273,8681
-	  if test -f "$$p"; then d=; else d=273,8681
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi;273,8681
-	  $(278,8877
-	files=`for p in $$list; do echo $$p;284,9067
-	dir=285,9134
-	dir='$(DESTDIR)$(includedir)'; $(285,9134
-	    if test -f "$$i"; then echo $$i;290,9333
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i;$$i290,9333
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi;290,9333
-TAGS:  $(297,9558
-	    if test -f "$$i"; then echo $$i;303,9747
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i;$$i303,9747
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi;303,9747
-	shift;307,9940
-	if test -z "$(ETAGS_ARGS)$$*$$unique"; then 308,9950
-	  test -n "$$unique" || unique=309,10005
-	    $(311,10081
-	    if test -f "$$i"; then echo $$i;323,10448
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i;$$i323,10448
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi;323,10448
-	  || $(328,10676
-	  dist_files=`for file in $$list; do echo $$file;343,11122
-
-md5.lo,18
-pic_object=8,199
-
-config.log,1277
-#define PACKAGE_NAME 764,26250
-#define PACKAGE_TARNAME 765,26287
-#define PACKAGE_VERSION 766,26327
-#define PACKAGE_STRING 767,26365
-#define PACKAGE_BUGREPORT 768,26416
-#define PACKAGE_URL 769,26464
-#define PACKAGE 770,26487
-#define VERSION 771,26519
-#define STDC_HEADERS 772,26549
-#define HAVE_SYS_TYPES_H 773,26572
-#define HAVE_SYS_STAT_H 774,26599
-#define HAVE_STDLIB_H 775,26625
-#define HAVE_STRING_H 776,26649
-#define HAVE_MEMORY_H 777,26673
-#define HAVE_STRINGS_H 778,26697
-#define HAVE_INTTYPES_H 779,26722
-#define HAVE_STDINT_H 780,26748
-#define HAVE_UNISTD_H 781,26772
-#define HAVE_DLFCN_H 782,26796
-#define LT_OBJDIR 783,26819
-#define HAVE_NETDB_H 784,26846
-#define HAVE_NETINET_IN_H 785,26869
-#define HAVE_STDLIB_H 786,26897
-#define HAVE_STRING_H 787,26921
-#define HAVE_SYS_SOCKET_H 788,26945
-#define HAVE_UNISTD_H 789,26973
-#define HAVE_WCHAR_H 790,26997
-#define HAVE_STDLIB_H 791,27020
-#define HAVE_MALLOC 792,27044
-#define HAVE_STDLIB_H 793,27066
-#define HAVE_REALLOC 794,27090
-#define HAVE_BZERO 795,27113
-#define HAVE_GETHOSTBYNAME 796,27134
-#define HAVE_MEMSET 797,27163
-#define HAVE_SELECT 798,27185
-#define HAVE_SOCKET 799,27207
-#define HAVE_STRDUP 800,27229
-#define HAVE_STRSTR 801,27251
-#define HAVE_LIBCURL 802,27273
-
-configure,36
-   function prototypes 3496,105315
-
-libcellophane.la,14
-dlname=8,218
-
-LICENSE,1409
-                       Version 2,27
- Copyright (C) 1989, 1991 Free Software Foundation,4,72
- 51 Franklin Street,5,148
- 51 Franklin Street, Fifth Floor,5,148
- 51 Franklin Street, Fifth Floor, Boston,5,148
- of this license document,7,270
-  To protect your rights,28,1347
-running the Program is not restricted,74,3759
-notices that refer to this License and to the absence of any warranty;83,4278
-your rights to work written entirely by you; rather,125,6589
-In addition,129,6763
-with the Program 130,6834
-    1 and 2 above on a medium customarily used for software interchange; or,140,7352
-    b) Accompany it with a written offer,142,7430
-    customarily used for software interchange; or,147,7766
-integrity of the free software distribution system,218,11705
-system;222,11961
-    Copyright 294,15793
-    This program is free software;296,15831
-    the Free Software Foundation;298,15977
-    the Free Software Foundation; either version 2 of the License,298,15977
-    the Free Software Foundation; either version 2 of the License, or298,15977
-parts of the General Public License.  Of course,321,17081
-be called something other than `show w'w322,17155
-You should also get your employer 325,17286
-  Yoyodyne,329,17475
-Gnomovision331,17623
-  Ty Coon,333,17663
-proprietary programs.  If your program is a subroutine library,336,17769
-library.  If this is what you want to do,338,17917
-
-COPYING,1403
-                       Version 2,47
- Copyright 4,95
-your programs,20,926
-  When we speak of free software,22,947
-  When we speak of free software, we are referring to freedom,22,947
-11 of the WIPO copyright treaty adopted on 20 December 183,9244
-  When you convey a covered work,187,9381
-the covered work,190,9592
-modification of the work as a means of enforcing,191,9663
-users, your or third parties' legal rights to forbid circumvention oftion of192,9732
-receive it,198,9929
-receive it, in any medium,198,9929
-appropriately publish on each copy an appropriate copyright notice;199,9992
-non-permissive terms added in accord with section 7 apply to the code;201,10118
-keep intact all notices of the absence of any warranty;202,10189
-    Appropriate Legal Notices; however,231,11578
-    Notices displayed by works containing it;370,19236
-    c) Prohibiting misrepresentation of the origin of that material,372,19286
-    reasonable ways as different from the original version;374,19425
-    material by anyone who conveys the material 383,19780
-modify it is void,411,21191
-  However,415,21356
-    the Free Software Foundation,639,33294
-    the Free Software Foundation, either version 3 of the License,639,33294
-    the Free Software Foundation, either version 3 of the License, or639,33294
-parts of the General Public License.  Of course,661,34332
-might be different;662,34405
-
-src/payload.c,759
-#define BYTETOBINARYPATTERN 29,935
-#define BYTETOBINARY(30,982
-void payload_init(40,1226
-void payload_setFin(50,1427
-int payload_getFin(54,1504
-void payload_setRsv1(58,1572
-int payload_getRsv1(63,1654
-void payload_setRsv2(67,1724
-int payload_getRsv2(71,1805
-void payload_setRsv3(75,1875
-int payload_getRsv3(79,1956
-void payload_setOpcode(83,2026
-int payload_getOpcode(87,2115
-void payload_setMask(92,2190
-int payload_getMask(100,2344
-int payload_getLength(104,2414
-void payload_setMaskKey(108,2517
-unsigned char * payload_getMaskKey(113,2633
-void payload_setPayload(117,2725
-unsigned char *  payload_getPayload(122,2923
-void payload_generateMaskKey(126,3012
-void payload_maskData(138,3461
-unsigned char * payload_encodePayload(150,3697
-
-src/cellophane_io.c,1320
-struct block{block54,2098
-	char *mem;mem55,2112
-	size_t size;56,2124
-int findn(59,2142
-void cellophane_io(69,2250
-int cellophane_io_connect(76,2434
-void cellophane_new(98,3722
-void cellophane_reset_default_events(124,4916
-void cellophane_trigger_default_events(136,5313
-void cellophane_set_debug(155,6145
-void cellophane_print_log(159,6271
-int  cellophane_init(206,7489
-int cellophane_handshake(223,7852
-int cellophane_connect(286,10045
-char * cellophane_generateKey(408,14061
-char ** cellophane_read(434,14551
-void cellophane_send(537,17171
-void  cellophane_emit(572,18314
-void cellophane_on(581,18726
-void cellophane_io_message_parse(609,19767
-void cellophane_io_json_response_parse(664,21365
-void cellophane_event_handler(685,22047
-void  cellophane_close(733,23831
-void cellophane_reconect(745,24146
-void cellophane_keepAlive(765,24677
-int cellophane_clean_header(805,25778
-int cellophane_read_ready(811,25828
-char * cellophane_do_web_request(853,27207
-size_t static cellophane_write_callback_func(896,28610
-char** cellophane_str_split(911,29134
-int cellophane_number_of_message(956,30045
-int cellophane_find_on_char_array(989,30794
-void cellophane_compute_md5(1002,31003
-static const char basis_64[basis_641009,31179
-int Base64encode_len(1011,31279
-int Base64encode(1016,31350
-
-src/example_client.c,87
-void on_notofication_callback(10,112
-void static keepBeating(17,277
-int main(23,471
-
-src/md5.c,315
-#define F(51,1891
-#define G(52,1940
-#define H(53,1989
-#define H2(54,2030
-#define I(55,2072
-#define STEP(60,2169
-#define SET(74,2676
-#define GET(76,2726
-#define SET(79,2757
-#define GET(85,2952
-static const void *body(body93,3133
-void MD5_Init(200,6657
-void MD5_Update(211,6807
-void MD5_Final(245,7485
-
-INSTALL,554
-Copyright (C) 1994-1996, 1999-2002, 2004-2011 Free Software Foundation,4,53
-   Copying and distribution of this file,7,131
-   Copying and distribution of this file, with or without modification,7,131
-notice and this notice are preserved.  This file is offered as-is,is9,270
-Basic Installation12,368
-   Briefly, the shell commands `./configure; make;15,407
-configure, build, and install this package.  The followingng16,479
-configure, build,16,479
-more-detailed instructions are generic;17,538
-Optional Features192,9209
-   On Haiku,250,11532
-
-Makefile,3349
-am__make_dryrun 19,694
-pkgdatadir 36,1140
-am__vpath_adj 75,2676
-am__nobase_list 85,3047
-am__base_list 92,3452
-am__installdirs 101,3802
-RECURSIVE_CLEAN_TARGETS 133,5197
-  else 149,5851
-am__relativize 150,5864
-  sed_first=152,5899
-  sed_rest=153,5938
-  sed_last=154,5967
-  sed_butlast=155,6005
-    first=157,6069
-        dir2=160,6197
-        dir0=161,6260
-        first2=163,6330
-          dir2=165,6434
-          dir2=167,6505
-        fi;168,6535
-        dir0=169,6549
-      fi;170,6584
-    fi;171,6596
-    dir1=172,6606
-  done;173,6656
-  reldir=174,6666
-AMTAR 182,7066
-AR 183,7086
-AUTOHEADER 185,7192
-AUTOMAKE 186,7294
-AWK 187,7397
-INSTALL_PROGRAM 208,7741
-INSTALL_SCRIPT 209,7770
-INSTALL_STRIP_PROGRAM 210,7798
-MANIFEST_TOOL 224,8211
-am__untar 257,9058
-bindir 258,9087
-build 259,9115
-datarootdir 266,9264
-docdir 267,9294
-dvidir 268,9341
-exec_prefix 269,9360
-host 270,9384
-includedir 276,9510
-infodir 277,9541
-install_sh 278,9571
-libdir 279,9659
-libexecdir 280,9687
-localedir 281,9723
-localstatedir 282,9757
-mandir 283,9787
-mkdir_p 284,9815
-prefix 287,9887
-sbindir 290,9964
-sharedstatedir 291,9994
-srcdir 292,10025
-target_alias 294,10063
-	      $(319,10727
-	    list2=366,12270
-	  else 367,12298
-	  else :; fi;367,12298
-	done;368,12315
-	  $(MKDIR_P) "$(DESTDIR)$(libdir)" || exit 371,12397
-	  $(373,12584
-	  $(380,12850
-	  dir=388,13221
-libcellophane.la: $(393,13390
-	  case $$f in 466,17295
-	    *k*) failcom=468,17336
-	  esac;469,17369
-	done;470,17380
-	dot_seen=471,17389
-	target=472,17405
-	    dot_seen=476,17571
-	    local_target=477,17592
-	    local_target=479,17637
-	  fi;480,17669
-	  || eval $$failcom;482,17746
-	done;483,17770
-	  $(485,17816
-	  case $$f in 491,17979
-	    *k*) failcom=493,18020
-	  esac;494,18053
-	done;495,18064
-	dot_seen=496,18073
-	  distclean-* | maintainer-clean-*) list=498,18105
-	  *) list=499,18170
-	esac;500,18199
-	rev=501,18208
-	  if test "$$subdir" = "."; then 502,18244
-	    rev=503,18288
-	  fi;504,18317
-	done;505,18326
-	rev=506,18335
-	target=507,18353
-	    local_target=511,18499
-	    local_target=513,18544
-	  fi;514,18576
-	  || eval $$failcom;516,18653
-	list=519,18719
-	list=523,18871
-ID: $(527,19008
-	    if test -f "$$i"; then echo $$i;530,19142
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i;$$i530,19142
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi;530,19142
-TAGS: tags-recursive $(537,19367
-	  include_option=542,19559
-	  empty_fix=543,19596
-	  include_option=545,19622
-	  empty_fix=546,19653
-	fi;547,19670
-	list=548,19677
-	  if test "$$subdir" = .; then 549,19724
-	  fi;552,19860
-	done;553,19869
-	list=554,19878
-	unique=555,19945
-	    if test -f "$$i"; then echo $$i;556,19976
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i;$$i556,19976
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi;556,19976
-	shift;560,20169
-	if test -z "$(ETAGS_ARGS)$$*$$unique"; then 561,20179
-	  test -n "$$unique" || unique=562,20234
-	    $(564,20310
-	    if test -f "$$i"; then echo $$i;576,20714
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i;$$i576,20714
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi;576,20714
-	  || $(581,20942
-	  dist_files=`for file in $$list; do echo $$file;598,21455
-
-AUTHORS,0
-
-stamp-h1,0
-
-.git/info/exclude,0
-
-.git/logs/HEAD,0
-
-.git/logs/refs/stash,0
-
-.git/logs/refs/heads/master,0
-
-.git/logs/refs/remotes/origin/HEAD,0
-
-.git/objects/a1/66908a1565683d42b7ce3e15c845cfee8eab99,0
-
-.git/objects/4d/e439793ef1f4c0c80d21de399856b84a7807c7,0
-
-.git/objects/b1/00ff99b9026e9cce95ab17998098575bde5ed2,0
-
-.git/objects/ae/ab94d9152bb17b079d1a9b7630d2a0dbb7b059,0
-
-.git/objects/1d/d088ab2b61ef5223ab178c1547b7aeaca07234,0
-
-.git/objects/ee/510ef29b931cfa2271d0a317f28450cbe37e92,0
-
-.git/objects/a2/99c4b3da373b347af2011af3464c8414ea5278,0
-
-.git/objects/6c/d76b6c74739f6e109fba3b9a6f561e83bb319d,0
-
-.git/objects/2c/81082576eb884c87c18f2a6441e78724714bc6,0
-
-.git/objects/e7/c75f62f5d8af008b50f3756c80ae4841044f49,0
-
-.git/objects/aa/cbb0f936ac25f54ebad690ea3594b25567e388,0
-
-.git/objects/78/916d0143dd2d200471a9ac2969cd2cdde6dc1a,0
-
-.git/objects/d8/b28564339f47e39cd88adf5373b2e366a86243,0
-
-.git/objects/b8/572b79bd5b8fc50f526a6fe75bf7396d920bd8,0
-
-.git/objects/10/90e6d9fe2e10ee5de6ca562af4fd5c9f0c7c4d,0
-
-.git/objects/76/d6936d1600a6fc11650e0df9750b7b65e143b5,0
-
-.git/objects/64/467d2256692279d87ed1979d717e73a6ffa21b,0
-
-.git/objects/24/2d09d79b187e0bd7ba6a142fcce03d8bf8c119,0
-
-.git/objects/67/8fbecdeae3b41516fa685f9e938db958c3eafd,0
-
-.git/objects/38/fa2a244063f74af074e14dbbed07572ce9c210,0
-
-.git/objects/86/4833f47259e3ebd544d5163999423a56c55599,0
-
-.git/objects/74/cd0076f25b022be5bb3f70c22c231fb7bfb245,0
-
-.git/hooks/applypatch-msg.sample,0
-
-.git/hooks/pre-commit.sample,0
-
-.git/hooks/post-update.sample,0
-
-.git/hooks/pre-applypatch.sample,0
-
-.git/hooks/commit-msg.sample,0
-
-.git/ORIG_HEAD,0
-
-.git/HEAD,0
-
-.git/COMMIT_EDITMSG,0
-
-.git/refs/stash,0
-
-.git/refs/heads/master,0
-
-.git/refs/remotes/origin/HEAD,0
-
-.git/index,0
-
-.git/packed-refs,0
-
-README,0
-
-NEWS,0
-
-cellophane_io.o,0
-
-.gitignore,0
-
-.deps/payload.Plo,0
-
-.deps/cellophane_io.Plo,0
-
-.deps/md5.Plo,0
-
-ChangeLog,0
-
-.libs/payload.o,0
-
-payload.o,0
-
-examples/client,0
-
-config/lt~obsolete.m4,0

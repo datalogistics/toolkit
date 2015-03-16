@@ -879,7 +879,7 @@ static size_t write_callback(void *contents, size_t size, size_t nmemb, void *us
     mem->memory = realloc(mem->memory, mem->size + realsize + 1);
     if(mem->memory == NULL) {
         /* out of memory! */
-        printf("not enough memory (realloc returned NULL)\n");
+        fprintf(stderr, "not enough memory (realloc returned NULL)\n");
         return 0;
     }
 
@@ -1015,11 +1015,12 @@ int curl_post_json_string(char *url, char *buf, longlong size, char **response, 
 	curl_easy_setopt(curl_handle, CURLOPT_READDATA, &data);
 	curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);
 	curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE, data.size);
+	curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, NULL);
 	//headers = curl_handle_slist_append(headers, "Transfer-Encoding: chunked");
 	headers = curl_slist_append(headers, "Content-type: application/json,application/perfsonar+json");
 	headers = curl_slist_append(headers, "Accept: text/html,application/json,application/perfsonar+json");
 	curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, headers);
-
+	
 	res = curl_easy_perform(curl_handle);
     if(res != CURLE_OK){
 		fprintf(stderr, "curl_easy_perform() failed: %s\n",	curl_easy_strerror(res));
@@ -1029,7 +1030,9 @@ int curl_post_json_string(char *url, char *buf, longlong size, char **response, 
 		*response = (char *)malloc(chunk.size * sizeof(char));
 		strncpy(*response, chunk.memory, *len);
 	}
- 
+	
+	//fprintf(stderr, "Chunk Memory : %s ", chunk.memory);
+
     curl_easy_cleanup(curl_handle);
 
 	if(chunk.memory)

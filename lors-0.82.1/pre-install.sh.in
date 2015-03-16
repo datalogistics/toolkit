@@ -49,40 +49,18 @@ if test "${BUILD_XML2}" = yes; then
     cd @PREFIX@
 fi
 
-BUILD_JANSSON=@LORS_BUILD_JANSSON@
-if test "${BUILD_JANSSON}" = yes; then
-    echo "Building libjansson package..."
-    cd @LORS_JANSSON_SRC_DIR@
-    ./configure --prefix=@prefix@
-    make install
-    cd @PREFIX@
-fi
-
-BUILD_LIBCURL=@LORS_BUILD_LIBCURL@
-if test "${BUILD_LIBCURL}" = yes; then
-    echo "Building libjansson package..."
-    cd @LORS_LIBCURL_SRC_DIR@
-    ./configure --prefix=@prefix@
-    make install
-    cd @PREFIX@
-fi
-
-BUILD_LIBCELLOPHANE=@LORS_BUILD_LIBCELLOPHANE@
-if test "${BUILD_LIBCELLOPHANE}" = yes; then
-    echo "Building libjansson package..."
-    cd @LORS_LIBCELLOPHANE_SRC_DIR@
-	./autogen.sh
-    ./configure --prefix=@prefix@ --with-libjansson=@LORS_JANSSON_DIR@ --with-libcurl=@LORS_LIBCURL_DIR@
-    make install
-    cd @PREFIX@
-fi
-
 BUILD_LBONE=@LORS_BUILD_LBONE@
 if test "${BUILD_LBONE}" = yes; then
     echo "Building lbone package..."
     cd @LORS_LBONE_SRC_DIR@
     ./configure --prefix=@prefix@ 
     make install
+	if test $? -ne 0; then
+        echo "****** Error in building libxml2 package"
+        cd @PREFIX@
+        /bin/rm Makefile
+        exit 1
+    fi
     cd @PREFIX@ 
 fi
 
@@ -90,8 +68,14 @@ BUILD_LIBXND=@LORS_BUILD_LIBXND@
 if test "${BUILD_LIBXND}" = yes; then
     echo "Building libexnode package..."
     cd @LORS_LIBXND_SRC_DIR@
-    ./configure --prefix=@prefix@ --with-libxml2=@LORS_XML2_DIR@ --with-libfdr=@LORS_LBONE_DIR@ --with-libjansson=@LORS_JANSSON_DIR@
+    ./configure --prefix=@prefix@ --with-libxml2=@LORS_XML2_DIR@ --with-libfdr=@LORS_LBONE_DIR@ --with-libjansson=@LIBJANSSON_DIR@ 
     make install
+	if test $? -ne 0; then
+        echo "****** Error in building libexnode package"
+        cd @PREFIX@
+        /bin/rm Makefile
+        exit 1
+    fi
     cd @PREFIX@
 fi
 

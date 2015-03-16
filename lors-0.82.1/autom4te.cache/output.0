@@ -638,12 +638,11 @@ LORS_LBONE_SRC_DIR
 LORS_BUILD_LBONE
 LIBWEBSOCKETS_LIB
 LIBWEBSOCKETS_INC
-LORS_LIBCURL_SRC_DIR
-LORS_LIBCURL_DIR
-LORS_BUILD_LIBCURL
-LORS_JANSSON_SRC_DIR
-LORS_JANSSON_DIR
-LORS_BUILD_JANSSON
+LIBCURL_LIB
+LIBCURL_INC
+LIBJANSSON_LIB
+LIBJANSSON_INC
+LIBJANSSON_DIR
 LORS_XML2_SRC_DIR
 LORS_XML2_DIR
 LORS_BUILD_XML2
@@ -1402,8 +1401,8 @@ Optional Packages:
 --with-popt=path   path to popt package(default is /usr)
 --with-zlib=path      path to zlib default=/usr
 --with-libxml2=path         path to libxml2default=/usr
---with-libjansson=path         path to libjanssondefault=/usr/local
---with-libcurl=path         path to libcurldefault=/usr/local
+--with-libjansson=path   path to libjansson
+--with-libcurl=path   path to libcurl
 --with-libwebsockets=path   path to libwebsockets
 --with-lbone=path    path to lbone package
 --with-libexnode=path      path to libexnode
@@ -5350,76 +5349,159 @@ fi
 
 
 
+
 @%:@ Check whether --with-libjansson was given.
 if test "${with_libjansson+set}" = set; then :
-  withval=$with_libjansson; LORS_JANSSON_DIR="$with_libjansson"
+  withval=$with_libjansson; 
 else
-  LORS_JANSSON_DIR="/usr/local"
+  with_libjansson=no
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for \"${LORS_JANSSON_DIR}/include/jansson.h\"" >&5
-$as_echo_n "checking for \"${LORS_JANSSON_DIR}/include/jansson.h\"... " >&6; }
-if test -r "${LORS_JANSSON_DIR}/include/jansson.h"; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
-$as_echo "found" >&6; }
-    LORS_BUILD_JANSSON="no"
+if test "$with_libjansson" == "no"; then
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for json_object in -ljansson" >&5
+$as_echo_n "checking for json_object in -ljansson... " >&6; }
+if ${ac_cv_lib_jansson_json_object+:} false; then :
+  $as_echo_n "(cached) " >&6
 else
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ljansson  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char json_object ();
+int
+main ()
+{
+return json_object ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_jansson_json_object=yes
+else
+  ac_cv_lib_jansson_json_object=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_jansson_json_object" >&5
+$as_echo "$ac_cv_lib_jansson_json_object" >&6; }
+if test "x$ac_cv_lib_jansson_json_object" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+@%:@define HAVE_LIBJANSSON 1
+_ACEOF
+
+  LIBS="-ljansson $LIBS"
+
+else
+  as_fn_error $? "Can not buiild without libjansson" "$LINENO" 5
+fi
+
+   LIBJANSSON_DIR="/usr/local"
+
+   LIBJANSSON_INC="-I/usr/local/include"
+
+   LIBJANSSON_LIB="-L/usr/local/lib -ljansson"
+		
+else
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libjansson" >&5
+$as_echo_n "checking for libjansson... " >&6; }
+   if test -f "$with_libjansson/include/jansson.h"; then
+   	   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	   LIBJANSSON_DIR="$with_libjansson"
+	
+	   LIBJANSSON_INC="-I$with_libjansson/include"
+
+	   LIBJANSSON_LIB="-L$with_libjansson/lib -lwebsockets"
+
+   else
+	   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for \"${PREFIX}/libjansson/src/jansson.h\"" >&5
-$as_echo_n "checking for \"${PREFIX}/libjansson/src/jansson.h\"... " >&6; }
-if test -r "${PREFIX}/libjansson/src/jansson.h"; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
-$as_echo "found" >&6; }
-    LORS_BUILD_JANSSON="yes"
-                          LORS_JANSSON_SRC_DIR="${PREFIX}/libjansson"
-                          LORS_JANSSON_DIR="${INS_DIR}"
-else
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-    as_fn_error $? "\"Can not find libjansson package\"" "$LINENO" 5
+	   as_fn_error $? "Can not buiild without libjansson" "$LINENO" 5
+   fi
 fi
-fi
-
-
-
-
 
 
 @%:@ Check whether --with-libcurl was given.
 if test "${with_libcurl+set}" = set; then :
-  withval=$with_libcurl; LORS_LIBCURL_DIR="$with_libcurl"
+  withval=$with_libcurl; 
 else
-  LORS_LIBCURL_DIR="/usr/local"
+  with_libcurl=no
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for \"${LORS_LIBCURL_DIR}/include/curl/curl.h\"" >&5
-$as_echo_n "checking for \"${LORS_LIBCURL_DIR}/include/curl/curl.h\"... " >&6; }
-if test -r "${LORS_LIBCURL_DIR}/include/curl/curl.h"; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
-$as_echo "found" >&6; }
-    LORS_BUILD_LIBCURL="no"
+if test "$with_libcurl" == "no"; then
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for curl_easy_init in -lcurl" >&5
+$as_echo_n "checking for curl_easy_init in -lcurl... " >&6; }
+if ${ac_cv_lib_curl_curl_easy_init+:} false; then :
+  $as_echo_n "(cached) " >&6
 else
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lcurl  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char curl_easy_init ();
+int
+main ()
+{
+return curl_easy_init ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_curl_curl_easy_init=yes
+else
+  ac_cv_lib_curl_curl_easy_init=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_curl_curl_easy_init" >&5
+$as_echo "$ac_cv_lib_curl_curl_easy_init" >&6; }
+if test "x$ac_cv_lib_curl_curl_easy_init" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+@%:@define HAVE_LIBCURL 1
+_ACEOF
+
+  LIBS="-lcurl $LIBS"
+
+else
+  as_fn_error $? "Can not buiild without libcurl" "$LINENO" 5
+fi
+
+else
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libcurl" >&5
+$as_echo_n "checking for libcurl... " >&6; }
+   if test -f "$with_libcurl/include/curl/curl.h"; then
+   	   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	   LIBCURL_INC="-I$with_libcurl/include"
+
+	   LIBCURL_LIB="-L$with_libcurl/lib -lcurl"
+
+   else
+	   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for \"${PREFIX}/libcurl/include/curl/curl.h\"" >&5
-$as_echo_n "checking for \"${PREFIX}/libcurl/include/curl/curl.h\"... " >&6; }
-if test -r "${PREFIX}/libcurl/include/curl/curl.h"; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
-$as_echo "found" >&6; }
-    LORS_BUILD_LIBCURL="yes"
-                          LORS_LIBCURL_SRC_DIR="${PREFIX}/libcurl"
-                          LORS_LIBCURL_DIR="${INS_DIR}"
-else
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-    as_fn_error $? "\"Can not find libcurl package\"" "$LINENO" 5
+	   as_fn_error $? "Can not buiild without libcurl" "$LINENO" 5
+   fi
 fi
-fi
-
-
-
-
 
 
 @%:@ Check whether --with-libwebsockets was given.
@@ -5480,7 +5562,7 @@ fi
 else
    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libwebsockets" >&5
 $as_echo_n "checking for libwebsockets... " >&6; }
-   if test -f "$with_libwebsockets/libwebscokets.h"; then
+   if test -f "$with_libwebsockets/include/libwebscokets.h"; then
    	   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 	   LIBWEBSOCKETS_INC="-I$with_libwebsockets/include"

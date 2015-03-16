@@ -549,8 +549,8 @@ _lorsDoDownload ( __LorsJob *job,
          };
          nread = nread + nbytes; 
      };
-	
-	if(job->handle != NULL){
+
+	if(job->handle->status == CONN_CONNECTED){
 		socket_io_send_push(job->handle, mapping->depot.host, job->src_offset, job->src_length);
 	} 
 	

@@ -704,7 +704,7 @@ next_depot:
         } else { 
 
 			// report status to report host 
-			if(job->handle != NULL){
+			if(job->handle->status == CONN_CONNECTED){
 				socket_io_send_push(job->handle, ldepot->depot->host, lm->exnode_offset+written, (job->src_length-written));
 			}
 

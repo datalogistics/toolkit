@@ -1,5 +1,5 @@
 /**
- * serialize.c
+ * uefSerialize.c
  *
  * Functions for (de)serializing exnode data structures.
  *
@@ -96,8 +96,6 @@ int uefSerializeMapping(ExnodeMapping *map, json_t **extent_arr, time_t duration
 	json_object_set(mapping, "write", json_string(map->write));
 	json_object_set(mapping, "manage", json_string(map->manage));
 	json_object_set(extent, "mapping", mapping);
-
-	json_object_set(extent, "$schema", json_string("http://unis.incntre.iu.edu/schema/exnode/ext/ibp#"));
 	json_object_set(extent, "location", json_string("ibp://"));
 
 	lifetime_arr = json_array();
@@ -138,9 +136,7 @@ int uefSerialize(Exnode *exnode, char **buf, int *len, size_t file_size, time_t 
 	}
 	
 	//snprintf(timestamp, 100, "%d", (int)time(NULL));
-	//json_object_set(exnode_obj, "parent", json_null());
-	// Put all data on Dump folder
-	json_object_set(exnode_obj, "parent", json_string("5502fa68e779894eaab36515"));
+	json_object_set(exnode_obj, "parent", json_null());
 	json_object_set(exnode_obj, "created", json_integer(time(NULL)));
 	json_object_set(exnode_obj, "modified", json_integer(time(NULL)));
 	json_object_set(exnode_obj, "mode", json_string("file"));

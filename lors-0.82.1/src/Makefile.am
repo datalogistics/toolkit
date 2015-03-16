@@ -28,13 +28,10 @@ ZLIB_LIB="-L@LORS_ZLIB_DIR@/lib -lz"
 E2EINC = @E2EDIR@
 E2ELIB = @E2EDIR@/libend2end.a $(E2EDIR)/md5/libmd5.a $(E2EDIR)/des/libdes.a
 
-CURL_INC =@LORS_LIBCURL_DIR@/include
-CURL_LIB ="-L@LORS_LIBCURL_DIR@/lib -lcurl"
-
 AM_CFLAGS = -g -D@OSDEF@  @EXTRA_CFLAGS@
-AM_CPPFLAGS = -I@GCC_INC_DIR@ -I../include -I$(XNDXMLINC) -I$(XNDINC) -I$(LBNINC) -I$(IBPINC) -I$(E2EINC) -I$(POPT_INC) -I$(ZLIB_INC)  -I$(CURL_INC) @LIBWEBSOCKETS_INC@
+AM_CPPFLAGS = -I@GCC_INC_DIR@ -I../include -I$(XNDXMLINC) -I$(XNDINC) -I$(LBNINC) -I$(IBPINC) -I$(E2EINC) -I$(POPT_INC) -I$(ZLIB_INC)  @LIBCURL_INC@ @LIBWEBSOCKETS_INC@
 
-ldadd = $(XNDLIB) $(LBNLIB) $(FDRLIB) $(IBPLIB) -L@XNDXMLDIR@/lib @LIBS@ $(ZLIB_LIB) $(POPT_LIB) -lpthread  $(CURL_LIB)  @LIBWEBSOCKETS_LIB@
+ldadd = $(XNDLIB) $(LBNLIB) $(FDRLIB) $(IBPLIB) -L@XNDXMLDIR@/lib @LIBS@ $(ZLIB_LIB) $(POPT_LIB) -lpthread  $(CURL_LIB) @LIBCURL_LIB@ @LIBWEBSOCKETS_LIB@
 #$(E2ELIB)
 
 liblors_a_SOURCES = lors_exnode.c lors_serialize.c lors_metadata.c lors_depotpool.c lors_util.c lors_job.c lors_set_copy.c lors_set_load.c lors_set_merge.c lors_set_misc.c lors_set_query.c lors_set_refresh.c lors_set_stat.c lors_set_store.c lors_set_trim.c lors_set_alloc.c lors_resolution.c socket_io.c url.c websocket.c

@@ -551,8 +551,12 @@ int lorsPostUnis(LorsExnode *exnode,
     }
 	
 	ret = curl_post_json_string(url, buf, len, &response, &response_len);
+	if(ret != LORS_SUCCESS){
+		goto bail;
+	}
+	
 	//fprintf(stdout, "JSON Respons : %s \n", response);
-	json_ret = json_loads(response, 0, &json_err);
+	json_ret = json_loads(response, JSON_DISABLE_EOF_CHECK, &json_err);
 	if(json_ret == NULL){
 		fprintf(stderr, "Could not decode JSON: %d: %s\n", json_err.line, json_err.text);
 		ret = LORS_FAILURE;

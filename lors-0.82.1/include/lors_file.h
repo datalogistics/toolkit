@@ -3,6 +3,7 @@
 #define __LORS_FILE_H__
 #include <lors_api.h>
 #include <lors_file_opts.h>
+#include <socket_io.h>
 
 typedef struct {
     int  size;
@@ -69,7 +70,7 @@ int lorsUploadFile( char      *filename,
                    char      *resolution_file,
                    int        nthreads,
                    int        timeout,
-					char      *report_host, 
+				   socket_io_handler *handle, 
                    int        opts);
 
 int lorsDownloadFile(char       *exnode_filename, 
@@ -89,7 +90,7 @@ int lorsDownloadFile(char       *exnode_filename,
                      char       *resolution_file,
                      int        nthreads,
                      int        timeout, 
- 					 char      *report_host,
+					 socket_io_handler *handle, 
                      int        opts);
 
 int lorsRefreshFile(char *filename, 
