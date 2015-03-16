@@ -85,6 +85,12 @@ if test "${BUILD_LIBAES}" = yes; then
     cd @LORS_LIBAES_SRC_DIR@
     ./configure --prefix=@prefix@
     make install
+	if test $? -ne 0; then
+        echo "****** Error in building libaes package"
+        cd @PREFIX@
+        /bin/rm Makefile
+        exit 1
+    fi
     cd @PREFIX@
 fi
 
