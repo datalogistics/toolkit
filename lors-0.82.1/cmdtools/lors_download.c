@@ -58,6 +58,9 @@ int main (int argc, char **argv)
 	char       session_id[33];
 	int        i;
 	int        inner_loop_flag = 0;
+	
+	// init status
+	handle.status = CONN_WAITING;
 
     poptContext optCon;   /* context for parsing command-line options */
     struct poptOption optionsTable[] = {

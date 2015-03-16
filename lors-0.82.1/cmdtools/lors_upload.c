@@ -67,6 +67,8 @@ int main (int argc, char **argv)
 
     poptContext optCon;   /* context for parsing command-line options */
 
+	handle.status = CONN_WAITING;
+
     struct poptOption optionsTable[] = {
   { "samename",   'f', POPT_ARG_NONE,   0,                  SAME_OUTPUTNAME, 
         "Specify the exNode filename by appending .xnd to the original filename.", NULL },

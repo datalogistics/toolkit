@@ -56,7 +56,7 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/pre-install.sh.in $(top_srcdir)/configure AUTHORS \
 	COPYING ChangeLog INSTALL NEWS config.guess config.sub depcomp \
-	install-sh ltmain.sh missing mkinstalldirs
+	install-sh missing mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -129,16 +129,16 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/lbone/missing --run aclocal-1.11
+ACLOCAL = ${SHELL} /home/adorwat/new_toolkit/toolkit/lors-0.82.1/lbone/missing --run aclocal-1.11
 AMTAR = $${TAR-tar}
-AUTOCONF = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/lbone/missing --run autoconf
-AUTOHEADER = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/lbone/missing --run autoheader
-AUTOMAKE = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/lbone/missing --run automake-1.11
+AUTOCONF = ${SHELL} /home/adorwat/new_toolkit/toolkit/lors-0.82.1/lbone/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/adorwat/new_toolkit/toolkit/lors-0.82.1/lbone/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/adorwat/new_toolkit/toolkit/lors-0.82.1/lbone/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2
-CGIDIR = /u/adorwat/toolkit/lors-0.82.1/lbone/ecgi
+CGIDIR = /home/adorwat/new_toolkit/toolkit/lors-0.82.1/lbone/ecgi
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -147,10 +147,10 @@ DEPDIR = .deps
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
-EGREP = /usr/bin/grep -E
+EGREP = /bin/grep -E
 EXEEXT = 
-GREP = /usr/bin/grep
-IBPDIR = /u/adorwat/usr
+GREP = /bin/grep
+IBPDIR = /home/adorwat/m_usr
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
@@ -165,12 +165,12 @@ LORS_BUILD_ECGI = no,
 LORS_BUILD_IBP = yes
 LORS_BUILD_NWS = no,
 LORS_ECGI_SRC_DIR = 
-LORS_IBP_SRC_DIR = /u/adorwat/toolkit/lors-0.82.1/lbone/ibp
+LORS_IBP_SRC_DIR = /home/adorwat/new_toolkit/toolkit/lors-0.82.1/lbone/ibp
 LORS_NWS_SRC_DIR = 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/lbone/missing --run makeinfo
-MKDIR_P = /usr/bin/mkdir -p
-NWSDIR = /u/adorwat/toolkit/lors-0.82.1/lbone/nws
+MAKEINFO = ${SHELL} /home/adorwat/new_toolkit/toolkit/lors-0.82.1/lbone/missing --run makeinfo
+MKDIR_P = /bin/mkdir -p
+NWSDIR = /home/adorwat/new_toolkit/toolkit/lors-0.82.1/lbone/nws
 OBJEXT = o
 OSDEF = _LINUX
 OSTYPE = Linux
@@ -182,23 +182,23 @@ PACKAGE_TARNAME =
 PACKAGE_URL = 
 PACKAGE_VERSION = 
 PATH_SEPARATOR = :
-PREFIX = /u/adorwat/toolkit/lors-0.82.1/lbone
+PREFIX = /home/adorwat/new_toolkit/toolkit/lors-0.82.1/lbone
 RANLIB = ranlib
 SET_MAKE = 
-SHELL = /bin/sh
+SHELL = /bin/bash
 STRIP = 
 VERSION = 0.5
-abs_builddir = /u/adorwat/toolkit/lors-0.82.1/lbone
-abs_srcdir = /u/adorwat/toolkit/lors-0.82.1/lbone
-abs_top_builddir = /u/adorwat/toolkit/lors-0.82.1/lbone
-abs_top_srcdir = /u/adorwat/toolkit/lors-0.82.1/lbone
+abs_builddir = /home/adorwat/new_toolkit/toolkit/lors-0.82.1/lbone
+abs_srcdir = /home/adorwat/new_toolkit/toolkit/lors-0.82.1/lbone
+abs_top_builddir = /home/adorwat/new_toolkit/toolkit/lors-0.82.1/lbone
+abs_top_srcdir = /home/adorwat/new_toolkit/toolkit/lors-0.82.1/lbone
 ac_ct_CC = gcc
 am__include = include
 am__leading_dot = .
 am__quote = 
 am__tar = $${TAR-tar} chof - "$$tardir"
 am__untar = $${TAR-tar} xf -
-bindir = /u/adorwat/usr/bin
+bindir = /home/adorwat/m_usr/bin
 build = x86_64-unknown-linux-gnu
 build_alias = 
 build_cpu = x86_64
@@ -218,16 +218,16 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/lbone/install-sh
-libdir = /u/adorwat/usr/lib
+install_sh = ${SHELL} /home/adorwat/new_toolkit/toolkit/lors-0.82.1/lbone/install-sh
+libdir = /home/adorwat/m_usr/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
 localstatedir = ${prefix}/var
 mandir = ${datarootdir}/man
-mkdir_p = /usr/bin/mkdir -p
+mkdir_p = /bin/mkdir -p
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /u/adorwat/usr
+prefix = /home/adorwat/m_usr
 program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
@@ -749,14 +749,14 @@ ibp-install:
 
 install-exec-local:
 	cd ibp && make install
-#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/lib/libibp.a /u/adorwat/usr/lib
-#	#ranlib /u/adorwat/usr/lib/libibp.a
-#	#/usr/bin/install -c -m 0751 $(srcdir)/ibp/local/bin/ibp-smoketest /u/adorwat/usr/bin
-#	#/usr/bin/install -c -m 0751 $(srcdir)/ibp/local/bin/ibp-dmtest2 /u/adorwat/usr/bin
-#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_ClientLib.h /u/adorwat/usr/include
-#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_protocol.h /u/adorwat/usr/include
-#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_errno.h /u/adorwat/usr/include
-#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_os.h /u/adorwat/usr/include
+#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/lib/libibp.a /home/adorwat/m_usr/lib
+#	#ranlib /home/adorwat/m_usr/lib/libibp.a
+#	#/usr/bin/install -c -m 0751 $(srcdir)/ibp/local/bin/ibp-smoketest /home/adorwat/m_usr/bin
+#	#/usr/bin/install -c -m 0751 $(srcdir)/ibp/local/bin/ibp-dmtest2 /home/adorwat/m_usr/bin
+#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_ClientLib.h /home/adorwat/m_usr/include
+#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_protocol.h /home/adorwat/m_usr/include
+#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_errno.h /home/adorwat/m_usr/include
+#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_os.h /home/adorwat/m_usr/include
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

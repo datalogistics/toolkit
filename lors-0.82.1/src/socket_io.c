@@ -19,6 +19,7 @@
 
 void static socket_io_emit_thread(socket_io_handler *handle);
 char *socket_io_get_event_name_from_type(Event_type type);
+long long current_timestamp();
 
 int socket_io_init(socket_io_handler *handle){
 	
@@ -293,7 +294,7 @@ int socket_io_send_register(socket_io_handler *handle, char *filename, size_t si
 	json_object_set(json_obj, "filename", json_string(filename));
 	json_object_set(json_obj, "size", json_integer(size));
 	json_object_set(json_obj, "connections", json_integer(conn));
-	json_object_set(json_obj, "ts", json_integer(time(NULL)));
+	json_object_set(json_obj, "timestamp", json_integer(current_timestamp()));
 	dump = json_dumps(json_obj, JSON_COMPACT);
 	if(dump == NULL){
 		fprintf(stderr, "Register JSON dump failed \n");
@@ -323,7 +324,7 @@ int socket_io_send_clear(socket_io_handler *handle){
 	
 	//NOTE: Need for information on clear message
 	json_object_set(json_obj, "sessionId" ,json_string(handle->session_id));
-	json_object_set(json_obj, "ts", json_integer(time(NULL)));
+	json_object_set(json_obj, "timestamp", json_integer(current_timestamp()));
 	dump = json_dumps(json_obj, JSON_COMPACT);
 	if(dump == NULL){
 		fprintf(stderr, "clear JSON dump failed \n");
@@ -356,7 +357,7 @@ int socket_io_send_push(socket_io_handler *handle, char *host, size_t offset, si
  	json_object_set(json_obj, "host" ,json_string(host));
 	json_object_set(json_obj, "offset", json_integer(offset));
 	json_object_set(json_obj, "length", json_integer(len));
-	json_object_set(json_obj, "ts", json_integer(time(NULL)));
+	json_object_set(json_obj, "timestamp", json_integer(current_timestamp()));
 	dump = json_dumps(json_obj, JSON_COMPACT);
 	if(dump == NULL){
 		fprintf(stderr, "clear JSON dump failed \n");
@@ -374,4 +375,9 @@ int socket_io_send_push(socket_io_handler *handle, char *host, size_t offset, si
 	return SOCK_SUCCESS;
 }
 
-
+long long current_timestamp() {
+    struct timeval te; 
+    gettimeofday(&te, NULL); // get current time
+    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000; // caculate milliseconds
+	return milliseconds;
+}

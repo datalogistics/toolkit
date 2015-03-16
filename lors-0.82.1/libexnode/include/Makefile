@@ -98,11 +98,11 @@ HEADERS = $(pkginclude_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/libexnode/missing --run aclocal-1.11
+ACLOCAL = ${SHELL} /home/adorwat/new_toolkit/toolkit/lors-0.82.1/libexnode/missing --run aclocal-1.11
 AMTAR = $${TAR-tar}
-AUTOCONF = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/libexnode/missing --run autoconf
-AUTOHEADER = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/libexnode/missing --run autoheader
-AUTOMAKE = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/libexnode/missing --run automake-1.11
+AUTOCONF = ${SHELL} /home/adorwat/new_toolkit/toolkit/lors-0.82.1/libexnode/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/adorwat/new_toolkit/toolkit/lors-0.82.1/libexnode/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/adorwat/new_toolkit/toolkit/lors-0.82.1/libexnode/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -110,31 +110,31 @@ CFLAGS = -g -O2
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
-DEFS = -DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -DPACKAGE_STRING=\"\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DPACKAGE=\"libexnode\" -DVERSION=\"0.6.5\" -DSTDC_HEADERS=1 -DHAVE_STRDUP=1 -DHAVE_STRTOD=1 -DHAVE_STRTOUL=1
+DEFS = -DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -DPACKAGE_STRING=\"\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DPACKAGE=\"libexnode\" -DVERSION=\"0.6.5\" -DHAVE_LIBXML2=1 -DSTDC_HEADERS=1 -DHAVE_STRDUP=1 -DHAVE_STRTOD=1 -DHAVE_STRTOUL=1
 DEPDIR = .deps
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
-EGREP = /usr/bin/grep -E
+EGREP = /bin/grep -E
 EXEEXT = 
-FDRDIR = /u/adorwat/usr
+FDRDIR = /home/adorwat/m_usr
 FDRINC = -I$(FDRDIR)/include
 FDRLIB = -L$(FDRDIR)/lib
-GREP = /usr/bin/grep
+GREP = /bin/grep
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-JANSSONDIR = /u/adorwat/usr
+JANSSONDIR = /home/adorwat/m_usr
 JANSSONINC = -I$(JANSSONDIR)/include
 JANSSONLIB = -L$(JANSSONDIR)/lib -ljansson
 LDFLAGS = 
 LIBOBJS = 
-LIBS = 
+LIBS = -lxml2 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/libexnode/missing --run makeinfo
-MKDIR_P = /usr/bin/mkdir -p
+MAKEINFO = ${SHELL} /home/adorwat/new_toolkit/toolkit/lors-0.82.1/libexnode/missing --run makeinfo
+MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = libexnode
 PACKAGE_BUGREPORT = 
@@ -146,16 +146,16 @@ PACKAGE_VERSION =
 PATH_SEPARATOR = :
 RANLIB = ranlib
 SET_MAKE = 
-SHELL = /bin/sh
+SHELL = /bin/bash
 STRIP = 
 VERSION = 0.6.5
-XMLDIR = /u/adorwat/usr
+XMLDIR = /usr
 XMLINC = -I$(XMLDIR)/include/libxml2
 XMLLIB = -L$(XMLDIR)/lib -lm -lz
-abs_builddir = /u/adorwat/toolkit/lors-0.82.1/libexnode/include
-abs_srcdir = /u/adorwat/toolkit/lors-0.82.1/libexnode/include
-abs_top_builddir = /u/adorwat/toolkit/lors-0.82.1/libexnode
-abs_top_srcdir = /u/adorwat/toolkit/lors-0.82.1/libexnode
+abs_builddir = /home/adorwat/new_toolkit/toolkit/lors-0.82.1/libexnode/include
+abs_srcdir = /home/adorwat/new_toolkit/toolkit/lors-0.82.1/libexnode/include
+abs_top_builddir = /home/adorwat/new_toolkit/toolkit/lors-0.82.1/libexnode
+abs_top_srcdir = /home/adorwat/new_toolkit/toolkit/lors-0.82.1/libexnode
 ac_ct_CC = gcc
 am__include = include
 am__leading_dot = .
@@ -174,16 +174,16 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/libexnode/install-sh
+install_sh = ${SHELL} /home/adorwat/new_toolkit/toolkit/lors-0.82.1/libexnode/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
 localstatedir = ${prefix}/var
 mandir = ${datarootdir}/man
-mkdir_p = /usr/bin/mkdir -p
+mkdir_p = /bin/mkdir -p
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /u/adorwat/usr
+prefix = /home/adorwat/m_usr
 program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
@@ -207,9 +207,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign include/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu include/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign include/Makefile
+	  $(AUTOMAKE) --gnu include/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

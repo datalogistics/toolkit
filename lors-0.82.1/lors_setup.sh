@@ -1,6 +1,6 @@
 #!/bin/sh
 
-INSTALLDIR=/u/adorwat/usr
+INSTALLDIR=/home/adorwat/m_usr
 
 echo "Are you located in the US? (Y/n): "
 read US
