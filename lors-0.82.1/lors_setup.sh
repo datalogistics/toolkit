@@ -170,7 +170,7 @@ E2E_ORDER            $E2E_ORDER
 
 #  Use COPIES to set how many copies of the file that you want to 
 #  create. COPIES defaults to 1. 
-COPIES               1
+COPIES               3
 
 TIMEOUT     2600
 #  Use THREADS to specify the maximum number of threads to use.

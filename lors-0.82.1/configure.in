@@ -171,37 +171,44 @@ AC_SUBST(LORS_BUILD_XML2)
 AC_SUBST(LORS_XML2_DIR)
 AC_SUBST(LORS_XML2_SRC_DIR)
 
-dnl check and setup path of libjansson package 
-AC_ARG_WITH(libjansson,[--with-libjansson=path         path to libjansson[default=/usr/local]],
-            LORS_JANSSON_DIR="$with_libjansson",
-            LORS_JANSSON_DIR="/usr/local")
-AC_FIND_FILE("${LORS_JANSSON_DIR}/include/jansson.h",
-            LORS_BUILD_JANSSON="no",
-            AC_FIND_FILE("${PREFIX}/libjansson/src/jansson.h",
-                          LORS_BUILD_JANSSON="yes"
-                          LORS_JANSSON_SRC_DIR="${PREFIX}/libjansson"
-                          LORS_JANSSON_DIR="${INS_DIR}",
-                          AC_MSG_ERROR("Can not find libjansson package")))
-AC_SUBST(LORS_BUILD_JANSSON)
-AC_SUBST(LORS_JANSSON_DIR)
-AC_SUBST(LORS_JANSSON_SRC_DIR)
 
+dnl check for libjansson package
+AC_ARG_WITH(libjansson, [--with-libjansson=path   path to libjansson], ,
+            with_libjansson=no)
+if test "$with_libjansson" == "no"; then
+   AC_CHECK_LIB([jansson], [json_object], ,AC_MSG_ERROR([Can not buiild without libjansson]))
+   AC_SUBST(LIBJANSSON_DIR, "/usr/local")
+   AC_SUBST(LIBJANSSON_INC, "-I/usr/local/include")
+   AC_SUBST(LIBJANSSON_LIB, "-L/usr/local/lib -ljansson")		
+else
+   AC_MSG_CHECKING( for libjansson)
+   if test -f "$with_libjansson/include/jansson.h"; then
+   	   AC_MSG_RESULT(yes)
+	   AC_SUBST(LIBJANSSON_DIR, "$with_libjansson")	
+	   AC_SUBST(LIBJANSSON_INC, "-I$with_libjansson/include")
+	   AC_SUBST(LIBJANSSON_LIB, "-L$with_libjansson/lib -lwebsockets")
+   else
+	   AC_MSG_RESULT(no)
+	   AC_MSG_ERROR([Can not buiild without libjansson])
+   fi
+fi
 
-dnl check and setup path of libcurl package 
-AC_ARG_WITH(libcurl,[--with-libcurl=path         path to libcurl[default=/usr/local]],
-            LORS_LIBCURL_DIR="$with_libcurl",
-            LORS_LIBCURL_DIR="/usr/local")
-AC_FIND_FILE("${LORS_LIBCURL_DIR}/include/curl/curl.h",
-            LORS_BUILD_LIBCURL="no",
-            AC_FIND_FILE("${PREFIX}/libcurl/include/curl/curl.h",
-                          LORS_BUILD_LIBCURL="yes"
-                          LORS_LIBCURL_SRC_DIR="${PREFIX}/libcurl"
-                          LORS_LIBCURL_DIR="${INS_DIR}",
-                          AC_MSG_ERROR("Can not find libcurl package")))
-AC_SUBST(LORS_BUILD_LIBCURL)
-AC_SUBST(LORS_LIBCURL_DIR)
-AC_SUBST(LORS_LIBCURL_SRC_DIR)
-
+dnl check for libcurl package
+AC_ARG_WITH(libcurl, [--with-libcurl=path   path to libcurl], ,
+            with_libcurl=no)
+if test "$with_libcurl" == "no"; then
+   AC_CHECK_LIB([curl], [curl_easy_init], ,AC_MSG_ERROR([Can not buiild without libcurl]))
+else
+   AC_MSG_CHECKING( for libcurl)
+   if test -f "$with_libcurl/include/curl/curl.h"; then
+   	   AC_MSG_RESULT(yes)
+	   AC_SUBST(LIBCURL_INC, "-I$with_libcurl/include")
+	   AC_SUBST(LIBCURL_LIB, "-L$with_libcurl/lib -lcurl")
+   else
+	   AC_MSG_RESULT(no)
+	   AC_MSG_ERROR([Can not buiild without libcurl])
+   fi
+fi
 
 dnl check for libwebscokets package
 AC_ARG_WITH(libwebsockets, [--with-libwebsockets=path   path to libwebsockets], ,
@@ -210,7 +217,7 @@ if test "$with_libwebsockets" == "no"; then
    AC_CHECK_LIB([websockets], [libwebsocket_create_context], ,AC_MSG_ERROR([Can not buiild without libwebsockets]))
 else
    AC_MSG_CHECKING( for libwebsockets)
-   if test -f "$with_libwebsockets/libwebscokets.h"; then
+   if test -f "$with_libwebsockets/include/libwebscokets.h"; then
    	   AC_MSG_RESULT(yes)
 	   AC_SUBST(LIBWEBSOCKETS_INC, "-I$with_libwebsockets/include")
 	   AC_SUBST(LIBWEBSOCKETS_LIB, "-L$with_libwebsockets/lib -lwebsockets")
