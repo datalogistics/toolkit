@@ -5,6 +5,7 @@ BUILD_IBP=@LORS_BUILD_IBP@
 if test "${BUILD_IBP}" = yes; then
     echo "Building ibp package..."
     cd @LORS_IBP_SRC_DIR@
+	autoreconf -if
     ./configure --prefix=@prefix@ --enable-clientonly=yes
     make install
     if test $? -ne 0; then
