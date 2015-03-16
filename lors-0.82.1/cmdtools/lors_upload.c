@@ -6,6 +6,8 @@
 #include <signal.h>
 #include <uuid/uuid.h>
 #include <xndrc.h>
+#include <uuid/uuid.h>
+
 
 void sigpipe_handle(int d)
 {
@@ -26,9 +28,10 @@ void sigint_handle(int d)
 
 int main (int argc, char **argv)
 {
-    int i, ret;
+    int ret;
     LorsExnode *exnode;
     struct ibp_depot   lbone_server = {"dsj.sinrg.cs.utk.edu", 6767};
+	socket_io_handler handle;
     IBP_depot          lbs = NULL,*dp_list = NULL;
     char        *s;
     char        *lbonehost = NULL;
@@ -57,7 +60,10 @@ int main (int argc, char **argv)
     int         type_set = 0;
     int         fragments=0;
     char        *rcfile=NULL;
-	char        *report_host=NULL;
+	char       *report_host = NULL;
+	uuid_t      out;
+	char       session_id[33];
+	int        i;
 
     poptContext optCon;   /* context for parsing command-line options */
 
@@ -340,6 +346,19 @@ int main (int argc, char **argv)
         for(; xndrc.e2e_order[e2e_cnt] != -1; e2e_cnt++);
     }
 
+	if(report_host != NULL){
+		uuid_generate(out);
+		for(i = 0; i < 16; i++)
+			sprintf(session_id + (i*2),"%02x", out[i]);
+
+		handle.server_add = report_host;
+		handle.session_id = session_id;
+	
+		if(socket_io_init(&handle) != SOCK_SUCCESS){
+			fprintf(stderr, "Socket IO Init failed \n");
+		}
+	}
+
     if ( filename != NULL )
     {
         goto in_while;
@@ -387,7 +406,7 @@ in_while:
                              xndrc.location, xndrc.maxdepots, xndrc.storage_type, 
                              xndrc.duration, xndrc.max_buffersize, 
                              xndrc.resolution_file, xndrc.threads, 
-							 xndrc.timeout, report_host, 0); 
+							 xndrc.timeout, &handle, 0); 
             if ( ret != LORS_SUCCESS && ret != LORS_PARTIAL )
             {
                 if ( ret == LORS_LBONE_FAILED && xndrc.lboneList[try1] != NULL )
@@ -406,6 +425,17 @@ in_while:
         } while ( ret != LORS_SUCCESS && ret != LORS_PARTIAL );
         free(output_filename);
     }
+
+	if(report_host != NULL){
+		if(handle.status == CONN_CONNECTED){
+			socket_io_send_clear(&handle);
+		}
+	
+		if(handle.status != CONN_WAITING){
+			socket_io_close(&handle);
+		}
+	}
+
     if ( file_cnt == 0 )
     {
         fprintf(stderr, "Error. You must also provide a filename on "

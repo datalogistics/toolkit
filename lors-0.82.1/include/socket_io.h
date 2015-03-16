@@ -50,7 +50,7 @@ typedef struct _socket_io_msg{
 	Msg_type m_type;
 } socket_io_msg;
 
-extern int socket_io_init(socket_io_handler *handle, const char *host, const char *session_id);
+extern int socket_io_init(socket_io_handler *handle);
 extern socket_io_msg* socket_io_get_msg(socket_io_handler *handle);
 extern int socket_io_send_register(socket_io_handler *handle, char *filename, size_t size, int conn);
 extern int socket_io_send_clear(socket_io_handler *handle);

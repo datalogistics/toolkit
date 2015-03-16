@@ -13,7 +13,7 @@
 #include <xndrc.h>
 #include <lors_libe2e.h>
 #include <lors_resolution.h>
-#include <uuid/uuid.h>
+
 
 #define lorsDemoPrint       fprintf
 
@@ -237,8 +237,8 @@ int lorsUploadFile( char      *filename,
                    char      *resolution_file,
                    int        nthreads,
                    int        timeout,
-					char      *report_host,
-				   int        opts)
+				   socket_io_handler      *handle,
+					int        opts)
 {
     struct stat          mystat;
     char                *file_shortname;
@@ -268,18 +268,10 @@ int lorsUploadFile( char      *filename,
     _LorsFileJob        fileJob;
     double              temp_size = 0;
     ulong_t             storage_size = 0;
-	socket_io_handler   handle, *temp_handle = NULL;
-    double              t1, t2;
+	double              t1, t2;
     double              demo_len;
     int                 l_stdin =0;
     longlong            soffset = 0;
-	uuid_t              out;
-	char                session_id[33];
-	int                 i;
-
-	uuid_generate(out);
-	for(i = 0; i < 16; i++)
-		sprintf(session_id + (i*2),"%02x", out[i]);
 
 start_over:
     if ( g_lors_demo )
@@ -523,16 +515,11 @@ start_over:
     buffer = buf_array[ith];
     file_read += fileJob.ret_size;
 
-	//create websocket to report server and register
-	if(report_host != NULL && session_id != NULL){
-		//fprintf(stderr, "Init .. \n");
-		if(socket_io_init(&handle, report_host, session_id) == SOCK_SUCCESS){
-			//fprintf(stderr, "Registering \n");
-			temp_handle = &handle;
-			socket_io_send_register(temp_handle, filename, (size_t)length, (size_t)nthreads);
-		}
+	// register if connected
+	if(handle->status == CONN_CONNECTED){
+		socket_io_send_register(handle, filename, (size_t)length, (size_t)nthreads);
 	}
-    fprintf(stderr, "entering while: %d\n", fileJob.status);
+    //fprintf(stderr, "entering while: %d\n", fileJob.status);
     while ( fileJob.status != LORS_EOF )
     /*while ( set->max_length < length )*/
     {
@@ -571,7 +558,7 @@ restore:
         timeout = _lorsCalcTimeout((longlong)ret);
         soffset = set->max_length;
         sret = lorsSetStore(set, dpp, buffer, soffset, ((longlong)ret), 
-							lc, nthreads, timeout, temp_handle, opts|LORS_RETRY_UNTIL_TIMEOUT);
+							lc, nthreads, timeout, handle, opts|LORS_RETRY_UNTIL_TIMEOUT);
         if ( sret != LORS_SUCCESS )
         {
 #if 1
@@ -715,10 +702,6 @@ upload_partial:
     //fprintf(stderr, "p7\n");
     lorsExnodeFree(xnd);
 
-	if(temp_handle != NULL){
-		socket_io_send_clear(temp_handle);
-		socket_io_close(temp_handle);
-	}
 
     if ( sret == LORS_PARTIAL || cret == LORS_PARTIAL )
     {
@@ -802,7 +785,7 @@ int lorsDownloadFile(char       *exnode_uri,
                      char       *resolution_file,
                      int        nthreads,
                      int        timeout,
-					 char      *report_host,
+					 socket_io_handler      *handle,
                      int        opts)
 {
     /* we will want to be able to specify, perthread blocksize, determined
@@ -829,16 +812,9 @@ int lorsDownloadFile(char       *exnode_uri,
     char        *buf_array[2];
     pthread_t   tid;
     _LorsFileJobQueue  *file_job_queue = NULL ;
-	socket_io_handler handle, *temp_handle = NULL;
     double      t1, t2;
     double      demo_len;
-	uuid_t      out;
-	char       session_id[33];
-	int        i;
-
-	uuid_generate(out);
-	for(i = 0; i < 16; i++)
-	sprintf(session_id + (i*2),"%02x", out[i]);
+	
 	
 
 #if 0
@@ -1009,13 +985,9 @@ failed_open:
     */
     
 	/*Start report status here*/
-	if(report_host != NULL && session_id != NULL){
-		//fprintf(stderr, "Init .. \n");
-		if(socket_io_init(&handle, report_host, session_id) == SOCK_SUCCESS){
-			//fprintf(stderr, "Registering \n");
-			temp_handle = &handle;
-			socket_io_send_register(temp_handle, filename, (size_t)length, (size_t)nthreads);
-		}
+	if(handle->status == CONN_CONNECTED){
+		//fprintf(stderr, "Registering \n");
+			socket_io_send_register(handle, filename, (size_t)length, (size_t)nthreads);
 	}
     written = 0;
     while ( written < length )
@@ -1046,15 +1018,11 @@ failed_open:
         dret = lorsSetRealTimeLoad(set, NULL,fd, offset+written, 
 								   len,data_blocksize,pre_buffer,cache,
 								   glob_lc, nthreads, 
-								   timeout,dp_threads,job_threads,progress,temp_handle, opts);
+								   timeout,dp_threads,job_threads,progress, handle, opts);
         /* TODO check for timeout? */
         if ( dret <= 0 )
         {
             fprintf(stderr, "lorsSetLoad failure. %d\n", dret);
-			if(temp_handle != NULL){
-				socket_io_send_clear(temp_handle);
-				socket_io_close(temp_handle);
-			}
 			/*fprintf(stderr, "How many times to try again??\n");*/
             fprintf(stderr, "End Failure\n");
             return LORS_FAILURE;
@@ -1081,10 +1049,6 @@ failed_open:
         fflush(stderr);
     }
 
-	if(temp_handle != NULL){
-		socket_io_send_clear(temp_handle);
-		socket_io_close(temp_handle);
-	}
     lorsSetFree(set,0);
     lorsFreeDepotPool(dpp);
     lorsExnodeFree(exnode);

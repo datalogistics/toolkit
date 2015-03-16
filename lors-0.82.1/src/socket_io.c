@@ -20,7 +20,7 @@
 void static socket_io_emit_thread(socket_io_handler *handle);
 char *socket_io_get_event_name_from_type(Event_type type);
 
-int socket_io_init(socket_io_handler *handle, const char *host, const char *session_id ){
+int socket_io_init(socket_io_handler *handle){
 	
 	socket_io_handler h;
 	struct parsed_url *URL;
@@ -28,18 +28,15 @@ int socket_io_init(socket_io_handler *handle, const char *host, const char *sess
 	handle->job_list = NULL;
 	handle->status = CONN_WAITING;
 
-	if(host == NULL){
+	if(handle->server_add == NULL){
 		fprintf(stderr, "Server address is NULL \n");
 		return SOCK_FAIL;
 	}
-	if(session_id == NULL){
+	if(handle->session_id == NULL){
 		fprintf(stderr, "Session id is NULL \n");
 		return SOCK_FAIL;
 	}
 
-	handle->server_add = strdup(host);
-	handle->session_id = strdup(session_id);
-	
 	URL = parse_url(handle->server_add);
 	if(URL == NULL){
 		fprintf(stderr,"Failed to parse URL \n");
@@ -237,14 +234,11 @@ int socket_io_close(socket_io_handler *handle){
 	
 	if(handle->job_list != NULL)
 		free_dllist(handle->job_list);
-	
-	if(handle->server_add)
-		free(handle->server_add);
-	
-	if(handle->session_id)
-		free(handle->session_id);
 
 	websocket_close(handle->context);
+	
+	handle->status = CONN_WAITING;
+
 }
 
 

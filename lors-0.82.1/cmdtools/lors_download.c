@@ -5,6 +5,7 @@
 #include <string.h>
 #include <signal.h>
 #include <xndrc.h>
+#include <uuid/uuid.h>
 
 void sigpipe_handle(int d)
 {
@@ -17,10 +18,11 @@ void sigpipe_handle(int d)
 
 int main (int argc, char **argv)
 {
-    int i, ret;
+    int  ret;
     LorsExnode *exnode;
     struct ibp_depot   lbone_server = {"dsj.sinrg.cs.utk.edu", 6767};
-    IBP_depot       lbs;
+	socket_io_handler handle;
+    IBP_depot   lbs;
     char        *s;
     char        *lbonehost = NULL;
     char        *output_filename = "-";
@@ -52,6 +54,10 @@ int main (int argc, char **argv)
     XndRc       xndrc;
     int         opts = 0;
 	char       *report_host = NULL;
+	uuid_t      out;
+	char       session_id[33];
+	int        i;
+	int        inner_loop_flag = 0;
 
     poptContext optCon;   /* context for parsing command-line options */
     struct poptOption optionsTable[] = {
@@ -213,6 +219,19 @@ int main (int argc, char **argv)
         
         x = length;
         y = offset;
+		
+		// generate session id
+		if(report_host != NULL){
+			uuid_generate(out);
+			for(i = 0; i < 16; i++)
+				sprintf(session_id + (i*2),"%02x", out[i]);
+			handle.server_add = report_host;
+			handle.session_id = session_id;
+			//fprintf(stderr, "Init .. \n");	
+			if(socket_io_init(&handle) != SOCK_SUCCESS){
+				fprintf(stderr, "socket io Init failed \n");
+			}
+		}
 
         if ( lbonehost == NULL )
         {
@@ -237,7 +256,7 @@ int main (int argc, char **argv)
                                lbs->port,
                                xndrc.location,xndrc.resolution_file,
                                xndrc.threads, xndrc.timeout, 
-							   report_host, opts); 
+							   &handle, opts); 
          
             if ( ret != LORS_SUCCESS )
             {
@@ -251,11 +270,29 @@ int main (int argc, char **argv)
                 } else 
                 {
                     fprintf(stderr, "LORS_ERROR: %d\n", ret);
-                    exit(EXIT_FAILURE);
+					inner_loop_flag = 1;
+                    break;
                 }
             }
         } while ( ret != LORS_SUCCESS );
+		
+		if(report_host != NULL){
+			if(handle.status == CONN_CONNECTED){
+				socket_io_send_clear(&handle);
+			}
+	
+			if(handle.status != CONN_WAITING){
+				socket_io_close(&handle);
+			}
+		}
+		
+		if(inner_loop_flag){
+			exit(EXIT_FAILURE);
+		}
+
     }
+
+
     if ( file_cnt == 0 )
     {
         fprintf(stderr, "Error. You must also provide a filename on "
