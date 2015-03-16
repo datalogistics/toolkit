@@ -129,16 +129,16 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/vagrant/toolkit/lors-0.82.1/lbone/missing --run aclocal-1.11
+ACLOCAL = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/lbone/missing --run aclocal-1.11
 AMTAR = $${TAR-tar}
-AUTOCONF = ${SHELL} /home/vagrant/toolkit/lors-0.82.1/lbone/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/vagrant/toolkit/lors-0.82.1/lbone/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/vagrant/toolkit/lors-0.82.1/lbone/missing --run automake-1.11
-AWK = mawk
+AUTOCONF = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/lbone/missing --run autoconf
+AUTOHEADER = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/lbone/missing --run autoheader
+AUTOMAKE = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/lbone/missing --run automake-1.11
+AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2
-CGIDIR = /home/vagrant/toolkit/lors-0.82.1/lbone/ecgi
+CGIDIR = /u/adorwat/toolkit/lors-0.82.1/lbone/ecgi
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -147,10 +147,10 @@ DEPDIR = .deps
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
-EGREP = /bin/grep -E
+EGREP = /usr/bin/grep -E
 EXEEXT = 
-GREP = /bin/grep
-IBPDIR = /home/vagrant/usr
+GREP = /usr/bin/grep
+IBPDIR = /u/adorwat/usr
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
@@ -159,18 +159,18 @@ INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDAPDIR = /usr
 LDFLAGS = 
 LIBOBJS = 
-LIBS = -lresolv -lpthread -lnsl -lm 
+LIBS = -lresolv -lpthread -lnsl -lm -lldap -llber 
 LN_S = ln -s
 LORS_BUILD_ECGI = no,
 LORS_BUILD_IBP = yes
 LORS_BUILD_NWS = no,
 LORS_ECGI_SRC_DIR = 
-LORS_IBP_SRC_DIR = /home/vagrant/toolkit/lors-0.82.1/lbone/ibp
+LORS_IBP_SRC_DIR = /u/adorwat/toolkit/lors-0.82.1/lbone/ibp
 LORS_NWS_SRC_DIR = 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/vagrant/toolkit/lors-0.82.1/lbone/missing --run makeinfo
-MKDIR_P = /bin/mkdir -p
-NWSDIR = /home/vagrant/toolkit/lors-0.82.1/lbone/nws
+MAKEINFO = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/lbone/missing --run makeinfo
+MKDIR_P = /usr/bin/mkdir -p
+NWSDIR = /u/adorwat/toolkit/lors-0.82.1/lbone/nws
 OBJEXT = o
 OSDEF = _LINUX
 OSTYPE = Linux
@@ -182,23 +182,23 @@ PACKAGE_TARNAME =
 PACKAGE_URL = 
 PACKAGE_VERSION = 
 PATH_SEPARATOR = :
-PREFIX = /home/vagrant/toolkit/lors-0.82.1/lbone
+PREFIX = /u/adorwat/toolkit/lors-0.82.1/lbone
 RANLIB = ranlib
 SET_MAKE = 
-SHELL = /bin/bash
+SHELL = /bin/sh
 STRIP = 
 VERSION = 0.5
-abs_builddir = /home/vagrant/toolkit/lors-0.82.1/lbone
-abs_srcdir = /home/vagrant/toolkit/lors-0.82.1/lbone
-abs_top_builddir = /home/vagrant/toolkit/lors-0.82.1/lbone
-abs_top_srcdir = /home/vagrant/toolkit/lors-0.82.1/lbone
+abs_builddir = /u/adorwat/toolkit/lors-0.82.1/lbone
+abs_srcdir = /u/adorwat/toolkit/lors-0.82.1/lbone
+abs_top_builddir = /u/adorwat/toolkit/lors-0.82.1/lbone
+abs_top_srcdir = /u/adorwat/toolkit/lors-0.82.1/lbone
 ac_ct_CC = gcc
 am__include = include
 am__leading_dot = .
 am__quote = 
 am__tar = $${TAR-tar} chof - "$$tardir"
 am__untar = $${TAR-tar} xf -
-bindir = /home/vagrant/usr/bin
+bindir = /u/adorwat/usr/bin
 build = x86_64-unknown-linux-gnu
 build_alias = 
 build_cpu = x86_64
@@ -218,16 +218,16 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/vagrant/toolkit/lors-0.82.1/lbone/install-sh
-libdir = /home/vagrant/usr/lib
+install_sh = ${SHELL} /u/adorwat/toolkit/lors-0.82.1/lbone/install-sh
+libdir = /u/adorwat/usr/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
 localstatedir = ${prefix}/var
 mandir = ${datarootdir}/man
-mkdir_p = /bin/mkdir -p
+mkdir_p = /usr/bin/mkdir -p
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /home/vagrant/usr
+prefix = /u/adorwat/usr
 program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
@@ -749,14 +749,14 @@ ibp-install:
 
 install-exec-local:
 	cd ibp && make install
-#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/lib/libibp.a /home/vagrant/usr/lib
-#	#ranlib /home/vagrant/usr/lib/libibp.a
-#	#/usr/bin/install -c -m 0751 $(srcdir)/ibp/local/bin/ibp-smoketest /home/vagrant/usr/bin
-#	#/usr/bin/install -c -m 0751 $(srcdir)/ibp/local/bin/ibp-dmtest2 /home/vagrant/usr/bin
-#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_ClientLib.h /home/vagrant/usr/include
-#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_protocol.h /home/vagrant/usr/include
-#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_errno.h /home/vagrant/usr/include
-#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_os.h /home/vagrant/usr/include
+#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/lib/libibp.a /u/adorwat/usr/lib
+#	#ranlib /u/adorwat/usr/lib/libibp.a
+#	#/usr/bin/install -c -m 0751 $(srcdir)/ibp/local/bin/ibp-smoketest /u/adorwat/usr/bin
+#	#/usr/bin/install -c -m 0751 $(srcdir)/ibp/local/bin/ibp-dmtest2 /u/adorwat/usr/bin
+#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_ClientLib.h /u/adorwat/usr/include
+#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_protocol.h /u/adorwat/usr/include
+#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_errno.h /u/adorwat/usr/include
+#	#/usr/bin/install -c -m 0644 $(srcdir)/ibp/local/include/ibp_os.h /u/adorwat/usr/include
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

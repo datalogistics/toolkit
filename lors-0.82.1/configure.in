@@ -176,17 +176,31 @@ dnl check for libjansson package
 AC_ARG_WITH(libjansson, [--with-libjansson=path   path to libjansson], ,
             with_libjansson=no)
 if test "$with_libjansson" == "no"; then
-   AC_CHECK_LIB([jansson], [json_object], ,AC_MSG_ERROR([Can not buiild without libjansson]))
-   AC_SUBST(LIBJANSSON_DIR, "/usr/local")
-   AC_SUBST(LIBJANSSON_INC, "-I/usr/local/include")
-   AC_SUBST(LIBJANSSON_LIB, "-L/usr/local/lib -ljansson")		
+   AC_MSG_CHECKING( for libjansson)
+   if test -f "/usr/local/include/jansson.h"; then
+   	  AC_MSG_RESULT(yes)
+      AC_SUBST(LIBJANSSON_DIR, "/usr/local")
+   	  AC_SUBST(LIBJANSSON_INC, "-I/usr/local/include")
+	  AC_SUBST(LIBJANSSON_LIB, "-L/usr/local/lib -ljansson")		
+
+   elif  test -f "/usr/include/jansson.h"; then
+   	  AC_MSG_RESULT(yes)
+      AC_SUBST(LIBJANSSON_DIR, "/usr")
+   	  AC_SUBST(LIBJANSSON_INC, "-I/usr/include")
+	  AC_SUBST(LIBJANSSON_LIB, "-L/usr/lib -ljansson")		
+
+   else
+	   AC_MSG_RESULT(no)
+	   AC_MSG_ERROR([Can not found libjansson V2.7 in default path : /usr/ , /usr/local. Please use with-libjansson flag])
+   fi
+
 else
    AC_MSG_CHECKING( for libjansson)
    if test -f "$with_libjansson/include/jansson.h"; then
    	   AC_MSG_RESULT(yes)
 	   AC_SUBST(LIBJANSSON_DIR, "$with_libjansson")	
 	   AC_SUBST(LIBJANSSON_INC, "-I$with_libjansson/include")
-	   AC_SUBST(LIBJANSSON_LIB, "-L$with_libjansson/lib -lwebsockets")
+	   AC_SUBST(LIBJANSSON_LIB, "-L$with_libjansson/lib -ljansson")
    else
 	   AC_MSG_RESULT(no)
 	   AC_MSG_ERROR([Can not buiild without libjansson])

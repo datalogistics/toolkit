@@ -19,9 +19,6 @@
 /* Define to 1 if you have the `curl' library (-lcurl). */
 #define HAVE_LIBCURL 1
 
-/* Define to 1 if you have the `jansson' library (-ljansson). */
-#define HAVE_LIBJANSSON 1
-
 /* Define to 1 if you have the `m' library (-lm). */
 #define HAVE_LIBM 1
 
@@ -44,7 +41,7 @@
 #define HAVE_LIBWEBSOCKETS 1
 
 /* Define to 1 if you have the `xml2' library (-lxml2). */
-#define HAVE_LIBXML2 1
+/* #undef HAVE_LIBXML2 */
 
 /* Define to 1 if you have the `z' library (-lz). */
 #define HAVE_LIBZ 1

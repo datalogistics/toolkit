@@ -1,6 +1,6 @@
 #!/bin/sh
 
-INSTALLDIR=/home/vagrant/usr
+INSTALLDIR=/u/adorwat/usr
 
 echo "Are you located in the US? (Y/n): "
 read US
