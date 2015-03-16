@@ -53,6 +53,7 @@ BUILD_LBONE=@LORS_BUILD_LBONE@
 if test "${BUILD_LBONE}" = yes; then
     echo "Building lbone package..."
     cd @LORS_LBONE_SRC_DIR@
+	autoreconf -if
     ./configure --prefix=@prefix@ 
     make install
 	if test $? -ne 0; then
@@ -68,6 +69,7 @@ BUILD_LIBXND=@LORS_BUILD_LIBXND@
 if test "${BUILD_LIBXND}" = yes; then
     echo "Building libexnode package..."
     cd @LORS_LIBXND_SRC_DIR@
+	autoreconf -if
     ./configure --prefix=@prefix@ --with-libxml2=@LORS_XML2_DIR@ --with-libfdr=@LORS_LBONE_DIR@ --with-libjansson=@LIBJANSSON_DIR@ 
     make install
 	if test $? -ne 0; then
