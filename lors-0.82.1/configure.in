@@ -231,7 +231,7 @@ if test "$with_libwebsockets" == "no"; then
    AC_CHECK_LIB([websockets], [libwebsocket_create_context], ,AC_MSG_ERROR([Can not buiild without libwebsockets]))
 else
    AC_MSG_CHECKING( for libwebsockets)
-   if test -f "$with_libwebsockets/include/libwebscokets.h"; then
+   if test -f "$with_libwebsockets/include/libwebsockets.h"; then
    	   AC_MSG_RESULT(yes)
 	   AC_SUBST(LIBWEBSOCKETS_INC, "-I$with_libwebsockets/include")
 	   AC_SUBST(LIBWEBSOCKETS_LIB, "-L$with_libwebsockets/lib -lwebsockets")

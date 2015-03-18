@@ -1,4 +1,4 @@
-bin_PROGRAMS = lors_upload lors_download lors_ls lors_augment lors_refresh lors_test lors_trim lors_launch lbone_resolution lbone_test lors_route lors_e2etest lors_modify socket_io_test
+bin_PROGRAMS = lors_upload lors_download lors_ls lors_augment lors_refresh lors_test lors_trim lors_launch lbone_resolution lbone_test lors_route lors_e2etest lors_modify 
 
 bindir = @prefix@/bin
 libdir = @prefix@/lib
@@ -76,5 +76,5 @@ lors_modify_LDADD = -lpopt $(LDADD)
 lors_launch_SOURCES = lors_launch.c
 lors_launch_LDADD = $(LBNLIB)
 
-socket_io_test_SOURCES = socket_io_test.c
-socket_io_test_LDADD = $(LDADD)
+#socket_io_test_SOURCES = socket_io_test.c
+#socket_io_test_LDADD = $(LDADD)

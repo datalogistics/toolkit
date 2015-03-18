@@ -30,3 +30,20 @@
 *.i*86
 *.x86_64
 *.hex
+
+# project specific
+stamp-h1
+config.h
+config.log
+config.status
+configure
+Makefile
+.libs
+lors_setup.sh
+.deps
+depcomp
+autom4te.cache
+aclocal.m4
+pre-install.sh
+libtool
+doxygen.cfg
