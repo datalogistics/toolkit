@@ -275,7 +275,8 @@ AC_SUBST(LORS_LIBXND_DIR)
 
 dnl check for libaes
 AC_FIND_FILE("${INS_DIR}/lib/libaes.a",
-            LORS_BUILD_LIBAES="no",
+            LORS_BUILD_LIBAES="no"
+			LORS_LIBAES_DIR="${INS_DIR}",
             AC_FIND_FILE("${PREFIX}/libe2e/aes/aes.h",
                         LORS_BUILD_LIBAES="yes"
                         LORS_LIBAES_DIR="${INS_DIR}"
@@ -284,7 +285,6 @@ AC_FIND_FILE("${INS_DIR}/lib/libaes.a",
 AC_SUBST(LORS_BUILD_LIBAES)
 AC_SUBST(LORS_LIBAES_SRC_DIR)
 AC_SUBST(LORS_LIBAES_DIR)
-
 
 dnl AC_ARG_WITH(demo, [--with-demo],
 dnl            AC_DEFINE(LORS_DEMO) )

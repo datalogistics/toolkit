@@ -28,14 +28,17 @@ ZLIB_INC=@LORS_ZLIB_DIR@/include
 ZLIB_LIB=-L@LORS_ZLIB_DIR@/lib -lz
 
 E2EINC = @E2EDIR@
-E2ELIB = @E2EDIR@/libend2end.a $(E2EDIR)/md5/libmd5.a $(E2EDIR)/des/libdes.a $(E2EDIR)/aes/libaes.a
+E2ELIB = @E2EDIR@/libend2end.a $(E2EDIR)/md5/libmd5.a $(E2EDIR)/des/libdes.a 
+
+AESINC = @LORS_LIBAES_DIR@/include
+AESLIB = @LORS_LIBAES_DIR@/lib/libaes.a
 
 LORSLIB = ../src/liblors.a
 
-AM_CPPFLAGS = -I../include -I$(XML2_INC) -I$(XNDINC) -I$(LBNINC) -I$(IBPINC) -I$(E2EINC) -I$(POPT_INC) -I$(ZLIB_INC)  @LIBJANSSON_INC@ @LIBCURL_INC@  @LIBWEBSOCKETS_INC@
+AM_CPPFLAGS = -I../include -I$(XML2_INC) -I$(XNDINC) -I$(LBNINC) -I$(IBPINC) -I$(E2EINC) -I$(POPT_INC) -I$(ZLIB_INC) -I$(AES_INC) @LIBJANSSON_INC@ @LIBCURL_INC@  @LIBWEBSOCKETS_INC@
 
 AM_CFLAGS=  -g -D@OSDEF@ @EXTRA_CFLAGS@
-LDADD = $(LORSLIB) $(XNDLIB) $(LBNLIB) $(FDRLIB) $(IBPLIB) -L$(XML2_LIB) $(POPT_LIB) -lpthread -lxml2 $(E2ELIB) $(ZLIB_LIB) @LIBJANSSON_LIB@ @LIBCURL_LIB@  @LIBWEBSOCKETS_LIB@ @LIBS@  
+LDADD = $(LORSLIB) $(XNDLIB) $(LBNLIB) $(FDRLIB) $(IBPLIB) -L$(XML2_LIB) $(POPT_LIB) -lpthread -lxml2 $(E2ELIB) $(ZLIB_LIB) $(AESLIB) @LIBJANSSON_LIB@ @LIBCURL_LIB@  @LIBWEBSOCKETS_LIB@ @LIBS@  
 
 lors_upload_SOURCES = lors_upload.c lors_file.c lors_libe2e.c parse_xndrc.c
 lors_upload_LDADD = -lpopt $(LDADD)
