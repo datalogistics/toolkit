@@ -556,7 +556,7 @@ int lorsPostUnis(LorsExnode *exnode,
 	}
 	
 	//fprintf(stdout, "JSON Respons : %s \n", response);
-	json_ret = json_loads(response, JSON_DISABLE_EOF_CHECK, &json_err);
+	json_ret = json_loads(response, 0, &json_err);
 	if(json_ret == NULL){
 		fprintf(stderr, "Could not decode JSON: %d: %s\n", json_err.line, json_err.text);
 		ret = LORS_FAILURE;

@@ -885,7 +885,7 @@ static size_t write_callback(void *contents, size_t size, size_t nmemb, void *us
 
     memcpy(&(mem->memory[mem->size]), contents, realsize);
     mem->size += realsize;
-    mem->memory[mem->size] = 0;
+    mem->memory[mem->size] = '\0';
 
     return realsize;
 }
