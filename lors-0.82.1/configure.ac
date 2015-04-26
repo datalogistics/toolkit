@@ -8,6 +8,7 @@ dnl automake and header files
 AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE( [lors], [0.826] )
 AC_PREFIX_DEFAULT("`pwd`/local")
+AC_CONFIG_MACRO_DIR([config])
 
 case "$build_os" in 
 linux*)
@@ -82,11 +83,8 @@ dnl Checks for libraries.
 dnl AC_CHECK_LIB(des, des_options)
 dnl AC_CHECK_LIB(md5, MD5Init)
 AC_CHECK_LIB(pthread, pthread_create)
-AC_CHECK_LIB(xml2, xmlBufferCreate)
 AC_CHECK_LIB(socket,socket)
 AC_CHECK_LIB(nsl,gethostbyname)
-AC_CHECK_LIB(z,compress)
-AC_CHECK_LIB(popt,poptGetContext)
 AC_CHECK_LIB(m,log)
 AC_CHECK_LIB(uuid,uuid_generate, ,AC_MSG_ERROR("Can not find libuuid"))
 
@@ -125,6 +123,7 @@ else
     INS_DIR="$prefix"
 fi
 
+
 dnl check and setup path of popt package
 AC_ARG_WITH(popt,[--with-popt=path   path to popt package(default is /usr)],
             LORS_POPT_DIR="$with_popt",
@@ -141,21 +140,6 @@ AC_SUBST(LORS_BUILD_POPT)
 AC_SUBST(LORS_POPT_DIR)
 AC_SUBST(LORS_POPT_SRC_DIR)
 
-dnl check and setup path of zlib package
-AC_ARG_WITH(zlib,[--with-zlib=path      path to zlib [default=/usr]],
-            LORS_ZLIB_DIR="$with_zlib",
-            LORS_ZLIB_DIR="/usr")
-AC_FIND_FILE("${LORS_ZLIB_DIR}/include/zlib.h",
-            LORS_BUILD_ZLIB="no",
-            AC_FIND_FILE("${PREFIX}/zlib/zutil.c",
-                        LORS_BUILD_ZLIB="yes"
-                        LORS_ZLIB_SRC_DIR="${PREFIX}/zlib"
-                        LORS_ZLIB_DIR="${INS_DIR}",
-                        AC_MSG_ERROR("Can not find zlib package")))
-AC_SUBST(LORS_BUILD_ZLIB)
-AC_SUBST(LORS_ZLIB_DIR)
-AC_SUBST(LORS_ZLIB_SRC_DIR)
-
 dnl check and setup path of libxml2 package 
 AC_ARG_WITH(libxml2,[--with-libxml2=path         path to libxml2[default=/usr]],
             LORS_XML2_DIR="$with_libxml2",
@@ -171,34 +155,15 @@ AC_SUBST(LORS_BUILD_XML2)
 AC_SUBST(LORS_XML2_DIR)
 AC_SUBST(LORS_XML2_SRC_DIR)
 
-
 dnl check for libjansson package
 AC_ARG_WITH(libjansson, [--with-libjansson=path   path to libjansson], ,
             with_libjansson=no)
 if test "$with_libjansson" == "no"; then
-   AC_MSG_CHECKING( for libjansson)
-   if test -f "/usr/local/include/jansson.h"; then
-   	  AC_MSG_RESULT(yes)
-      AC_SUBST(LIBJANSSON_DIR, "/usr/local")
-   	  AC_SUBST(LIBJANSSON_INC, "-I/usr/local/include")
-	  AC_SUBST(LIBJANSSON_LIB, "-L/usr/local/lib -ljansson")		
-
-   elif  test -f "/usr/include/jansson.h"; then
-   	  AC_MSG_RESULT(yes)
-      AC_SUBST(LIBJANSSON_DIR, "/usr")
-   	  AC_SUBST(LIBJANSSON_INC, "-I/usr/include")
-	  AC_SUBST(LIBJANSSON_LIB, "-L/usr/lib -ljansson")		
-
-   else
-	   AC_MSG_RESULT(no)
-	   AC_MSG_ERROR([Can not found libjansson V2.7 in default path : /usr/ , /usr/local. Please use with-libjansson flag])
-   fi
-
+   AC_CHECK_LIB([jansson], [json_object], ,AC_MSG_ERROR([Can not buiild without libjansson]))		
 else
    AC_MSG_CHECKING( for libjansson)
    if test -f "$with_libjansson/include/jansson.h"; then
    	   AC_MSG_RESULT(yes)
-	   AC_SUBST(LIBJANSSON_DIR, "$with_libjansson")	
 	   AC_SUBST(LIBJANSSON_INC, "-I$with_libjansson/include")
 	   AC_SUBST(LIBJANSSON_LIB, "-L$with_libjansson/lib -ljansson")
    else
@@ -207,20 +172,23 @@ else
    fi
 fi
 
-dnl check for libcurl package
-AC_ARG_WITH(libcurl, [--with-libcurl=path   path to libcurl], ,
-            with_libcurl=no)
-if test "$with_libcurl" == "no"; then
-   AC_CHECK_LIB([curl], [curl_easy_init], ,AC_MSG_ERROR([Can not buiild without libcurl]))
+dnl check for libunis-c package
+AC_ARG_WITH(libunis, [--with-libunis=path   path to libunis-c], ,
+            with_libunis=no)
+if test "$with_libunis" == "no"; then
+   PKG_CHECK_MODULES([LIBUNIS], [libunis-c], [], [AC_MSG_ERROR([Can not buiild without libunis-c])])
+   AC_SUBST(LIBUNIS_INC, "$LIBUNIS_CFLAGS")
+   AC_SUBST(LIBUNIS_LIB, "$LIBUNIS_LIBS")
 else
-   AC_MSG_CHECKING( for libcurl)
-   if test -f "$with_libcurl/include/curl/curl.h"; then
+   AC_MSG_CHECKING(for libunis)
+   
+   if test -f "$with_libunis/include/unis_exnode.h"; then
    	   AC_MSG_RESULT(yes)
-	   AC_SUBST(LIBCURL_INC, "-I$with_libcurl/include")
-	   AC_SUBST(LIBCURL_LIB, "-L$with_libcurl/lib -lcurl")
+	   AC_SUBST(LIBUNIS_INC, "-I$with_libunis/include")
+	   AC_SUBST(LIBUNIS_LIB, "-L$with_libunis/lib -lunis-c")
    else
 	   AC_MSG_RESULT(no)
-	   AC_MSG_ERROR([Can not buiild without libcurl])
+	   AC_MSG_ERROR([Can not buiild without libunis])
    fi
 fi
 
@@ -240,7 +208,6 @@ else
 	   AC_MSG_ERROR([Can not buiild without libwebsockets])
    fi
 fi
-
 
 dnl check and setup path of lbone package
 AC_ARG_WITH(lbone,[--with-lbone=path    path to lbone package],
@@ -276,7 +243,7 @@ AC_SUBST(LORS_LIBXND_DIR)
 dnl check for libaes
 AC_FIND_FILE("${INS_DIR}/lib/libaes.a",
             LORS_BUILD_LIBAES="no"
-			LORS_LIBAES_DIR="${INS_DIR}",
+						LORS_LIBAES_DIR="${INS_DIR}",
             AC_FIND_FILE("${PREFIX}/libe2e/aes/aes.h",
                         LORS_BUILD_LIBAES="yes"
                         LORS_LIBAES_DIR="${INS_DIR}"

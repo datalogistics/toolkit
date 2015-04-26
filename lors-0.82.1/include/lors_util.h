@@ -10,7 +10,6 @@
 #include <ibp.h>
 #include <lors_resolution.h>
 #include "lors_job.h"
-#include <curl/curl.h>
 #include <string.h>
 
 
@@ -92,8 +91,6 @@ int _lorsCreateDepotList( IBP_depot *dp_list, int max_depots, JRB jrb_tree,get_I
 int strtotimeout(char *str, time_t *ret_timeout);
 int _lorsCalcTimeout(longlong length);
 IBP_depot lors_strtodepot(char *hostname);
-int curl_get_json_string(char *url, char **buf, longlong *size);
-int curl_post_json_string(char *url, char *buf, longlong size, char **response, longlong *len);
 void get_uuid(char *buff);
 
 #ifdef __GNU__ 

@@ -155,9 +155,9 @@ int uefSerialize(Exnode *exnode, char **buf, int *len, size_t file_size, time_t 
 		*len = 0;
 		return EXNODE_NOMEM;
 	}
-	*len = strlen(temp);
+	*len = strlen(temp) + sizeof(char);   // extra one byte for '\0'
 	*buf = (char *)malloc( (*len)  * sizeof(char));
-	memcpy(*buf, temp, *len);
+	strncpy(*buf, temp, *len);
 	free(temp);
 
 	return(EXNODE_SUCCESS);

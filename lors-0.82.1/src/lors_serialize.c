@@ -13,9 +13,10 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
-
+#include <unis_exnode.h>
 
 ulong_t g_lm_id = 0;
+unis_config config;
 
 static void lorsDeserializeMapping(ExnodeMapping *emap, LorsMapping **lmap)
 {
@@ -169,7 +170,10 @@ int    lorsUrleDeserialize (LorsExnode ** exnode,
     char          *filetype;
     longlong       size;
     
-    ret = curl_get_json_string( url, &buf, &size);
+    //ret = curl_get_json_string( url, &buf, &size);
+	memset(&config, 0, sizeof(unis_config));
+	config.endpoint = url;
+	unis_GET_exnode(&config, &buf);
     
     if (ret != LORS_SUCCESS) {
       fprintf(stderr, "Error while extracting JSON from URL : %s  \n", url);
@@ -550,12 +554,14 @@ int lorsPostUnis(LorsExnode *exnode,
         return LORS_FAILURE;
     }
 	
-	ret = curl_post_json_string(url, buf, len, &response, &response_len);
-	if(ret != LORS_SUCCESS){
+	memset (&config, 0, sizeof(unis_config));
+	config.endpoint = url;
+	unis_POST_exnode(&config, buf, &response);
+	if(response == NULL){
 		goto bail;
 	}
 	
-	//fprintf(stdout, "JSON Respons : %s \n", response);
+
 	json_ret = json_loads(response, 0, &json_err);
 	if(json_ret == NULL){
 		fprintf(stderr, "Could not decode JSON: %d: %s\n", json_err.line, json_err.text);
