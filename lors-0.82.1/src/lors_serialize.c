@@ -14,6 +14,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <unis_exnode.h>
+#include <time.h>
 
 ulong_t g_lm_id = 0;
 unis_config config;
@@ -261,7 +262,10 @@ static void lorsSerializeMapping(LorsMapping *lm, ExnodeMapping **emap)
     ExnodeMetadata  *emd;
     ExnodeMapping   *map;
     ExnodeValue     val;
-
+	char           buf[100];
+	struct tm     *tm_info;
+	time_t        end;
+	
     exnodeCreateMapping(&map);
     exnodeGetMappingMetadata(map, &emd);
     val.i = lm->exnode_offset;
@@ -272,11 +276,20 @@ static void lorsSerializeMapping(LorsMapping *lm, ExnodeMapping **emap)
     exnodeSetMetadataValue(emd, "alloc_length", val, INTEGER, TRUE);
     val.i = lm->alloc_offset;
     exnodeSetMetadataValue(emd, "alloc_offset", val, INTEGER, TRUE);
-
     val.i = lm->e2e_bs;
-
-    /*fprintf(stderr, "e2e_bs: %d\n", lm->e2e_bs);*/
     exnodeSetMetadataValue(emd, "e2e_blocksize", val, INTEGER, TRUE);
+	
+	/*Adding start and end to support uef*/
+	tm_info = localtime(&(lm->begin_time));
+	strftime(buf, 100, "%Y-%m-%d %H:%M:%S", tm_info);
+	val.s = buf;
+	exnodeSetMetadataValue(emd, "start", val, STRING, TRUE);
+	
+	end = lm->begin_time + lm->dp->duration;
+	tm_info = localtime(&end);
+	strftime(buf, 100, "%Y-%m-%d %H:%M:%S", tm_info);
+	val.s = buf;
+	exnodeSetMetadataValue(emd, "end", val, STRING, TRUE);
 
     exnodeSetCapabilities(map, lm->capset.readCap, 
                                lm->capset.writeCap, 
@@ -399,13 +412,11 @@ int    lorsFileSerialize (LorsExnode * exnode,
 
 
 int lorsUefSerialize(LorsExnode * exnode,
-					 char       *filename,
-					 time_t     duration,
-					 longlong   size
+					 char       *filename
 )
 {
 	char           *buf;
-    int             len;
+    size_t          len;
     int             ret;
     JRB             tree, node;
     LorsMapping    *lm;
@@ -447,8 +458,9 @@ int lorsUefSerialize(LorsExnode * exnode,
     {
         lorsMetadataMerge(exnode->md, ed);
     }
-
-	ret = uefSerialize(exnode->exnode, &buf,  &len, size, duration);
+	
+	fprintf(stderr, "calling uef serialize \n");
+	ret = uefSerialize(exnode->exnode, &buf,  &len);
     if ( ret != EXNODE_SUCCESS )
     {
         return LORS_FAILURE;
@@ -493,9 +505,7 @@ int lorsUefSerialize(LorsExnode * exnode,
 }
 
 int lorsPostUnis(LorsExnode *exnode,
-				 char       *url,
-				 time_t     duration,
-				 longlong   size
+				 char       *url
 )
 {
 	char           *buf;
@@ -548,7 +558,7 @@ int lorsPostUnis(LorsExnode *exnode,
         lorsMetadataMerge(exnode->md, ed);
     }
 
-	ret = uefSerialize(exnode->exnode, &buf,  &len, size, duration);
+	ret = uefSerialize(exnode->exnode, &buf,  &len );
     if ( ret != EXNODE_SUCCESS )
     {
         return LORS_FAILURE;

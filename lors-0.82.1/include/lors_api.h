@@ -653,7 +653,7 @@ int    lorsUrleDeserialize (LorsExnode ** exnode,
                             char *schema);
 
 /**
- * After a @c lorsFileSerialize() call, you will ahve an XML  file
+ * After a @c lorsFileSerialize() call, you will have an XML  file
  * representative of the Exnode data structure.  To recover the data structure
  * from the XML serialization, you must deserialize it.
  *
@@ -672,15 +672,10 @@ int lorsFileDeserialize (LorsExnode ** exnode,
 						 char *schema);
 	
 int lorsPostUnis(LorsExnode *exnode,
-				 char       *url,
-				 time_t     duration,
-				 longlong   size );
-	
+				 char       *url);
 	
 int lorsUefSerialize(LorsExnode * exnode,
-					 char       *filename,
-					 time_t     duration,
-					 longlong   size );
+					 char       *filename );
 	
 /**
  * To preserve the structure of the Exnode across invocations of an

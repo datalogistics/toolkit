@@ -378,7 +378,7 @@ extern "C" {
 	/**
 	 * Serialize exnode to uef
 	 */
-	extern int uefSerialize(Exnode *exnode, char **buf, int *len, size_t file_size, time_t duration);
+	extern int uefSerialize(Exnode *exnode, char **buf, size_t *len);
 
 	/**
 	 * Operations on enumerations

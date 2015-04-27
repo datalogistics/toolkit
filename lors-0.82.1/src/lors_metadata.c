@@ -11,8 +11,6 @@
 #include <string.h>
 
 
-
-
 /*typedef void *ExnodeMetadata;*/
 /*typedef void *ExnodeMetadataEnum;*/
 

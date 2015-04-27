@@ -684,12 +684,30 @@ upload_partial:
     free(buf_array[1]);
 
     exnodeSetMetadataValue(emd, "filename", val, STRING, TRUE);
+	// add mode
+	val.s = "file";	
+	exnodeSetMetadataValue(emd, "mode", val, STRING, TRUE);
+	// add duration
+	val.d = (double)duration;
+	exnodeSetMetadataValue(emd, "duration", val, DOUBLE, TRUE);
+	// add size of file 
+	val.i = length;	
+	exnodeSetMetadataValue(emd, "size", val, INTEGER, TRUE);
+	// add parent id
+	//val.s = parent_id;
+	//exnodeSetMetadataValue(emd, "parent", val, STRING, TRUE);
+	// add created 
+	val.i = (long long)time(NULL);
+	exnodeSetMetadataValue(emd, "created", val, INTEGER, TRUE);
+	// add modified
+	val.i = (long long)time(NULL);
+	exnodeSetMetadataValue(emd, "modified", val, INTEGER, TRUE);
 
 	//fprintf(stderr, "p6\n");
 	if(output_filename != NULL && strstr(output_filename,".uef")){
-		ret = lorsUefSerialize(xnd, output_filename, duration, length);
+		ret = lorsUefSerialize(xnd, output_filename);
 	}else if(output_filename != NULL && strstr(output_filename,"http://")){
-		ret = lorsPostUnis(xnd, output_filename, duration, length);
+		ret = lorsPostUnis(xnd, output_filename);
 	}else{
 		ret = lorsFileSerialize(xnd, output_filename, 0, 0);
 	}

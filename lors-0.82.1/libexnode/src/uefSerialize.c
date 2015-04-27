@@ -68,7 +68,7 @@ int uefSerializeMetadata(ExnodeMetadata *md, const char *key, json_t **root)
 }
 
 
-int uefSerializeMapping(ExnodeMapping *map, json_t **extent_arr, time_t duration)
+int uefSerializeMapping(ExnodeMapping *map, json_t **extent_arr)
 {
 	JRB             md,current;
 	json_t         *extent;
@@ -76,76 +76,75 @@ int uefSerializeMapping(ExnodeMapping *map, json_t **extent_arr, time_t duration
 	json_t         *lifetime_arr;
 	json_t         *lifetime;
 	ExnodeMetadata *ptr;
-	time_t         timer;
-    char           buf[100];
-    struct tm     *tm_info;
 
 	extent = json_object();
-
+	lifetime_arr = json_array();
+	lifetime = json_object();
+	
 	md=(JRB)jval_v(map->metadata->val);
 	if(md!=NULL) {
 		jrb_traverse(current,md) {
 			ptr = (ExnodeMetadata*)jval_v(current->val);
-			if(strcmp(ptr->name, "exnode_offset") == 0) {  uefSerializeMetadata( ptr, "offset", &extent); }
-			if(strcmp(ptr->name, "logical_length") == 0) {  uefSerializeMetadata( ptr, "size", &extent); }
+			if(strcmp(ptr->name, "exnode_offset") == 0) {  
+				uefSerializeMetadata( ptr, "offset", &extent); 
+			}else if(strcmp(ptr->name, "logical_length") == 0) {
+				uefSerializeMetadata( ptr, "size", &extent); 
+			}else if(strcmp(ptr->name, "start") == 0) {  
+				uefSerializeMetadata( ptr, "start", &lifetime); 
+			}else if(strcmp(ptr->name, "end") == 0) {  
+				uefSerializeMetadata( ptr, "end", &lifetime); 
+			}
 		}
 	}
-
+	
+	json_array_append(lifetime_arr, lifetime);
+	json_object_set(extent, "lifetimes", lifetime_arr);
+	
 	mapping = json_object();
 	json_object_set(mapping, "read", json_string(map->read));
 	json_object_set(mapping, "write", json_string(map->write));
 	json_object_set(mapping, "manage", json_string(map->manage));
 	json_object_set(extent, "mapping", mapping);
 	json_object_set(extent, "location", json_string("ibp://"));
-
-	lifetime_arr = json_array();
-	lifetime = json_object();
-	time(&timer);
-    tm_info = localtime(&timer);
-	strftime(buf, 100, "%Y-%m-%d %H:%M:%S", tm_info);
-	json_object_set(lifetime, "start", json_string(buf));
-	timer = timer + duration;
-	tm_info = localtime(&timer);
-	strftime(buf, 100, "%Y-%m-%d %H:%M:%S", tm_info);
-	json_object_set(lifetime, "end", json_string(buf));
-	json_array_append(lifetime_arr, lifetime);
-	json_object_set(extent, "lifetimes", lifetime_arr);
-
+	
 	json_array_append(*extent_arr, extent);
 
 	return(EXNODE_SUCCESS);
 }
 
-int uefSerialize(Exnode *exnode, char **buf, int *len, size_t file_size, time_t duration)
+int uefSerialize(Exnode *exnode, char **buf, size_t *len)
 {
 	JRB             md,jrbptr;
 	Dllist          dllptr;
 	json_t         *exnode_obj, *extent_arr;
 	char           *temp;
 	ExnodeMetadata *ptr;
-	char            timestamp[100];
-	
+
 	exnode_obj = json_object();
 
 	md=(JRB)jval_v(exnode->metadata->val);
 	if(md!=NULL) {
 		jrb_traverse(jrbptr,md) {
 			ptr = (ExnodeMetadata *)jval_v(jrbptr->val);
-			if(strcmp(ptr->name, "filename") == 0) {  uefSerializeMetadata( ptr, "name", &exnode_obj); }
+			if(strcmp(ptr->name, "filename") == 0){ 
+				uefSerializeMetadata( ptr, "name", &exnode_obj); 
+			}else if(strcmp(ptr->name, "parent") == 0){  
+				uefSerializeMetadata( ptr, "parent", &exnode_obj); 
+			}else if(strcmp(ptr->name, "created") == 0){  
+				uefSerializeMetadata( ptr, "created", &exnode_obj); 
+			}else if(strcmp(ptr->name, "modified") == 0){  
+				uefSerializeMetadata( ptr, "modified", &exnode_obj); 
+			}else if(strcmp(ptr->name, "mode") == 0){  
+				uefSerializeMetadata( ptr, "mode", &exnode_obj); 
+			}else if(strcmp(ptr->name, "size") == 0){  
+				uefSerializeMetadata( ptr, "size", &exnode_obj); 
+			}
 		}
 	}
 	
-	//snprintf(timestamp, 100, "%d", (int)time(NULL));
-	json_object_set(exnode_obj, "parent", json_null());
-	json_object_set(exnode_obj, "created", json_integer(time(NULL)));
-	json_object_set(exnode_obj, "modified", json_integer(time(NULL)));
-	json_object_set(exnode_obj, "mode", json_string("file"));
-	json_object_set(exnode_obj, "size", json_integer(file_size));
-
-
 	extent_arr = json_array();
 	dll_traverse(dllptr,exnode->mappings) {
-		uefSerializeMapping((ExnodeMapping *)jval_v(dllptr->val),	&extent_arr, duration);
+		uefSerializeMapping((ExnodeMapping *)jval_v(dllptr->val),	&extent_arr);
 	}
 	json_object_set(exnode_obj, "extents", extent_arr);
 	
