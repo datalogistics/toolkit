@@ -14,7 +14,6 @@
 #include <lors_libe2e.h>
 #include <lors_resolution.h>
 
-
 #define lorsDemoPrint       fprintf
 
 LorsConditionStruct     glob_lc[] = 
@@ -238,7 +237,8 @@ int lorsUploadFile( char      *filename,
                    int        nthreads,
                    int        timeout,
 				   socket_io_handler      *handle,
-					int        opts)
+				   char       *upload_dir_id,
+				   int        opts)
 {
     struct stat          mystat;
     char                *file_shortname;
@@ -694,8 +694,10 @@ upload_partial:
 	val.i = length;	
 	exnodeSetMetadataValue(emd, "size", val, INTEGER, TRUE);
 	// add parent id
-	//val.s = parent_id;
-	//exnodeSetMetadataValue(emd, "parent", val, STRING, TRUE);
+	fprintf(stderr, "Inserting parent .. \n");
+	val.s = upload_dir_id == NULL ? "" : upload_dir_id;
+	exnodeSetMetadataValue(emd, "parent", val, STRING, TRUE);
+	fprintf(stderr, "Inserting parent .. Sucessfull  \n");
 	// add created 
 	val.i = (long long)time(NULL);
 	exnodeSetMetadataValue(emd, "created", val, INTEGER, TRUE);

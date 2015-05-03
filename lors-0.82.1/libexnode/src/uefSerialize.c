@@ -55,7 +55,11 @@ int uefSerializeMetadata(ExnodeMetadata *md, const char *key, json_t **root)
 	}
 	
 	if(md->type==STRING) {
-		json_object_set(*root, key, json_string(jval_s(md->val)));
+		if(strlen(jval_s(md->val)) == 0){
+			json_object_set(*root, key, json_null());
+		}else{
+			json_object_set(*root, key, json_string(jval_s(md->val)));
+		}
 	} else if(md->type==INTEGER) {
 		json_object_set(*root, key, json_integer(jval_ll(md->val)));
 	} else if(md->type==DOUBLE) {

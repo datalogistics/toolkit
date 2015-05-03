@@ -7,7 +7,7 @@
 #include <uuid/uuid.h>
 #include <xndrc.h>
 #include <uuid/uuid.h>
-
+#include <unis_exnode.h>
 
 void sigpipe_handle(int d)
 {
@@ -36,6 +36,8 @@ int main (int argc, char **argv)
     char        *s;
     char        *lbonehost = NULL;
     char        *output_filename = NULL;
+	char        *upload_dir_path = NULL;
+	char        *upload_dir_id = NULL;
     const char  *filename = NULL;
     int          same_name=0;
     char        *s_data_blocksize = NULL;
@@ -64,7 +66,7 @@ int main (int argc, char **argv)
 	uuid_t      out;
 	char       session_id[33];
 	int        i;
-
+	unis_config config;
     poptContext optCon;   /* context for parsing command-line options */
 
 	handle.status = CONN_WAITING;
@@ -75,11 +77,13 @@ int main (int argc, char **argv)
   { "stdin",   'i', POPT_ARG_NONE,   0,                  READ_STDIN, 
         "Read from standard input rather than a specified filename.", NULL },
   { "outputfile", 'o', POPT_ARG_STRING, &output_filename,   OUTPUTNAME, 
-	"Specify a specific name for the output exNode file. "
-	"Default output format is Exnode. 1) If file extension is \".uef\" "
-	"then output file format will be Unis Exnode Format (.uef) "
-	"2) if ouputfile contain  link then exnodes will posted"
-	" to that link", NULL},
+	    "Specify a specific name for the output exNode file. "
+	    "Default output format is Exnode. 1) If file extension is \".uef\" "
+	    "then output file format will be Unis Exnode Format (.uef) "
+	    "2) if ouputfile contain  link then exnodes will posted"
+	    " to that link", NULL},
+  { "upload_dir", 'u', POPT_ARG_STRING, &upload_dir_path,   UPLOAD_DIR, 
+	    "Specifiy the upload directory path in Unis File System e.g. /user23/LSAT8/2015/1/15", NULL},
   { "version",    'v', POPT_ARG_NONE,   0,                  LORS_VERSION, 
         "Display Version information about this package.", NULL},
   { "verbose",    'V', POPT_ARG_INT,    &xndrc.verbose,        VERBOSE, 
@@ -87,8 +91,8 @@ int main (int argc, char **argv)
   { "lbone-host", 'H', POPT_ARG_STRING, &lbonehost,         LBONESERVER, 
         "Specify an L-Bone Server for resource discover and proxmity resolution.", NULL},
   { "lbone-port", 'P', POPT_ARG_INT,    &lbone_server.port, LBONEPORT, 
-	"Specify the port number when using an L-Bone Server on a non standard port.", 
-	"6767"},
+	    "Specify the port number when using an L-Bone Server on a non standard port.", 
+	    "6767"},
   { "location",   'l', POPT_ARG_STRING, &xndrc.location,          LOCATION_HINT, 
         "Specify a location hint to pass the L-Bone Query.", "\"state= TN\""},
   { "duration",   'd', POPT_ARG_STRING,     &s_duration,          DURATION, 
@@ -122,7 +126,6 @@ int main (int argc, char **argv)
         "Specify a length other than the logical extent of the exNode.", NULL},
   { "none",        'n', POPT_ARG_NONE,   0,   LORS_NO_E2E, 
         "Turn off all e2e services.", NULL},
-
   { "des",        'e', POPT_ARG_NONE|POPT_ARGFLAG_OR,   &encryption,   DES_ENCRYPTION, 
         "Turn on des encryption.", NULL},
   { "aes",        'a', POPT_ARG_NONE|POPT_ARGFLAG_OR,   &encryption,   AES_ENCRYPTION, 
@@ -133,7 +136,6 @@ int main (int argc, char **argv)
         "Turn on xor encryption.", NULL},
   { "checksum",   'k', POPT_ARG_NONE|POPT_ARGFLAG_OR,   &encryption,   ADD_CHECKSUM, 
         "Turn on checksum.", NULL},
-
   { "e2e-blocksize", 'E', POPT_ARG_STRING,   &s_e2e_blocksize,     E2E_BLOCKSIZE, 
         "When specifying e2e conditioning, select an e2e bocksize "
         "which will evenly fit into your chosen Mapping Blocksize.", NULL},
@@ -145,7 +147,7 @@ int main (int argc, char **argv)
      	"Http link to visualizer with port e.g. http://dlt.incntre.iu.edu:8000 .", NULL},
         POPT_AUTOHELP
         { NULL, 0, 0, NULL, 0 }
-    };
+  };
 
     memset(&drc, 0, sizeof(XndRc));
     memset(&xndrc, 0, sizeof(XndRc));
@@ -347,8 +349,27 @@ int main (int argc, char **argv)
     {
         for(; xndrc.e2e_order[e2e_cnt] != -1; e2e_cnt++);
     }
-
-	if(report_host != NULL){
+	/*check the upload directory */
+	if(output_filename != NULL && strstr(output_filename, "http://") != NULL )
+	{
+		
+        if(upload_dir_path == NULL){
+			fprintf(stderr, "Missing UNIS upload directory absolute path \n");
+			exit(EXIT_FAILURE);
+		}else{
+			memset (&config, 0, sizeof(unis_config));
+			config.endpoint = output_filename;
+			config.persistent = 1;
+			ret = unis_create_directory(&config, upload_dir_path, &upload_dir_id);
+			if(ret == 0){
+				fprintf(stderr, "Failed to get the upload directory id from UNIS \n");
+				exit(EXIT_FAILURE);
+			}
+		}
+	}
+	/*Generate session UUID*/
+	if(report_host != NULL)
+	{
 		uuid_generate(out);
 		for(i = 0; i < 16; i++)
 			sprintf(session_id + (i*2),"%02x", out[i]);
@@ -356,7 +377,8 @@ int main (int argc, char **argv)
 		handle.server_add = report_host;
 		handle.session_id = session_id;
 	
-		if(socket_io_init(&handle) != SOCK_SUCCESS){
+		if(socket_io_init(&handle) != SOCK_SUCCESS)
+		{
 			fprintf(stderr, "Socket IO Init failed \n");
 		}
 	}
@@ -408,7 +430,7 @@ in_while:
                              xndrc.location, xndrc.maxdepots, xndrc.storage_type, 
                              xndrc.duration, xndrc.max_buffersize, 
                              xndrc.resolution_file, xndrc.threads, 
-							 xndrc.timeout, &handle, 0); 
+							 xndrc.timeout, &handle, upload_dir_id,  0); 
             if ( ret != LORS_SUCCESS && ret != LORS_PARTIAL )
             {
                 if ( ret == LORS_LBONE_FAILED && xndrc.lboneList[try1] != NULL )

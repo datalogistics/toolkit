@@ -71,6 +71,7 @@ int lorsUploadFile( char      *filename,
                    int        nthreads,
                    int        timeout,
 				   socket_io_handler *handle, 
+				   char       *upload_dir_id,
                    int        opts);
 
 int lorsDownloadFile(char       *exnode_filename, 
