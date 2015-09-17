@@ -4,14 +4,14 @@ Version: 1.0
 Release: %{?release}%{!?release:%{default_release}}
 Summary: Unis C library
 
-Group:	Library/System
+Group:	        Library/System
 License:	http://www.apache.org/licenses/LICENSE-2.0
-URL:	https://github.com/periscope-ps/periscope
+URL:	        https://github.com/periscope-ps/periscope
 Source0:	%{name}.tar.gz
-BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}
 
 BuildRequires:	cmake curl-devel jansson-devel sed
-Requires:	 jansson curl
+Requires:	jansson curl
 
 %description
 UNIS C library. Currently only used to register C services.
@@ -19,28 +19,22 @@ UNIS C library. Currently only used to register C services.
 %prep
 %setup -n libunis-c
 
-
 %build
-./configure --prefix=%{buildroot}
+%configure
 make
 
 %install
-rm -rf %{buildroot}
-make install
-sed -i "s@libdir='.*'@libdir='/lib'@g" $RPM_BUILD_ROOT/lib/*.la
-
+%makeinstall
 
 %clean
 rm -rf %{buildroot}
 
-
 %files
-%defattr(-,root,root,-)
-/lib/*
-/include/unis_registration.h
-/include/libunis_c_log.h
-
-
+%defattr(-,root,root)
+%{_libdir}/*
+%{_includedir}/unis_registration.h
+%{_includedir}/unis_exnode.h
+%{_includedir}/libunis_c_log.h
 
 %changelog
 * Sat Oct 11 2014 <ezkissel@indiana.edu> 1.0-2-libunis-c

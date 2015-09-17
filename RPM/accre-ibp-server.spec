@@ -12,8 +12,8 @@ URL: http://www.reddnet.org/
 Source0: ibp_server.tar.gz
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
-BuildRequires:	cmake apr-devel apr-util-devel openssl-devel gcc gcc-c++ openssl-devel jansson-devel
-Requires: czmq fuse openssl jansson libunis-c python-argparse
+BuildRequires:	cmake apr-devel apr-util-devel openssl-devel gcc gcc-c++ openssl-devel jansson-devel leveldb-devel snappy-devel
+Requires: czmq fuse openssl jansson libunis-c python-argparse leveldb snappy
 
 %description
 The Internet Backplane Protocol (IBP) Server handles exposes storage 
