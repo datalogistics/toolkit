@@ -1,0 +1,15 @@
+[data-logistics]
+name=Data Logistics Packages for CentOS - $basearch
+baseurl=http://data-logistics.org/yum/centos/$releasever/$basearch
+failovermethod=priority
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-data-logistics
+
+[data-logistics-src]
+name=Data Logistics Source Packages for CentOS - $basearch - Source
+baseurl=http://data-logistics.org/yum/centos/$releasever/SRPMS
+failovermethod=priority
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-data-logistics
