@@ -25,6 +25,7 @@ int socket_io_init(socket_io_handler *handle){
 	
 	socket_io_handler h;
 	struct parsed_url *URL;
+	int port = 80;
 	handle->num_job = 0;
 	handle->job_list = NULL;
 	handle->status = CONN_WAITING;
@@ -44,7 +45,12 @@ int socket_io_init(socket_io_handler *handle){
 		return SOCK_FAIL;
 	}
 	
-	LOG("protocol : %s Host : %s Port : %d ", URL->scheme, URL->host, atoi(URL->port));
+	/* update port if it was parsed, otherwise the default port 80 is used */
+	if (URL->port) {
+	    port = atoi(URL->port);
+	}
+
+	LOG("protocol : %s Host : %s Port : %d", URL->scheme, URL->host, port);
 	
 	if(strstr(URL->scheme, "http") == NULL){
 		fprintf(stderr, "Dont have support for %s \n", URL->scheme);
@@ -59,8 +65,9 @@ int socket_io_init(socket_io_handler *handle){
 		return SOCK_FAIL;
 	}
 	
-	if(websocket_init(&handle->context, &handle->wsi, URL->host, "/socket.io/?transport=websocket", atoi(URL->port), (void *) handle) != WEBSOCKET_SUCCESS){
-		fprintf(stderr, "Failed to Init  : %s%s:%d \n", URL->scheme, URL->host, atoi(URL->port));
+	if(websocket_init(&handle->context, &handle->wsi, URL->host, "/socket.io/?transport=websocket",
+			  port, (void *) handle) != WEBSOCKET_SUCCESS){
+		fprintf(stderr, "Failed to Init  : %s%s:%d \n", URL->scheme, URL->host, port);
 		return SOCK_FAIL;
 	}
 
