@@ -140,7 +140,7 @@ struct __LorsDepotPool
     IBP_depot           lboneserver;
     int                 min_unique_depots;
     char               *location;
-    ulong_t            size;
+    ulong_t             size;
     int                 type;
     time_t              duration;
     int                 timeout;
@@ -152,7 +152,7 @@ struct __depot_t
 {
     int                 id;
     IBP_depot           depot;
-    LorsDepotPool       *dpp;
+    LorsDepotPool      *dpp;
     pthread_mutex_t    *lock;
     double              score;      /* score */
     double              bandwidth;  /* bandwidth from local machine to this depot */
@@ -362,9 +362,9 @@ struct __LorsMapping
     pthread_t              tid;
     pthread_attr_t         attr;
     pthread_mutex_t       *lock;
-    ulong_t                   id;
-    ulong_t                   i;
-#if 0
+    ulong_t                id;
+    ulong_t                i;
+#if 0 // wow
 <<<<<<< lors_api.h
 
     int                     set_index;

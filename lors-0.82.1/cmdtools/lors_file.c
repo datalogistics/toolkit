@@ -260,7 +260,7 @@ int lorsUploadFile( char      *filename,
     pthread_t            tid;
     double               duration_days;
     LboneResolution     *lr = NULL;
-	LorsSet             *set = NULL,*copy_set = NULL;
+    LorsSet             *set = NULL,*copy_set = NULL;
     LorsDepotPool       *dpp = NULL;
     LorsExnode          *xnd = NULL;
     ExnodeMetadata      *emd = NULL;
@@ -268,7 +268,7 @@ int lorsUploadFile( char      *filename,
     _LorsFileJob        fileJob;
     double              temp_size = 0;
     ulong_t             storage_size = 0;
-	double              t1, t2;
+    double              t1, t2;
     double              demo_len;
     int                 l_stdin =0;
     longlong            soffset = 0;
@@ -684,36 +684,36 @@ upload_partial:
     free(buf_array[1]);
 
     exnodeSetMetadataValue(emd, "filename", val, STRING, TRUE);
-	// add mode
-	val.s = "file";	
-	exnodeSetMetadataValue(emd, "mode", val, STRING, TRUE);
-	// add duration
-	val.d = (double)duration;
-	exnodeSetMetadataValue(emd, "duration", val, DOUBLE, TRUE);
-	// add size of file 
-	val.i = length;	
-	exnodeSetMetadataValue(emd, "size", val, INTEGER, TRUE);
-	// add parent id
-	fprintf(stderr, "Inserting parent .. \n");
-	val.s = upload_dir_id == NULL ? "" : upload_dir_id;
-	exnodeSetMetadataValue(emd, "parent", val, STRING, TRUE);
-	fprintf(stderr, "Inserting parent .. Sucessfull  \n");
-	// add created 
-	val.i = (long long)time(NULL);
-	exnodeSetMetadataValue(emd, "created", val, INTEGER, TRUE);
-	// add modified
-	val.i = (long long)time(NULL);
-	exnodeSetMetadataValue(emd, "modified", val, INTEGER, TRUE);
-
-	//fprintf(stderr, "p6\n");
-	if(output_filename != NULL && strstr(output_filename,".uef")){
-		ret = lorsUefSerialize(xnd, output_filename);
-	}else if(output_filename != NULL && strstr(output_filename,"http://")){
-		ret = lorsPostUnis(xnd, output_filename);
-	}else{
-		ret = lorsFileSerialize(xnd, output_filename, 0, 0);
-	}
-	
+    // add mode
+    val.s = "file";	
+    exnodeSetMetadataValue(emd, "mode", val, STRING, TRUE);
+    // add duration
+    val.d = (double)duration;
+    exnodeSetMetadataValue(emd, "duration", val, DOUBLE, TRUE);
+    // add size of file 
+    val.i = length;	
+    exnodeSetMetadataValue(emd, "size", val, INTEGER, TRUE);
+    // add parent id
+    fprintf(stderr, "Inserting parent .. \n");
+    val.s = upload_dir_id == NULL ? "" : upload_dir_id;
+    exnodeSetMetadataValue(emd, "parent", val, STRING, TRUE);
+    fprintf(stderr, "Inserting parent .. Sucessfull  \n");
+    // add created 
+    val.i = (long long)time(NULL);
+    exnodeSetMetadataValue(emd, "created", val, INTEGER, TRUE);
+    // add modified
+    val.i = (long long)time(NULL);
+    exnodeSetMetadataValue(emd, "modified", val, INTEGER, TRUE);
+    
+    //fprintf(stderr, "p6\n");
+    if(output_filename != NULL && strstr(output_filename,".uef")){
+	ret = lorsUefSerialize(xnd, output_filename);
+    }else if(output_filename != NULL && strstr(output_filename,"http://")){
+	ret = lorsPostUnis(xnd, output_filename);
+    }else{
+	ret = lorsFileSerialize(xnd, output_filename, 0, 0);
+    }
+    
     if ( ret != LORS_SUCCESS )
     {
         fprintf(stderr, "Serialize Failed.\n");

@@ -257,15 +257,21 @@ int    lorsFileDeserialize (LorsExnode ** exnode,
     /*fprintf(stderr, "md: 0x%x\n", (*exnode)->md);*/
 }
 
-static void lorsSerializeMapping(LorsMapping *lm, ExnodeMapping **emap)
+static void lorsSerializeMapping(LorsExnode     *exnode,
+				 LorsMapping    *lm,
+				 ExnodeMapping **emap)
 {
     ExnodeMetadata  *emd;
+    ExnodeMetadata  *exmd = NULL;
     ExnodeMapping   *map;
-    ExnodeValue     val;
-	char           buf[100];
-	struct tm     *tm_info;
-	time_t        end;
-	
+    ExnodeValue      val;
+    ExnodeType       type;
+    char             buf[100];
+    struct tm       *tm_info;
+    time_t           end;
+    
+    lorsGetExnodeMetadata(exnode, &exmd);
+
     exnodeCreateMapping(&map);
     exnodeGetMappingMetadata(map, &emd);
     val.i = lm->exnode_offset;
@@ -279,18 +285,19 @@ static void lorsSerializeMapping(LorsMapping *lm, ExnodeMapping **emap)
     val.i = lm->e2e_bs;
     exnodeSetMetadataValue(emd, "e2e_blocksize", val, INTEGER, TRUE);
 	
-	/*Adding start and end to support uef*/
-	tm_info = localtime(&(lm->begin_time));
-	strftime(buf, 100, "%Y-%m-%d %H:%M:%S", tm_info);
-	val.s = buf;
-	exnodeSetMetadataValue(emd, "start", val, STRING, TRUE);
-	
-	end = lm->begin_time + lm->dp->duration;
-	tm_info = localtime(&end);
-	strftime(buf, 100, "%Y-%m-%d %H:%M:%S", tm_info);
-	val.s = buf;
-	exnodeSetMetadataValue(emd, "end", val, STRING, TRUE);
-
+    /*Adding start and end to support uef*/
+    tm_info = localtime(&(lm->begin_time));
+    strftime(buf, 100, "%Y-%m-%d %H:%M:%S", tm_info);
+    val.s = buf;
+    exnodeSetMetadataValue(emd, "start", val, STRING, TRUE);
+    
+    exnodeGetMetadataValue(exmd, "duration", &val, &type);
+    end = lm->begin_time + (unsigned)val.d;
+    tm_info = localtime(&end);
+    strftime(buf, 100, "%Y-%m-%d %H:%M:%S", tm_info);
+    val.s = buf;
+    exnodeSetMetadataValue(emd, "end", val, STRING, TRUE);
+    
     exnodeSetCapabilities(map, lm->capset.readCap, 
                                lm->capset.writeCap, 
                                lm->capset.manageCap, TRUE);
@@ -330,7 +337,7 @@ int    lorsSerialize (LorsExnode * exnode,
     jrb_traverse(node, exnode->mapping_map)
     {
         lm = node->val.v;
-        lorsSerializeMapping(lm, &em);
+        lorsSerializeMapping(exnode, lm, &em);
 
         /*fprintf(stderr, "\tAppending Mapping:0x%x\n", em);*/
         exnodeAppendMapping(exnode->exnode, em);
@@ -411,11 +418,10 @@ int    lorsFileSerialize (LorsExnode * exnode,
 }
 
 
-int lorsUefSerialize(LorsExnode * exnode,
-					 char       *filename
-)
+int lorsUefSerialize(LorsExnode *exnode,
+		     char       *filename)
 {
-	char           *buf;
+    char           *buf;
     size_t          len;
     int             ret;
     JRB             tree, node;
@@ -424,18 +430,18 @@ int lorsUefSerialize(LorsExnode * exnode,
     ExnodeMetadata *ed;
     ExnodeValue     val;
     ExnodeType      type;
-	int             fd = 0;
+    int             fd = 0;
 
-	if ( exnode->exnode != NULL ) {
+    if ( exnode->exnode != NULL ) {
         fprintf(stderr,"serialize: not null\n");
     }
-
+    
     exnodeCreateExnode(&(exnode->exnode));
 
     jrb_traverse(node, exnode->mapping_map)
     {
         lm = node->val.v;
-        lorsSerializeMapping(lm, &em);
+        lorsSerializeMapping(exnode, lm, &em);
 
         /*fprintf(stderr, "\tAppending Mapping:0x%x\n", em);*/
         exnodeAppendMapping(exnode->exnode, em);
@@ -505,12 +511,11 @@ int lorsUefSerialize(LorsExnode * exnode,
 }
 
 int lorsPostUnis(LorsExnode *exnode,
-				 char       *url
-)
+		 char       *url)
 {
-	char           *buf;
-	char           *response;
-	longlong        response_len;
+    char           *buf;
+    char           *response;
+    longlong        response_len;
     longlong        len;
     int             ret;
     JRB             tree, node;
@@ -519,27 +524,27 @@ int lorsPostUnis(LorsExnode *exnode,
     ExnodeMetadata *ed;
     ExnodeValue     val;
     ExnodeType      type;
-	int             fd = 0;
-	json_t         *json_ret;
-	json_error_t    json_err;
-
-	if(url == NULL){
-		fprintf(stderr, "Url not found \n");
-		return LORS_FAILURE;
-	}
-	
-	if ( exnode->exnode != NULL ) {
+    int             fd = 0;
+    json_t         *json_ret;
+    json_error_t    json_err;
+    
+    if(url == NULL){
+	fprintf(stderr, "Url not found \n");
+	return LORS_FAILURE;
+    }
+    
+    if ( exnode->exnode != NULL ) {
         fprintf(stderr,"serialize: not null\n");
     }
-
+    
     exnodeCreateExnode(&(exnode->exnode));
-
+    
     jrb_traverse(node, exnode->mapping_map)
-    {
-        lm = node->val.v;
-        lorsSerializeMapping(lm, &em);
-        exnodeAppendMapping(exnode->exnode, em);
-    }
+	{
+	    lm = node->val.v;
+	    lorsSerializeMapping(exnode, lm, &em);
+	    exnodeAppendMapping(exnode->exnode, em);
+	}
 
     exnodeGetExnodeMetadata(exnode->exnode, &ed);
 
