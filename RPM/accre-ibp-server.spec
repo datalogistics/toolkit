@@ -1,4 +1,4 @@
-%define default_release 6
+%define default_release 8
 
 Name: accre-ibp-server
 Version: 1.0
@@ -12,7 +12,7 @@ URL: http://www.reddnet.org/
 Source0: ibp_server.tar.gz
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
-BuildRequires:	cmake apr-devel apr-util-devel openssl-devel gcc gcc-c++ openssl-devel jansson-devel leveldb-devel snappy-devel
+BuildRequires: cmake apr-devel apr-util-devel openssl-devel gcc gcc-c++ openssl-devel jansson-devel leveldb-devel snappy-devel
 Requires: czmq fuse openssl jansson libunis-c python-argparse leveldb snappy
 
 %description
@@ -39,8 +39,9 @@ install -m 755 get_alloc get_config get_corrupt get_version ${RPM_BUILD_ROOT}/bi
 install -m 755 print_alog read_alloc repair_history ${RPM_BUILD_ROOT}/bin
 install -m 755 date_spacefree chksum_test expire_list mkfs.resource ${RPM_BUILD_ROOT}/bin
 install -m 755 misc/ibp_configure.py ${RPM_BUILD_ROOT}/bin
-install -m 755 misc/dlt-client.pem ${RPM_BUILD_ROOT}/usr/local/etc/
-install -m 755 misc/dlt-client.key ${RPM_BUILD_ROOT}/usr/local/etc/
+install -m 644 misc/dlt-client.pem ${RPM_BUILD_ROOT}/usr/local/etc/
+install -m 644 misc/dlt-client.key ${RPM_BUILD_ROOT}/usr/local/etc/
+install -m 644 misc/dlt-ca.bundle ${RPM_BUILD_ROOT}/usr/local/etc/
 %clean
 rm -rf %{buildroot}
 
@@ -50,9 +51,12 @@ rm -rf %{buildroot}
 /etc/ibp.cfg
 /usr/local/etc/dlt-client.pem
 /usr/local/etc/dlt-client.key
+/usr/local/etc/dlt-ca.bundle
 %attr(755,root,root) /etc/init.d/ibp-server
 
 %changelog
+* Thu Oct 08 2015 <exkissel@indiana.edu> 1.0-8-accre-ibp-server
+- Include DLT CA file for SSL server verification.
 * Thu Oct 16 2014 <ezkissel@indiana.edu> 1.0-6-accre-ibp-server 
 - Minor configure script improvements.  Default RID is now 1.  Prompt to delete existing DB env.
 * Sat Oct 11 2014 <ezkissel@indiana.edu> 1.0-5-accre-ibp-server 
