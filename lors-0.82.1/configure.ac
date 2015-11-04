@@ -140,6 +140,22 @@ AC_SUBST(LORS_BUILD_POPT)
 AC_SUBST(LORS_POPT_DIR)
 AC_SUBST(LORS_POPT_SRC_DIR)
 
+dnl check and setup path of zlib package
+AC_ARG_WITH(zlib,[--with-zlib=path   path to zlib package(default is /usr)],
+            LORS_ZLIB_DIR="$with_zlib",
+            LORS_ZLIB_DIR="/usr")
+
+AC_FIND_FILE("${LORS_ZLIB_DIR}/include/trees.h",
+            LORS_BUILD_ZLIB="no",
+            AC_FIND_FILE("${PREFIX}/zlib/trees.c",
+                          LORS_BUILD_ZLIB="yes"
+                          LORS_ZLIB_SRC_DIR="${PREFIX}/zlib"
+                          LORS_ZLIB_DIR="${INS_DIR}",
+                          AC_MSG_ERROR("Can not find zlib package")))
+AC_SUBST(LORS_BUILD_ZLIB)
+AC_SUBST(LORS_ZLIB_DIR)
+AC_SUBST(LORS_ZLIB_SRC_DIR)
+
 dnl check and setup path of libxml2 package 
 AC_ARG_WITH(libxml2,[--with-libxml2=path         path to libxml2[default=/usr]],
             LORS_XML2_DIR="$with_libxml2",
