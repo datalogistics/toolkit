@@ -79,7 +79,6 @@ visual/command.tcl
 visual/lat_display.tcl
 
 # Lors_tools generated files
-INSTALL
 cmdtools/lbone_resolution
 cmdtools/lbone_test
 cmdtools/lors_augment
