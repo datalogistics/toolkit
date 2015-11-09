@@ -356,7 +356,8 @@ int uefDeserialize(char *buf, int len, Exnode **exnode)
 				fprintf(stderr, "Expecting extents array \n");
 				return (EXNODE_BADPARSE);
 			}
-			json_array_foreach(value, index, json_extent){
+			//json_array_foreach(value, index, json_extent){
+			for(index = 0; index < json_array_size(value) && (json_extent = json_array_get(value, index)); index++){
 				err=uefDeserializeMapping(temp, json_extent);
 				if(err!=EXNODE_SUCCESS) {
 					exnodeDestroyExnode(temp);
