@@ -1,9 +1,0 @@
-dn: city=Knoxville,state=TN,cc=US,ou=locations,o=lbone
-objectClass: city
-city: Knoxville
-c: US
-st: TN
-lat: 35.99
-lon: -84.12
-
-
