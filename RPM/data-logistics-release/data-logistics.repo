@@ -1,6 +1,6 @@
 [data-logistics]
 name=Data Logistics Packages for CentOS - $basearch
-baseurl=http://data-logistics.org/yum/centos/$releasever/$arch
+baseurl=http://data-logistics.org/yum/centos/$releasever/$basearch
 failovermethod=priority
 enabled=1
 gpgcheck=1
