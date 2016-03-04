@@ -11,7 +11,7 @@ BuildRoot: %{_builddir}/%{name}-root
 Packager: jayaajay <jayaajay@indiana.edu>
 BuildArch: noarch
 
-Requires : periscope ntp libwebsockets dlt-lors OSiRIS-Tools
+Requires : periscope ntp libwebsockets dlt-lors OSiRIS-tools
 
 %description 
 
