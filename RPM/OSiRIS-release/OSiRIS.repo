@@ -1,0 +1,15 @@
+[OSiRIS]
+name=OSiRIS packages for CentOS - $basearch
+baseurl=http://data-logistics.org/yum/centos/$releasever/$basearch
+failovermethod=priority
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-OSiRIS
+
+[OSiRIS-src]
+name=OSiRIS Source Packages for CentOS - $basearch - Source
+baseurl=http://data-logistics.org/yum/centos/$releasever/SRPMS
+failovermethod=priority
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-OSiRIS
