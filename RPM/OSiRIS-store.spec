@@ -11,13 +11,13 @@ BuildRoot: %{_builddir}/%{name}-root
 Packager: jayaajay <jayaajay@indiana.edu>
 BuildArch: noarch
 
-Requires : periscope ntp libwebsockets dlt-lors OSiRIS-tools
+Requires : periscope ntp libwebsockets dlt-lors dlt-tools
 
 %description 
 
 Configures the OSiRIS Store for measurement store. This meta 
 package installs the Periscope measurement store, DLT LoRS 
-and OSiRIS-tools.
+and dlt-tools.
 
 %prep
 
