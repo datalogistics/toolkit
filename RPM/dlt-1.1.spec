@@ -11,7 +11,7 @@ BuildRoot: %{_builddir}/%{name}-root
 Packager: Jayashree Candadai <jayaajay@indiana.edu>
 BuildArch: noarch
 
-Requires : libxsp-client >= 1.0-10 phoebus-client >=1.0-10 periscope >= 0.3.dev-1 blipp >= 0.1.dev-14 accre-ibp-server >= 1.0-12 ntp libwebsockets dlt-lors >= 1.0-1 dlt-tools >= 0.1.dev-3
+Requires : libxsp-client >= 1.0-10 phoebus-client >= 1.0-10 periscope >= 0.3.dev-1 blipp >= 0.1.dev-14 accre-ibp-server >= 1.0-12 ntp libwebsockets dlt-lors >= 1.0-1 dlt-tools >= 0.1.dev-3
 
 %description 
 
