@@ -11,7 +11,7 @@ BuildRoot: %{_builddir}/%{name}-root
 Packager: Ezra Kissel <ezkissel@indiana.edu>
 BuildArch: noarch
 
-Requires: libxsp-client = 1.0-10%{dist} phoebus-client = 1.0-10%{dist} periscope = 0.2.dev-1 blipp = 0.1.dev-13 accre-ibp-server = 1.0-11%{dist} ntp libwebsockets dlt-lors = 1.0-1%{dist} dlt-tools = 0.1.dev-2
+Requires: libxsp-client = 1.0-10%{dist} phoebus-client = 1.0-10%{dist} periscope = 0.2.dev-1 blipp = 0.1.dev-12 accre-ibp-server = 1.0-11%{dist} ntp libwebsockets dlt-lors = 1.0-1%{dist} dlt-tools = 0.1.dev-2
 
 %description 
 
