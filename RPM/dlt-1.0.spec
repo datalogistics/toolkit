@@ -8,10 +8,10 @@ License: N/A
 Group: Utilities/Configuration
 
 BuildRoot: %{_builddir}/%{name}-root
-Packager: Ezra Kissel <ezkissel@indiana.edu>
+Packager: Jayashree Candadai <jayaajay@indiana.edu>
 BuildArch: noarch
 
-Requires : libxsp-client = 1.0-10 phoebus-client = 1.0-10 periscope = 0.2.dev-1 blipp = 0.1.dev-13 accre-ibp-server = 1.0-11 ntp libwebsockets dlt-lors = 1.0-1 dlt-tools = 0.1.dev-2
+Requires: libxsp-client = 1.0-10%{dist} phoebus-client = 1.0-10%{dist} periscope = 0.2.dev-1 blipp = 0.1.dev-13 accre-ibp-server = 1.0-11%{dist} ntp libwebsockets dlt-lors = 1.0-1%{dist} dlt-tools = 0.1.dev-2
 
 %description 
 
@@ -34,6 +34,3 @@ BLiPP monitoring agent, DLT LoRS and tools.
 %post
 
 %changelog
-* Mon Mar 14 2016 <jayaajay@indiana.edu> dlt_1.0.spec
-- Moved the dlt.spec to dlt_1.0.spec and updated the version numbers in 
-  requires field.

@@ -1,0 +1,3 @@
+Note: When creating dlt-{version}.rpm for pin releases, use the requires
+as in dlt-1.0.spec and force the dist{el7/el6} as in example command:
+rpmbuild -bb --define "dist .el7" dlt-1.0.spec
