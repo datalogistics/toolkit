@@ -2,7 +2,7 @@
 
 Summary: Data Logistics Repository Package
 Name: data-logistics-release
-Version: 2
+Version: 1
 Release: %{?release}%{!?release:%{default_release}}
 License: none
 Group: System Environment/Base
