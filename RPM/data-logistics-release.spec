@@ -2,11 +2,12 @@
 
 Summary: Data Logistics Repository Package
 Name: data-logistics-release
-Version: 1
+Version: 2
 Release: %{?release}%{!?release:%{default_release}}
 License: none
 Group: System Environment/Base
 Source: %{name}.tar.gz
+BuildArch: noarch
 BuildRoot: %{_builddir}/%{name}-build
 Packager: Ezra Kissel <ezkissel@indiana.edu>
 BuildArch: noarch
