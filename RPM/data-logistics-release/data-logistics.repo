@@ -13,3 +13,11 @@ failovermethod=priority
 enabled=1
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-data-logistics
+
+[data-logistics-extra]
+name=Data Logistics Packages for CentOS - extra
+baseurl=http://data-logistics.org/yum/centos/extra
+failovermethod=priority
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-data-logistics

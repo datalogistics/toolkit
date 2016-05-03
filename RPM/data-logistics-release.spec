@@ -1,4 +1,4 @@
-%define default_release 0
+%define default_release 1
 
 Summary: Data Logistics Repository Package
 Name: data-logistics-release
