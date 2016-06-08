@@ -27,11 +27,13 @@ ls -al
 mkdir -p $RPM_BUILD_ROOT/etc/yum.repos.d
 mkdir -p $RPM_BUILD_ROOT/etc/pki/rpm-gpg
 install -m 644 data-logistics.repo $RPM_BUILD_ROOT/etc/yum.repos.d/
+install -m 644 data-logistics-testing.repo $RPM_BUILD_ROOT/etc/yum.repos.d/
 install -m 644 RPM-GPG-KEY-data-logistics $RPM_BUILD_ROOT/etc/pki/rpm-gpg/
 
 %files
 %defattr(-,root,root)
 /etc/yum.repos.d/data-logistics.repo
+/etc/yum.repos.d/data-logistics-testing.repo
 /etc/pki/rpm-gpg/RPM-GPG-KEY-data-logistics
 
 %post
@@ -42,4 +44,3 @@ rm -rf %{_tmppath}/%{name}
 rm -rf %{_topdir}/BUILD/%{name}
 
 %changelog
-

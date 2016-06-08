@@ -1,0 +1,23 @@
+[data-logistics-testing]
+name=Data Logistics Testing Packages for CentOS - $basearch
+baseurl=http://data-logistics.org/yum/testing/centos/$releasever/$basearch
+failovermethod=priority
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-data-logistics
+
+[data-logistics-testing-src]
+name=Data Logistics Testing Source Packages for CentOS - $basearch - Source
+baseurl=http://data-logistics.org/yum/testing/centos/$releasever/SRPMS
+failovermethod=priority
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-data-logistics
+
+[data-logistics-testing-extra]
+name=Data Logistics Testing Packages for CentOS - extra
+baseurl=http://data-logistics.org/yum/testing/centos/extra
+failovermethod=priority
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-data-logistics
